@@ -14,226 +14,177 @@
     href="https://fonts.googleapis.com/css2?family=Battambang:wght@400;700&family=Kantumruy+Pro:ital,wght@0,100..700;1,100..700&display=swap"
     rel="stylesheet"
   >
-
   <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
+<div class="page-wrapper">
 
-  <div class="page-wrapper">
-
-    <!-- Language switch -->
-    <div class="language-area">
-      <button id="languageButton"
-        class="language-button">
-        ខ្មែរ
-      </button>
-    </div>
-
-    <!-- Header -->
-    <header class="header">
-      <div class="header-icon">🏫</div>
-      <h1 data-i18n="title">
-        Student QR Attendance
-      </h1>
-      <p data-i18n="subtitle">
-        Please enter your information and allow
-        location access to check in.
-      </p>
-    </header>
-
-    <!-- Session status banner -->
-    <div class="session-banner" id="sessionBanner"
-      style="display:none;">
-      <span id="sessionBannerIcon">📋</span>
-      <span id="sessionBannerText"></span>
-    </div>
-
-    <!-- Location status box -->
-    <div class="location-box" id="locationBox">
-      <div class="location-icon">📍</div>
-      <div class="location-text">
-        <p id="locationStatus"
-          data-i18n="requestingLocation">
-          Requesting your location permission...
-        </p>
-        <p class="location-reason"
-          data-i18n="locationReason">
-          Your location is needed to verify that
-          you are physically present at school.
-          We do not collect location secretly.
-        </p>
-      </div>
-    </div>
-
-    <!-- Distance status box -->
-    <div class="distance-box" id="distanceBox"
-      style="display:none;">
-      <div class="distance-icon"
-        id="distanceIcon">📏</div>
-      <div class="distance-text">
-        <p id="distanceStatus"></p>
-      </div>
-    </div>
-
-    <!-- Attendance form -->
-    <main class="form-card" id="formCard">
-
-      <h2 class="form-title" data-i18n="formTitle">
-        📋 Attendance Form
-      </h2>
-
-      <form id="attendanceForm" novalidate>
-
-        <!-- Full name -->
-        <div class="form-group">
-          <label for="fullName"
-            data-i18n="fullName">
-            Full Name
-            <span class="required">*</span>
-          </label>
-          <input
-            type="text"
-            id="fullName"
-            data-placeholder-en="Enter your full name"
-            data-placeholder-km=
-              "បញ្ចូលឈ្មោះពេញរបស់អ្នក"
-            placeholder="Enter your full name"
-            autocomplete="name"
-          >
-          <span class="field-error"
-            id="nameError"></span>
-        </div>
-
-        <!-- Age -->
-        <div class="form-group">
-          <label for="age" data-i18n="age">
-            Age <span class="required">*</span>
-          </label>
-          <input
-            type="number"
-            id="age"
-            data-placeholder-en="Enter your age"
-            data-placeholder-km=
-              "បញ្ចូលអាយុរបស់អ្នក"
-            placeholder="Enter your age"
-            min="5"
-            max="100"
-          >
-          <span class="field-error"
-            id="ageError"></span>
-        </div>
-
-        <!-- Grade -->
-        <div class="form-group">
-          <label for="grade" data-i18n="grade">
-            Grade / Class
-            <span class="required">*</span>
-          </label>
-          <input
-            type="text"
-            id="grade"
-            data-placeholder-en=
-              "Example: Grade 10 - A"
-            data-placeholder-km=
-              "ឧទាហរណ៍៖ ថ្នាក់ទី ១០ ក"
-            placeholder="Example: Grade 10 - A"
-          >
-          <span class="field-error"
-            id="gradeError"></span>
-        </div>
-
-        <!-- Location consent -->
-        <div class="form-group checkbox-group"
-          id="consentGroup">
-          <label class="checkbox-label">
-            <input type="checkbox"
-              id="locationConsent">
-            <span class="checkbox-custom"></span>
-            <span class="checkbox-text"
-              data-i18n="locationConsent">
-              I allow this website to access my
-              location for attendance verification.
-            </span>
-          </label>
-          <span class="field-error"
-            id="locationError"></span>
-        </div>
-
-        <!-- Submit -->
-        <button
-          type="submit"
-          class="submit-btn"
-          id="submitBtn"
-          data-i18n="submit"
-        >
-          Submit Attendance
-        </button>
-
-      </form>
-
-    </main>
-
-    <!-- Session closed message -->
-    <div class="session-closed-card"
-      id="sessionClosedCard"
-      style="display:none;">
-      <div style="font-size:48px;">🔒</div>
-      <h2 data-i18n="sessionClosedTitle">
-        Attendance is Closed
-      </h2>
-      <p data-i18n="sessionClosedMsg">
-        The teacher has not opened attendance yet
-        or the session has ended.
-        Please ask your teacher.
-      </p>
-    </div>
-
-    <!-- Success card -->
-    <section class="success-card"
-      id="successCard">
-      <div class="success-icon">✅</div>
-      <h2 class="success-title"
-        data-i18n="successTitle">
-        Attendance recorded successfully!
-      </h2>
-      <p class="success-message"
-        data-i18n="successMessage">
-        Thank you. Your attendance has been saved.
-      </p>
-      <div class="success-details"
-        id="successDetails"></div>
-    </section>
-
-    <!-- Error card -->
-    <section class="error-card" id="errorCard">
-      <div class="error-icon">❌</div>
-      <p class="error-message"
-        id="errorMessage"></p>
-    </section>
-
-    <!-- Loading overlay -->
-    <div class="loading-overlay"
-      id="loadingOverlay">
-      <div class="loading-spinner"></div>
-      <p class="loading-text" data-i18n="saving">
-        Saving your attendance...
-      </p>
-    </div>
-
-    <!-- Footer -->
-    <footer class="footer">
-      <p data-i18n="footerSecurity">
-        🔒 Your information is kept safe and secure.
-      </p>
-      <p data-i18n="footerSchool">
-        តេប្រណំ - Tepranom High School
-      </p>
-    </footer>
-
+  <!-- Language switch -->
+  <div class="language-area">
+    <button id="languageButton"
+      class="language-button">
+      ខ្មែរ
+    </button>
   </div>
 
-  <script type="module" src="script.js"></script>
+  <!-- Header -->
+  <header class="header">
+    <div class="header-icon">🏫</div>
+    <h1 data-i18n="title"></h1>
+    <p data-i18n="subtitle"></p>
+  </header>
 
+  <!-- Session status banner -->
+  <div class="session-banner" id="sessionBanner"
+    style="display:none;">
+    <span id="sessionBannerIcon">📋</span>
+    <span id="sessionBannerText"></span>
+  </div>
+
+  <!-- Location status box -->
+  <div class="location-box" id="locationBox">
+    <div class="location-icon">📍</div>
+    <div class="location-text">
+      <p id="locationStatus"
+        data-i18n="requestingLocation"></p>
+      <p class="location-reason"
+        data-i18n="locationReason"></p>
+    </div>
+  </div>
+
+  <!-- Distance status box -->
+  <div class="distance-box" id="distanceBox"
+    style="display:none;">
+    <div class="distance-icon"
+      id="distanceIcon">📏</div>
+    <div class="distance-text">
+      <p id="distanceStatus"></p>
+    </div>
+  </div>
+
+  <!-- Attendance form -->
+  <main class="form-card" id="formCard">
+
+    <h2 class="form-title"
+      data-i18n="formTitle"></h2>
+
+    <form id="attendanceForm" novalidate>
+
+      <!-- Full name -->
+      <div class="form-group">
+        <label for="fullName">
+          <span data-i18n="fullNameLabel"></span>
+          <span class="required">*</span>
+        </label>
+        <input
+          type="text"
+          id="fullName"
+          data-i18n-placeholder="fullNamePlaceholder"
+        >
+        <span class="field-error"
+          id="nameError"></span>
+      </div>
+
+      <!-- Age -->
+      <div class="form-group">
+        <label for="age">
+          <span data-i18n="ageLabel"></span>
+          <span class="required">*</span>
+        </label>
+        <input
+          type="number"
+          id="age"
+          data-i18n-placeholder="agePlaceholder"
+          min="5"
+          max="100"
+        >
+        <span class="field-error"
+          id="ageError"></span>
+      </div>
+
+      <!-- Grade -->
+      <div class="form-group">
+        <label for="grade">
+          <span data-i18n="gradeLabel"></span>
+          <span class="required">*</span>
+        </label>
+        <input
+          type="text"
+          id="grade"
+          data-i18n-placeholder="gradePlaceholder"
+        >
+        <span class="field-error"
+          id="gradeError"></span>
+      </div>
+
+      <!-- Location consent -->
+      <div class="form-group checkbox-group"
+        id="consentGroup">
+        <label class="checkbox-label">
+          <input type="checkbox"
+            id="locationConsent">
+          <span class="checkbox-custom"></span>
+          <span class="checkbox-text"
+            data-i18n="locationConsentText"></span>
+        </label>
+        <span class="field-error"
+          id="locationError"></span>
+      </div>
+
+      <!-- Submit -->
+      <button
+        type="submit"
+        class="submit-btn"
+        id="submitBtn"
+        data-i18n="submitButton"
+      ></button>
+
+    </form>
+  </main>
+
+  <!-- Session closed card -->
+  <div class="session-closed-card"
+    id="sessionClosedCard"
+    style="display:none;">
+    <div style="font-size:48px;">🔒</div>
+    <h2 data-i18n="sessionClosedTitle"></h2>
+    <p data-i18n="sessionClosedMsg"></p>
+  </div>
+
+  <!-- Success card -->
+  <section class="success-card" id="successCard">
+    <div class="success-icon">✅</div>
+    <h2 class="success-title"
+      data-i18n="successTitle"></h2>
+    <p class="success-message"
+      data-i18n="successMessage"></p>
+    <div class="success-details"
+      id="successDetails"></div>
+  </section>
+
+  <!-- Error card -->
+  <section class="error-card" id="errorCard">
+    <div class="error-icon">❌</div>
+    <p class="error-message"
+      id="errorMessage"></p>
+  </section>
+
+  <!-- Loading overlay -->
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-spinner"></div>
+    <p class="loading-text"
+      data-i18n="savingText"></p>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p data-i18n="footerSecurity"></p>
+    <p data-i18n="footerSchool"></p>
+  </footer>
+
+</div>
+
+<script type="module" src="script.js"></script>
 </body>
 </html>
