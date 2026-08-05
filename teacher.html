@@ -7,9 +7,10 @@
     content="width=device-width, initial-scale=1.0">
   <title>Teacher Dashboard - Tepranom</title>
   <link rel="stylesheet" href="style.css">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com"
-    crossorigin>
+  <link rel="preconnect"
+    href="https://fonts.googleapis.com">
+  <link rel="preconnect"
+    href="https://fonts.gstatic.com" crossorigin>
   <link
     href="https://fonts.googleapis.com/css2?family=Battambang:wght@400;700&family=Kantumruy+Pro:ital,wght@0,100..700;1,100..700&display=swap"
     rel="stylesheet"
@@ -18,388 +19,355 @@
 
 <body class="teacher-body">
 
-  <!-- Header -->
-  <header class="teacher-header">
-    <div class="teacher-header-left">
-      <h1>👩‍🏫
-        <span data-t="dashTitle">
-          Teacher Dashboard
+<!-- Header -->
+<header class="teacher-header">
+  <div class="teacher-header-left">
+    <h1>👩‍🏫
+      <span data-t="dashTitle">
+        Teacher Dashboard
+      </span>
+    </h1>
+    <p data-t="dashSubtitle">
+      Tepranom High School
+    </p>
+  </div>
+  <div class="teacher-header-right">
+    <button id="teacherLangBtn"
+      class="teacher-lang-btn">
+      ខ្មែរ
+    </button>
+    <a href="index.html" class="btn btn-white">
+      <span data-t="studentPage">
+        Student Page
+      </span>
+    </a>
+    <button id="refreshBtn"
+      class="btn btn-white">
+      <span data-t="refresh">Refresh</span>
+    </button>
+    <button id="exportBtn"
+      class="btn btn-green">
+      <span data-t="export">Export CSV</span>
+    </button>
+  </div>
+</header>
+
+<main class="teacher-content">
+
+  <!-- SESSION CONTROL -->
+  <div class="session-panel">
+    <div class="session-panel-title">
+      🎛️
+      <span data-t="sessionControlTitle">
+        Session Control
+      </span>
+      <span id="sessionStatusBadge"
+        class="session-status-badge closed"
+        style="margin-left:10px;">
+        🔴
+        <span data-t="sessionClosed">
+          Closed
         </span>
-      </h1>
-      <p data-t="dashSubtitle">
-        Tepranom High School
-      </p>
+      </span>
     </div>
-    <div class="teacher-header-right">
-      <button id="teacherLangBtn"
-        class="teacher-lang-btn">
-        ខ្មែរ
+
+    <div class="session-controls">
+      <div class="session-field">
+        <label data-t="openTimeLabel">
+          Open Time
+        </label>
+        <input type="time" id="openTime"
+          value="07:00">
+      </div>
+      <div class="session-field">
+        <label data-t="closeTimeLabel">
+          Close Time
+        </label>
+        <input type="time" id="closeTime"
+          value="08:30">
+      </div>
+      <button id="startSessionBtn"
+        class="btn btn-blue">
+        <span data-t="startSession">
+          ▶ Start Session
+        </span>
       </button>
-      <a href="index.html" class="btn btn-white">
-        <span data-t="studentPage">
-          Student Page
+      <button id="endSessionBtn"
+        class="btn btn-red"
+        style="display:none;">
+        <span data-t="endSession">
+          ⏹ End Session
         </span>
-      </a>
-      <button id="refreshBtn"
-        class="btn btn-white">
-        <span data-t="refresh">Refresh</span>
-      </button>
-      <button id="exportBtn"
-        class="btn btn-green">
-        <span data-t="export">Export CSV</span>
       </button>
     </div>
-  </header>
 
-  <main class="teacher-content">
+    <p id="sessionInfoText"
+      style="margin-top:12px;
+             font-size:13px;
+             color:#64748b;"></p>
+  </div>
 
-    <!-- SESSION CONTROL PANEL -->
-    <div class="session-panel">
-
-      <div class="session-panel-title">
-        🎛️
-        <span data-t="sessionControlTitle">
-          Session Control
-        </span>
-        <span id="sessionStatusBadge"
-          class="session-status-badge closed"
-          style="margin-left:10px;">
-          🔴
-          <span data-t="sessionClosed">
-            Closed
-          </span>
-        </span>
-      </div>
-
-      <div class="session-controls">
-
-        <div class="session-field">
-          <label data-t="openTimeLabel">
-            Open Time
-          </label>
-          <input type="time" id="openTime"
-            value="07:00">
-        </div>
-
-        <div class="session-field">
-          <label data-t="closeTimeLabel">
-            Close Time
-          </label>
-          <input type="time" id="closeTime"
-            value="08:30">
-        </div>
-
-        <button id="startSessionBtn"
-          class="btn btn-blue">
-          <span data-t="startSession">
-            ▶ Start Session
-          </span>
-        </button>
-
-        <button id="endSessionBtn"
-          class="btn btn-red"
-          style="display:none;">
-          <span data-t="endSession">
-            ⏹ End Session
-          </span>
-        </button>
-
-      </div>
-
-      <p id="sessionInfoText"
-        style="margin-top:12px;
-               font-size:13px;
-               color:#64748b;">
-      </p>
-
+  <!-- QR CODE PANEL -->
+  <div class="qr-panel" id="qrPanel"
+    style="display:none;">
+    <div class="qr-panel-title"
+      data-t="qrTitle">
+      📱 Today's QR Code
     </div>
-
-    <!-- QR CODE PANEL -->
-    <div class="qr-panel" id="qrPanel"
-      style="display:none;">
-
-      <div class="qr-panel-title"
-        data-t="qrTitle">
-        📱 Today's QR Code
-      </div>
-
-      <div class="qr-session-info"
-        id="qrSessionInfo">
-      </div>
-
-      <div class="qr-code-box">
-        <img id="qrCodeImage" src="" alt="QR Code">
-      </div>
-
-      <p class="qr-instructions"
-        data-t="qrInstructions">
-        Show this QR code to students.
-        Students scan it with their phone camera.
-        QR code changes every session.
-      </p>
-
-      <div style="display:flex;
-                  gap:10px;
-                  justify-content:center;
-                  flex-wrap:wrap;">
-        <button id="downloadQrBtn"
-          class="btn btn-blue">
-          <span data-t="downloadQr">
-            ⬇ Download QR Code
-          </span>
-        </button>
-      </div>
-
+    <div class="qr-session-info"
+      id="qrSessionInfo"></div>
+    <div class="qr-code-box">
+      <img id="qrCodeImage" src=""
+        alt="QR Code">
     </div>
-
-    <!-- STATS -->
-    <section class="stats-row">
-      <div class="stat-card">
-        <div class="stat-number"
-          id="totalCount">0</div>
-        <div class="stat-label"
-          data-t="totalLabel">
-          Total Attendance
-        </div>
-      </div>
-      <div class="stat-card"
-        style="border-top-color:#16a34a;">
-        <div class="stat-number"
-          id="todayCount"
-          style="color:#16a34a;">0</div>
-        <div class="stat-label"
-          data-t="todayLabel">
-          Present Today
-        </div>
-      </div>
-      <div class="stat-card"
-        style="border-top-color:#dc2626;">
-        <div class="stat-number"
-          id="absentCount"
-          style="color:#dc2626;">0</div>
-        <div class="stat-label"
-          data-t="absentLabel">
-          Absent Today
-        </div>
-      </div>
-      <div class="stat-card"
-        style="border-top-color:#7c3aed;">
-        <div class="stat-number"
-          id="lastUpdated"
-          style="color:#7c3aed; font-size:20px;">
-          --
-        </div>
-        <div class="stat-label"
-          data-t="updatedLabel">
-          Last Updated
-        </div>
-      </div>
-    </section>
-
-    <!-- ABSENT LIST PANEL -->
-    <div class="absent-panel">
-
-      <div class="absent-panel-title"
-        data-t="absentPanelTitle">
-        📝 Class List (for Absent Tracking)
-      </div>
-
-      <p style="font-size:13px;
-                color:#64748b;
-                margin-bottom:10px;"
-        data-t="absentPanelHint">
-        Enter each student name on a new line.
-        The system will show who is absent.
-      </p>
-
-      <textarea
-        id="classListInput"
-        class="class-list-input"
-        data-placeholder-en=
-          "Type one student name per line...
-Example:
-Chan Dara
-Sopheap
-Bopha"
-        data-placeholder-km=
-          "វាយឈ្មោះសិស្សម្នាក់ក្នុងមួយបន្ទាត់...
-ឧទាហរណ៍៖
-ចាន់ ដារ៉ា
-សុភាព
-បូផា"
-        placeholder=
-          "Type one student name per line..."
-      ></textarea>
-
-      <div style="margin-top:10px;
-                  display:flex; gap:10px;">
-        <button id="checkAbsentBtn"
-          class="btn btn-orange">
-          <span data-t="checkAbsent">
-            🔍 Check Absent
-          </span>
-        </button>
-        <button id="clearAbsentBtn"
-          class="btn btn-white">
-          <span data-t="clearList">
-            🗑 Clear
-          </span>
-        </button>
-      </div>
-
-      <div class="absent-list"
-        id="absentList"></div>
-
-    </div>
-
-    <!-- SEARCH -->
-    <section class="search-bar-container">
-      <h3 data-t="searchTitle">
-        🔍 Find a Student
-      </h3>
-      <div style="margin-top:10px;">
-        <input
-          type="search"
-          id="searchInput"
-          class="search-input"
-          data-placeholder-en=
-            "Search by name or class..."
-          data-placeholder-km=
-            "ស្វែងរកតាមឈ្មោះ ឬថ្នាក់..."
-          placeholder="Search by name or class..."
-        >
-      </div>
-      <p class="search-result-text"
-        id="searchResultText"></p>
-    </section>
-
-    <!-- TABLE -->
-    <section class="table-container">
-      <div class="table-header">
-        <h2 data-t="tableTitle">
-          📋 Attendance List
-        </h2>
-        <span id="recordCount"
-          style="color:#64748b; font-size:13px;">
-          Loading...
+    <p class="qr-instructions"
+      data-t="qrInstructions">
+      Show this QR code to students.
+    </p>
+    <div style="display:flex;
+                gap:10px;
+                justify-content:center;
+                flex-wrap:wrap;">
+      <button id="downloadQrBtn"
+        class="btn btn-blue">
+        <span data-t="downloadQr">
+          ⬇ Download QR Code
         </span>
-      </div>
-      <div class="table-scroll">
-        <table class="attendance-table">
-          <thead>
-            <tr>
-              <th data-t="colNo">No.</th>
-              <th data-t="colName">
-                Student Name
-              </th>
-              <th data-t="colAge">Age</th>
-              <th data-t="colGrade">
-                Grade / Class
-              </th>
-              <th data-t="colDate">Date</th>
-              <th data-t="colTime">Time</th>
-              <th data-t="colStatus">Status</th>
-              <th data-t="colProfile">Profile</th>
-            </tr>
-          </thead>
-          <tbody id="attendanceTableBody">
-            <tr>
-              <td colspan="8"
-                class="table-loading">
-                Loading...
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
-
-  </main>
-
-  <!-- Profile modal -->
-  <div id="profileModal" class="profile-modal">
-    <div class="profile-content">
-      <div class="profile-header">
-        <div class="profile-avatar">🎓</div>
-        <h2 id="profileName"></h2>
-        <p id="profileGradeHeader"></p>
-      </div>
-      <div class="profile-body">
-        <div class="profile-row">
-          <span class="profile-row-label"
-            data-t="profileAge">Age</span>
-          <span class="profile-row-value"
-            id="profileAge"></span>
-        </div>
-        <div class="profile-row">
-          <span class="profile-row-label"
-            data-t="profileGrade">Grade</span>
-          <span class="profile-row-value"
-            id="profileGrade"></span>
-        </div>
-        <div class="profile-row">
-          <span class="profile-row-label"
-            data-t="profileDate">Date</span>
-          <span class="profile-row-value"
-            id="profileDate"></span>
-        </div>
-        <div class="profile-row">
-          <span class="profile-row-label"
-            data-t="profileTime">Time</span>
-          <span class="profile-row-value"
-            id="profileTime"></span>
-        </div>
-        <div class="profile-row">
-          <span class="profile-row-label"
-            data-t="profileStatus">Status</span>
-          <span class="profile-row-value"
-            id="profileStatus"></span>
-        </div>
-        <div class="profile-row">
-          <span class="profile-row-label"
-            data-t="profileLat">Latitude</span>
-          <span class="profile-row-value"
-            id="profileLat"></span>
-        </div>
-        <div class="profile-row">
-          <span class="profile-row-label"
-            data-t="profileLon">Longitude</span>
-          <span class="profile-row-value"
-            id="profileLon"></span>
-        </div>
-      </div>
-      <div class="profile-footer">
-        <button id="closeProfileBtn"
-          class="close-modal-btn"
-          data-t="closeProfile">
-          Close
-        </button>
-      </div>
+      </button>
     </div>
   </div>
 
-  <script type="module">
+  <!-- STATS -->
+  <section class="stats-row">
+    <div class="stat-card">
+      <div class="stat-number"
+        id="totalCount">0</div>
+      <div class="stat-label"
+        data-t="totalLabel">
+        Total Attendance
+      </div>
+    </div>
+    <div class="stat-card"
+      style="border-top-color:#16a34a;">
+      <div class="stat-number"
+        id="todayCount"
+        style="color:#16a34a;">0</div>
+      <div class="stat-label"
+        data-t="todayLabel">
+        Present Today
+      </div>
+    </div>
+    <div class="stat-card"
+      style="border-top-color:#dc2626;">
+      <div class="stat-number"
+        id="absentCount"
+        style="color:#dc2626;">0</div>
+      <div class="stat-label"
+        data-t="absentLabel">
+        Absent Today
+      </div>
+    </div>
+    <div class="stat-card"
+      style="border-top-color:#7c3aed;">
+      <div class="stat-number"
+        id="lastUpdated"
+        style="color:#7c3aed;
+               font-size:20px;">--</div>
+      <div class="stat-label"
+        data-t="updatedLabel">
+        Last Updated
+      </div>
+    </div>
+  </section>
 
-    import {
-      initializeApp
-    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  <!-- ABSENT PANEL -->
+  <div class="absent-panel">
+    <div class="absent-panel-title"
+      data-t="absentPanelTitle">
+      📝 Class List
+    </div>
+    <p style="font-size:13px;
+              color:#64748b;
+              margin-bottom:10px;"
+      data-t="absentPanelHint">
+      Enter each student name on a new line.
+    </p>
+    <textarea
+      id="classListInput"
+      class="class-list-input"
+      data-t-placeholder="classListPlaceholder"
+      placeholder=
+        "Type one student name per line..."
+    ></textarea>
+    <div style="margin-top:10px;
+                display:flex; gap:10px;">
+      <button id="checkAbsentBtn"
+        class="btn btn-orange">
+        <span data-t="checkAbsent">
+          🔍 Check Absent
+        </span>
+      </button>
+      <button id="clearAbsentBtn"
+        class="btn btn-white">
+        <span data-t="clearList">
+          🗑 Clear
+        </span>
+      </button>
+    </div>
+    <div class="absent-list"
+      id="absentList"></div>
+  </div>
 
-    import {
-      getFirestore,
-      collection,
-      getDocs,
-      doc,
-      setDoc,
-      getDoc
-    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  <!-- SEARCH -->
+  <section class="search-bar-container">
+    <h3 data-t="searchTitle">
+      🔍 Find a Student
+    </h3>
+    <div style="margin-top:10px;">
+      <input
+        type="search"
+        id="searchInput"
+        class="search-input"
+        data-t-placeholder="searchPlaceholder"
+        placeholder=
+          "Search by name or class..."
+      >
+    </div>
+    <p class="search-result-text"
+      id="searchResultText"></p>
+  </section>
+
+  <!-- TABLE -->
+  <section class="table-container">
+    <div class="table-header">
+      <h2 data-t="tableTitle">
+        📋 Attendance List
+      </h2>
+      <span id="recordCount"
+        style="color:#64748b;
+               font-size:13px;">
+        Loading...
+      </span>
+    </div>
+    <div class="table-scroll">
+      <table class="attendance-table">
+        <thead>
+          <tr>
+            <th data-t="colNo">No.</th>
+            <th data-t="colName">
+              Student Name
+            </th>
+            <th data-t="colAge">Age</th>
+            <th data-t="colGrade">
+              Grade / Class
+            </th>
+            <th data-t="colDate">Date</th>
+            <th data-t="colTime">Time</th>
+            <th data-t="colStatus">Status</th>
+            <th data-t="colProfile">
+              Profile
+            </th>
+          </tr>
+        </thead>
+        <tbody id="attendanceTableBody">
+          <tr>
+            <td colspan="8"
+              class="table-loading">
+              Loading...
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+</main>
+
+<!-- Profile modal -->
+<div id="profileModal" class="profile-modal">
+  <div class="profile-content">
+    <div class="profile-header">
+      <div class="profile-avatar">🎓</div>
+      <h2 id="profileName"></h2>
+      <p id="profileGradeHeader"></p>
+    </div>
+    <div class="profile-body">
+      <div class="profile-row">
+        <span class="profile-row-label"
+          data-t="profileAge">Age</span>
+        <span class="profile-row-value"
+          id="profileAge"></span>
+      </div>
+      <div class="profile-row">
+        <span class="profile-row-label"
+          data-t="profileGrade">Grade</span>
+        <span class="profile-row-value"
+          id="profileGrade"></span>
+      </div>
+      <div class="profile-row">
+        <span class="profile-row-label"
+          data-t="profileDate">Date</span>
+        <span class="profile-row-value"
+          id="profileDate"></span>
+      </div>
+      <div class="profile-row">
+        <span class="profile-row-label"
+          data-t="profileTime">Time</span>
+        <span class="profile-row-value"
+          id="profileTime"></span>
+      </div>
+      <div class="profile-row">
+        <span class="profile-row-label"
+          data-t="profileStatus">Status</span>
+        <span class="profile-row-value"
+          id="profileStatus"></span>
+      </div>
+      <div class="profile-row">
+        <span class="profile-row-label"
+          data-t="profileLat">Latitude</span>
+        <span class="profile-row-value"
+          id="profileLat"></span>
+      </div>
+      <div class="profile-row">
+        <span class="profile-row-label"
+          data-t="profileLon">Longitude</span>
+        <span class="profile-row-value"
+          id="profileLon"></span>
+      </div>
+    </div>
+    <div class="profile-footer">
+      <button id="closeProfileBtn"
+        class="close-modal-btn"
+        data-t="closeProfile">
+        Close
+      </button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+
+  // Firebase imports
+  import {
+    initializeApp
+  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+  import {
+    getFirestore,
+    collection,
+    getDocs,
+    doc,
+    setDoc,
+    getDoc
+  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 
-    // ==========================================
-    // FIREBASE CONFIG
-    // Replace with your real values
-    // ==========================================
+  // ==========================================
+  // FIREBASE CONFIG
+  // Replace with your real values
+  // ==========================================
 
-    const firebaseConfig = {
+  const firebaseConfig = {
   apiKey: "AIzaSyDpKCJ9xVeq2BY07aDwzzQ1qWvbStRuZLI",
   authDomain: "student-qr-attendance-90323.firebaseapp.com",
   projectId: "student-qr-attendance-90323",
@@ -408,899 +376,1067 @@ Bopha"
   appId: "1:45837607105:web:29f7dd8350f1dc06bd7440"
 };
 
-    const app = initializeApp(firebaseConfig);
-    const db  = getFirestore(app);
+  const app = initializeApp(firebaseConfig);
+  const db  = getFirestore(app);
 
 
-    // ==========================================
-    // TRANSLATIONS
-    // ==========================================
+  // ==========================================
+  // COMPLETE TEACHER TRANSLATIONS
+  // Every single text on teacher dashboard
+  // ==========================================
 
-    let tLang =
-      localStorage.getItem("teacherLanguage") || "en";
+  const tt = {
+    en: {
+      // Header
+      dashTitle:     "Teacher Dashboard",
+      dashSubtitle:  "Tepranom High School — Attendance Records",
+      studentPage:   "Student Page",
+      refresh:       "Refresh",
+      export:        "Export CSV",
+      langBtn:       "ខ្មែរ",
 
-    const tt = {
-      en: {
-        dashTitle:          "Teacher Dashboard",
-        dashSubtitle:       "Tepranom High School",
-        studentPage:        "Student Page",
-        refresh:            "Refresh",
-        export:             "Export CSV",
-        sessionControlTitle:"Session Control",
-        sessionOpen:        "Open",
-        sessionClosed:      "Closed",
-        openTimeLabel:      "Open Time",
-        closeTimeLabel:     "Close Time",
-        startSession:       "▶ Start Session",
-        endSession:         "⏹ End Session",
-        qrTitle:            "📱 Today's QR Code",
-        qrInstructions:     "Show this QR code to students. Students scan it with their phone camera. QR code changes every session.",
-        downloadQr:         "⬇ Download QR Code",
-        totalLabel:         "Total Attendance",
-        todayLabel:         "Present Today",
-        absentLabel:        "Absent Today",
-        updatedLabel:       "Last Updated",
-        absentPanelTitle:   "📝 Class List (for Absent Tracking)",
-        absentPanelHint:    "Enter each student name on a new line. The system will show who is absent.",
-        checkAbsent:        "🔍 Check Absent",
-        clearList:          "🗑 Clear",
-        searchTitle:        "🔍 Find a Student",
-        tableTitle:         "📋 Attendance List",
-        colNo:              "No.",
-        colName:            "Student Name",
-        colAge:             "Age",
-        colGrade:           "Grade / Class",
-        colDate:            "Date",
-        colTime:            "Time",
-        colStatus:          "Status",
-        colProfile:         "Profile",
-        viewBtn:            "👁 View",
-        profileAge:         "Age",
-        profileGrade:       "Grade",
-        profileDate:        "Date",
-        profileTime:        "Time",
-        profileStatus:      "Status",
-        profileLat:         "Latitude",
-        profileLon:         "Longitude",
-        closeProfile:       "Close",
-        noRecords:          "No attendance records found.",
-        noRecordsSub:       "Students have not submitted attendance yet.",
-        loadError:          "Could not load records.",
-        exportEmpty:        "No records to export.",
-        present:            "✅ Present",
-        absent:             "❌ Absent",
-        results:            "result(s)",
-        sessionStarted:     "Session started. Students can now check in.",
-        sessionEnded:       "Session ended. Students can no longer check in.",
-        sessionActive:      "Session is active from {open} to {close}.",
-        confirmEnd:         "Are you sure you want to end the session?"
-      },
-      km: {
-        dashTitle:          "ផ្ទាំងគ្រប់គ្រងគ្រូ",
-        dashSubtitle:       "សាលាមធ្យមសិក្សាតេប្រណំ",
-        studentPage:        "ទំព័រសិស្ស",
-        refresh:            "ផ្ទុកឡើងវិញ",
-        export:             "នាំចេញ CSV",
-        sessionControlTitle:"គ្រប់គ្រងវគ្គ",
-        sessionOpen:        "បើក",
-        sessionClosed:      "បិទ",
-        openTimeLabel:      "ម៉ោងបើក",
-        closeTimeLabel:     "ម៉ោងបិទ",
-        startSession:       "▶ ចាប់ផ្ដើមវគ្គ",
-        endSession:         "⏹ បញ្ចប់វគ្គ",
-        qrTitle:            "📱 QR Code ថ្ងៃនេះ",
-        qrInstructions:     "បង្ហាញ QR Code នេះដល់សិស្ស។ សិស្សស្កេន QR Code ដោយប្រើកាមេរ៉ាទូរស័ព្ទ។ QR Code ផ្លាស់ប្ដូរគ្រប់វគ្គ។",
-        downloadQr:         "⬇ ទាញយក QR Code",
-        totalLabel:         "វត្តមានសរុប",
-        todayLabel:         "មានវត្តមានថ្ងៃនេះ",
-        absentLabel:        "អវត្តមានថ្ងៃនេះ",
-        updatedLabel:       "ធ្វើបច្ចុប្បន្នភាពចុងក្រោយ",
-        absentPanelTitle:   "📝 បញ្ជីសិស្ស (សម្រាប់តាមដានអវត្តមាន)",
-        absentPanelHint:    "វាយឈ្មោះសិស្សម្នាក់ក្នុងមួយបន្ទាត់។ ប្រព័ន្ធនឹងបង្ហាញថាមួយណាអវត្តមាន។",
-        checkAbsent:        "🔍 ពិនិត្យអវត្តមាន",
-        clearList:          "🗑 លុប",
-        searchTitle:        "🔍 ស្វែងរកសិស្ស",
-        tableTitle:         "📋 បញ្ជីវត្តមាន",
-        colNo:              "លរ",
-        colName:            "ឈ្មោះសិស្ស",
-        colAge:             "អាយុ",
-        colGrade:           "ថ្នាក់រៀន",
-        colDate:            "កាលបរិច្ឆេទ",
-        colTime:            "ម៉ោង",
-        colStatus:          "ស្ថានភាព",
-        colProfile:         "ព័ត៌មាន",
-        viewBtn:            "👁 មើល",
-        profileAge:         "អាយុ",
-        profileGrade:       "ថ្នាក់រៀន",
-        profileDate:        "កាលបរិច្ឆេទ",
-        profileTime:        "ម៉ោង",
-        profileStatus:      "ស្ថានភាព",
-        profileLat:         "រយៈទទឹង",
-        profileLon:         "រយៈបណ្តោយ",
-        closeProfile:       "បិទ",
-        noRecords:          "រកមិនឃើញកំណត់ត្រាវត្តមានទេ។",
-        noRecordsSub:       "សិស្សមិនទាន់ដាក់ស្នើវត្តមានទេ។",
-        loadError:          "មិនអាចផ្ទុកកំណត់ត្រាបានទេ។",
-        exportEmpty:        "មិនមានទិន្នន័យដើម្បីនាំចេញទេ។",
-        present:            "✅ មានវត្តមាន",
-        absent:             "❌ អវត្តមាន",
-        results:            "លទ្ធផល",
-        sessionStarted:     "វគ្គបានចាប់ផ្ដើម។ សិស្សអាចចុះវត្តមានបាន។",
-        sessionEnded:       "វគ្គបានបញ្ចប់។ សិស្សមិនអាចចុះវត្តមានទៀតទេ។",
-        sessionActive:      "វគ្គកំពុងដំណើរការពី {open} ដល់ {close}។",
-        confirmEnd:         "តើអ្នកពិតជាចង់បញ្ចប់វគ្គមែនទេ?"
-      }
-    };
+      // Session panel
+      sessionControlTitle: "Session Control",
+      sessionOpen:         "Open",
+      sessionClosed:       "Closed",
+      openTimeLabel:       "Open Time",
+      closeTimeLabel:      "Close Time",
+      startSession:        "▶ Start Session",
+      endSession:          "⏹ End Session",
 
-    function t(key) {
-      return tt[tLang][key] || key;
+      // Session info messages
+      sessionActive:
+        "Session is active from {open} to {close}.",
+      sessionStarted:
+        "Session started successfully. Students can now check in.",
+      sessionEnded:
+        "Session ended. Students can no longer check in.",
+      confirmEnd:
+        "Are you sure you want to end the session?",
+      setTimesAlert:
+        "Please set both open and close time.",
+      timeOrderAlert:
+        "Close time must be after open time.",
+      sessionError:
+        "Error with session. Please try again.",
+
+      // QR code panel
+      qrTitle:        "📱 Today's QR Code",
+      qrInstructions:
+        "Show this QR code to students. Students scan it with their phone camera. The QR code changes every session.",
+      downloadQr:     "⬇ Download QR Code",
+      qrSession:      "Session",
+
+      // Stats
+      totalLabel:    "Total Attendance",
+      todayLabel:    "Present Today",
+      absentLabel:   "Absent Today",
+      updatedLabel:  "Last Updated",
+
+      // Absent panel
+      absentPanelTitle:
+        "📝 Class List (for Absent Tracking)",
+      absentPanelHint:
+        "Enter each student name on a new line. The system will show who is absent.",
+      classListPlaceholder:
+        "Type one student name per line...\nExample:\nChan Dara\nSopheap\nBopha",
+      checkAbsent:   "🔍 Check Absent",
+      clearList:     "🗑 Clear",
+      enterNamesHint:
+        "Please enter student names above first.",
+
+      // Search
+      searchTitle:       "🔍 Find a Student",
+      searchPlaceholder: "Search by name or class...",
+      results:           "result(s)",
+
+      // Table
+      tableTitle:  "📋 Attendance List",
+      colNo:       "No.",
+      colName:     "Student Name",
+      colAge:      "Age",
+      colGrade:    "Grade / Class",
+      colDate:     "Date",
+      colTime:     "Time",
+      colStatus:   "Status",
+      colProfile:  "Profile",
+      viewBtn:     "👁 View",
+
+      // Profile modal
+      profileAge:    "Age",
+      profileGrade:  "Grade / Class",
+      profileDate:   "Date",
+      profileTime:   "Time",
+      profileStatus: "Status",
+      profileLat:    "Latitude",
+      profileLon:    "Longitude",
+      closeProfile:  "Close",
+
+      // Table states
+      noRecords:
+        "No attendance records found.",
+      noRecordsSub:
+        "Students have not submitted attendance yet.",
+      loadError:
+        "Could not load attendance records.",
+      loading:       "Loading...",
+
+      // Export
+      exportEmpty:
+        "There are no records to export.",
+
+      // Status
+      present:  "✅ Present",
+      absent:   "❌ Absent"
+    },
+
+    km: {
+      // Header
+      dashTitle:
+        "ផ្ទាំងគ្រប់គ្រងគ្រូ",
+      dashSubtitle:
+        "វិទ្យាល័យទេពប្រណម្យ — កំណត់ត្រាវត្តមាន",
+      studentPage:  "ទំព័រសិស្ស",
+      refresh:      "ផ្ទុកឡើងវិញ",
+      export:       "នាំចេញ CSV",
+      langBtn:      "English",
+
+      // Session panel
+      sessionControlTitle: "គ្រប់គ្រងវគ្គ",
+      sessionOpen:         "បើក",
+      sessionClosed:       "បិទ",
+      openTimeLabel:       "ម៉ោងបើក",
+      closeTimeLabel:      "ម៉ោងបិទ",
+      startSession:        "▶ ចាប់ផ្ដើមវគ្គ",
+      endSession:          "⏹ បញ្ចប់វគ្គ",
+
+      // Session info messages
+      sessionActive:
+        "វគ្គកំពុងដំណើរការពី {open} ដល់ {close}។",
+      sessionStarted:
+        "វគ្គបានចាប់ផ្ដើមដោយជោគជ័យ។ សិស្សអាចចុះវត្តមានបាន។",
+      sessionEnded:
+        "វគ្គបានបញ្ចប់។ សិស្សមិនអាចចុះវត្តមានទៀតទេ។",
+      confirmEnd:
+        "តើអ្នកពិតជាចង់បញ្ចប់វគ្គមែនទេ?",
+      setTimesAlert:
+        "សូមកំណត់ម៉ោងបើក និងម៉ោងបិទ។",
+      timeOrderAlert:
+        "ម៉ោងបិទត្រូវតែក្រោយម៉ោងបើក។",
+      sessionError:
+        "មានបញ្ហាជាមួយវគ្គ។ សូមព្យាយាមម្តងទៀត។",
+
+      // QR code panel
+      qrTitle:
+        "📱 QR Code ថ្ងៃនេះ",
+      qrInstructions:
+        "បង្ហាញ QR Code នេះដល់សិស្ស។ សិស្សស្កេន QR Code ដោយប្រើកាមេរ៉ាទូរស័ព្ទ។ QR Code ផ្លាស់ប្ដូររាល់វគ្គ។",
+      downloadQr:   "⬇ ទាញយក QR Code",
+      qrSession:    "វគ្គ",
+
+      // Stats
+      totalLabel:   "វត្តមានសរុប",
+      todayLabel:   "មានវត្តមានថ្ងៃនេះ",
+      absentLabel:  "អវត្តមានថ្ងៃនេះ",
+      updatedLabel: "ធ្វើបច្ចុប្បន្នភាពចុងក្រោយ",
+
+      // Absent panel
+      absentPanelTitle:
+        "📝 បញ្ជីសិស្ស (សម្រាប់តាមដានអវត្តមាន)",
+      absentPanelHint:
+        "វាយឈ្មោះសិស្សម្នាក់ក្នុងមួយបន្ទាត់។ ប្រព័ន្ធនឹងបង្ហាញថាមួយណាអវត្តមាន។",
+      classListPlaceholder:
+        "វាយឈ្មោះសិស្សម្នាក់ក្នុងមួយបន្ទាត់...\nឧទាហរណ៍៖\nចាន់ ដារ៉ា\nសុភាព\nបូផា",
+      checkAbsent:  "🔍 ពិនិត្យអវត្តមាន",
+      clearList:    "🗑 លុប",
+      enterNamesHint:
+        "សូមបញ្ចូលឈ្មោះសិស្សខាងលើជាមុន។",
+
+      // Search
+      searchTitle:
+        "🔍 ស្វែងរកសិស្ស",
+      searchPlaceholder:
+        "ស្វែងរកតាមឈ្មោះ ឬថ្នាក់រៀន...",
+      results: "លទ្ធផល",
+
+      // Table
+      tableTitle:  "📋 បញ្ជីវត្តមាន",
+      colNo:       "លរ",
+      colName:     "ឈ្មោះសិស្ស",
+      colAge:      "អាយុ",
+      colGrade:    "ថ្នាក់រៀន",
+      colDate:     "កាលបរិច្ឆេទ",
+      colTime:     "ម៉ោង",
+      colStatus:   "ស្ថានភាព",
+      colProfile:  "ព័ត៌មាន",
+      viewBtn:     "👁 មើល",
+
+      // Profile modal
+      profileAge:    "អាយុ",
+      profileGrade:  "ថ្នាក់រៀន",
+      profileDate:   "កាលបរិច្ឆេទ",
+      profileTime:   "ម៉ោង",
+      profileStatus: "ស្ថានភាព",
+      profileLat:    "រយៈទទឹង",
+      profileLon:    "រយៈបណ្តោយ",
+      closeProfile:  "បិទ",
+
+      // Table states
+      noRecords:
+        "រកមិនឃើញកំណត់ត្រាវត្តមានទេ។",
+      noRecordsSub:
+        "សិស្សមិនទាន់ដាក់ស្នើវត្តមានទេ។",
+      loadError:
+        "មិនអាចផ្ទុកកំណត់ត្រាវត្តមានបានទេ។",
+      loading: "កំពុងផ្ទុក…",
+
+      // Export
+      exportEmpty:
+        "មិនមានទិន្នន័យដើម្បីនាំចេញទេ។",
+
+      // Status
+      present:  "✅ មានវត្តមាន",
+      absent:   "❌ អវត្តមាន"
+    }
+  };
+
+
+  // ==========================================
+  // CURRENT TEACHER LANGUAGE
+  // ==========================================
+
+  let tLang =
+    localStorage.getItem("teacherLanguage") || "en";
+
+
+  // ==========================================
+  // GET TRANSLATION
+  // ==========================================
+
+  function t(key) {
+    return tt[tLang][key] || key;
+  }
+
+
+  // ==========================================
+  // APPLY TEACHER LANGUAGE
+  // Translates every element on dashboard
+  // ==========================================
+
+  function applyTeacherLang(lang) {
+    tLang = lang;
+    localStorage.setItem("teacherLanguage", lang);
+
+    document.documentElement.lang =
+      lang === "km" ? "km" : "en";
+    document.body.classList.toggle(
+      "khmer", lang === "km"
+    );
+
+    document.title =
+      lang === "km"
+        ? "ផ្ទាំងគ្រប់គ្រងគ្រូ - វិទ្យាល័យទេពប្រណម្យ"
+        : "Teacher Dashboard - Tepranom";
+
+    // Translate all data-t elements
+    document.querySelectorAll("[data-t]")
+      .forEach(function (el) {
+        const key = el.getAttribute("data-t");
+        const val = t(key);
+        if (val !== key) {
+          el.textContent = val;
+        }
+      });
+
+    // Translate language button
+    const langBtn =
+      document.getElementById("teacherLangBtn");
+    if (langBtn) {
+      langBtn.textContent = t("langBtn");
     }
 
-    function applyTeacherLang(lang) {
-      tLang = lang;
-      localStorage.setItem("teacherLanguage", lang);
-      document.documentElement.lang =
-        lang === "km" ? "km" : "en";
-      document.body.classList.toggle(
-        "khmer", lang === "km"
+    // Translate textarea placeholder
+    const classListInput =
+      document.getElementById("classListInput");
+    if (classListInput) {
+      classListInput.placeholder =
+        t("classListPlaceholder");
+    }
+
+    // Translate search input placeholder
+    const searchInput =
+      document.getElementById("searchInput");
+    if (searchInput) {
+      searchInput.placeholder =
+        t("searchPlaceholder");
+    }
+
+    // Redraw table with new language
+    displayRecords(allRecords);
+
+    // Update session badge
+    updateSessionBadge(sessionIsOpen);
+
+    // Update session info text
+    retranslateSessionInfo();
+  }
+
+
+  // ==========================================
+  // RETRANSLATE SESSION INFO TEXT
+  // ==========================================
+
+  function retranslateSessionInfo() {
+    const infoText =
+      document.getElementById("sessionInfoText");
+
+    if (!infoText) return;
+
+    if (sessionIsOpen &&
+        currentOpenTime &&
+        currentCloseTime) {
+      infoText.textContent =
+        t("sessionActive")
+          .replace("{open}",  currentOpenTime)
+          .replace("{close}", currentCloseTime);
+    } else if (!sessionIsOpen &&
+               infoText.textContent !== "") {
+      infoText.textContent = t("sessionEnded");
+    }
+  }
+
+
+  // ==========================================
+  // DATA
+  // ==========================================
+
+  let allRecords     = [];
+  let sessionIsOpen  = false;
+  let currentSessionId = null;
+  let currentOpenTime  = null;
+  let currentCloseTime = null;
+
+  // Change this URL when you publish online
+  const STUDENT_PAGE_URL =
+    "http://127.0.0.1:5500/index.html";
+
+
+  // ==========================================
+  // SAFE HTML
+  // ==========================================
+
+  function escapeHTML(value) {
+    return String(value ?? "")
+      .replace(/&/g,  "&amp;")
+      .replace(/</g,  "&lt;")
+      .replace(/>/g,  "&gt;")
+      .replace(/"/g,  "&quot;")
+      .replace(/'/g,  "&#039;");
+  }
+
+
+  // ==========================================
+  // GENERATE SESSION ID
+  // ==========================================
+
+  function generateSessionId() {
+    const today =
+      new Date().toLocaleDateString("en-CA");
+    const random =
+      Math.random().toString(36)
+        .substring(2, 8).toUpperCase();
+    return `${today}-${random}`;
+  }
+
+
+  // ==========================================
+  // GENERATE QR CODE
+  // ==========================================
+
+  function generateQRCode(sessionId) {
+    const url =
+      STUDENT_PAGE_URL +
+      "?session=" + sessionId;
+
+    const qrApiUrl =
+      "https://api.qrserver.com/v1/create-qr-code/" +
+      "?size=200x200&data=" +
+      encodeURIComponent(url);
+
+    document.getElementById("qrCodeImage")
+      .src = qrApiUrl;
+
+    document.getElementById("qrSessionInfo")
+      .textContent =
+        t("qrSession") + ": " + sessionId;
+
+    document.getElementById("qrPanel")
+      .style.display = "block";
+
+    document.getElementById("downloadQrBtn")
+      .onclick = function () {
+        const link = document.createElement("a");
+        link.href   = qrApiUrl;
+        link.download =
+          "qr-" + sessionId + ".png";
+        link.target = "_blank";
+        link.click();
+      };
+  }
+
+
+  // ==========================================
+  // UPDATE SESSION BADGE
+  // ==========================================
+
+  function updateSessionBadge(isOpen) {
+    const badge =
+      document.getElementById(
+        "sessionStatusBadge"
+      );
+    const startBtn =
+      document.getElementById("startSessionBtn");
+    const endBtn =
+      document.getElementById("endSessionBtn");
+
+    if (isOpen) {
+      badge.className =
+        "session-status-badge open";
+      badge.innerHTML =
+        "🟢 " + t("sessionOpen");
+      startBtn.style.display = "none";
+      endBtn.style.display   = "flex";
+    } else {
+      badge.className =
+        "session-status-badge closed";
+      badge.innerHTML =
+        "🔴 " + t("sessionClosed");
+      startBtn.style.display = "flex";
+      endBtn.style.display   = "none";
+    }
+  }
+
+
+  // ==========================================
+  // START SESSION
+  // ==========================================
+
+  async function startSession() {
+    const openTime =
+      document.getElementById("openTime").value;
+    const closeTime =
+      document.getElementById("closeTime").value;
+
+    if (!openTime || !closeTime) {
+      alert(t("setTimesAlert"));
+      return;
+    }
+
+    if (openTime >= closeTime) {
+      alert(t("timeOrderAlert"));
+      return;
+    }
+
+    const sessionId  = generateSessionId();
+    const today =
+      new Date().toLocaleDateString("en-CA");
+
+    try {
+      await setDoc(
+        doc(db, "session", "current"),
+        {
+          isOpen:    true,
+          sessionId: sessionId,
+          date:      today,
+          openTime:  openTime,
+          closeTime: closeTime,
+          startedAt: new Date().toISOString()
+        }
       );
 
-      document.querySelectorAll("[data-t]")
-        .forEach(function (el) {
-          const key = el.getAttribute("data-t");
-          const val = t(key);
-          if (val !== key) el.textContent = val;
-        });
+      sessionIsOpen    = true;
+      currentSessionId = sessionId;
+      currentOpenTime  = openTime;
+      currentCloseTime = closeTime;
 
-      document
-        .querySelectorAll("[data-placeholder-en]")
-        .forEach(function (el) {
-          el.placeholder =
-            lang === "km"
-              ? el.getAttribute("data-placeholder-km")
-              : el.getAttribute("data-placeholder-en");
-        });
+      updateSessionBadge(true);
+      generateQRCode(sessionId);
 
-      const btn =
-        document.getElementById("teacherLangBtn");
-      if (btn) {
-        btn.textContent =
-          lang === "en" ? "ខ្មែរ" : "English";
-      }
-
-      displayRecords(allRecords);
-      loadSessionStatus();
-    }
-
-
-    // ==========================================
-    // DATA
-    // ==========================================
-
-    let allRecords    = [];
-    let sessionIsOpen = false;
-    let currentSessionId = null;
-
-    // Base URL for QR code
-    // IMPORTANT: Change this to your real URL
-    // when you publish online
-    const STUDENT_PAGE_URL =
-      "http://127.0.0.1:5500/index.html";
-
-
-    // ==========================================
-    // SAFE HTML
-    // ==========================================
-
-    function escapeHTML(value) {
-      return String(value ?? "")
-        .replace(/&/g,  "&amp;")
-        .replace(/</g,  "&lt;")
-        .replace(/>/g,  "&gt;")
-        .replace(/"/g,  "&quot;")
-        .replace(/'/g,  "&#039;");
-    }
-
-
-    // ==========================================
-    // GENERATE SESSION ID
-    // Creates a unique code for each session
-    // ==========================================
-
-    function generateSessionId() {
-      const today =
-        new Date().toLocaleDateString("en-CA");
-      const random =
-        Math.random().toString(36)
-          .substring(2, 8).toUpperCase();
-      return `${today}-${random}`;
-    }
-
-
-    // ==========================================
-    // GENERATE QR CODE IMAGE
-    // Uses a free QR code API
-    // ==========================================
-
-    function generateQRCode(sessionId) {
-      const url =
-        STUDENT_PAGE_URL +
-        "?session=" + sessionId;
-
-      const qrApiUrl =
-        "https://api.qrserver.com/v1/create-qr-code/" +
-        "?size=200x200&data=" +
-        encodeURIComponent(url);
-
-      document.getElementById("qrCodeImage")
-        .src = qrApiUrl;
-
-      document.getElementById("qrSessionInfo")
+      document.getElementById("sessionInfoText")
         .textContent =
-          "Session: " + sessionId;
+          t("sessionActive")
+            .replace("{open}",  openTime)
+            .replace("{close}", closeTime);
+
+      alert(t("sessionStarted"));
+
+    } catch (error) {
+      console.error("Start session error:", error);
+      alert(t("sessionError") +
+        " " + error.message);
+    }
+  }
+
+
+  // ==========================================
+  // END SESSION
+  // ==========================================
+
+  async function endSession() {
+    if (!confirm(t("confirmEnd"))) return;
+
+    try {
+      await setDoc(
+        doc(db, "session", "current"),
+        {
+          isOpen:    false,
+          sessionId: currentSessionId || "",
+          date:      new Date()
+            .toLocaleDateString("en-CA"),
+          endedAt:   new Date().toISOString()
+        }
+      );
+
+      sessionIsOpen    = false;
+      currentOpenTime  = null;
+      currentCloseTime = null;
+
+      updateSessionBadge(false);
 
       document.getElementById("qrPanel")
-        .style.display = "block";
+        .style.display = "none";
 
-      // Setup download button
-      document.getElementById("downloadQrBtn")
-        .onclick = function () {
-          const link = document.createElement("a");
-          link.href = qrApiUrl;
-          link.download = "qr-" + sessionId + ".png";
-          link.target = "_blank";
-          link.click();
-        };
+      document.getElementById("sessionInfoText")
+        .textContent = t("sessionEnded");
+
+      alert(t("sessionEnded"));
+
+    } catch (error) {
+      console.error("End session error:", error);
+      alert(t("sessionError") +
+        " " + error.message);
     }
+  }
 
 
-    // ==========================================
-    // START SESSION
-    // ==========================================
+  // ==========================================
+  // LOAD SESSION STATUS
+  // ==========================================
 
-    async function startSession() {
-      const openTime =
-        document.getElementById("openTime").value;
-      const closeTime =
-        document.getElementById("closeTime").value;
+  async function loadSessionStatus() {
+    try {
+      const sessionDoc =
+        await getDoc(
+          doc(db, "session", "current")
+        );
 
-      if (!openTime || !closeTime) {
-        alert("Please set both open and close time.");
+      if (!sessionDoc.exists()) {
+        updateSessionBadge(false);
         return;
       }
 
-      if (openTime >= closeTime) {
-        alert("Close time must be after open time.");
-        return;
-      }
-
-      const sessionId = generateSessionId();
+      const data  = sessionDoc.data();
       const today =
         new Date().toLocaleDateString("en-CA");
 
-      const sessionData = {
-        isOpen:    true,
-        sessionId: sessionId,
-        date:      today,
-        openTime:  openTime,
-        closeTime: closeTime,
-        startedAt: new Date().toISOString()
-      };
-
-      try {
-        await setDoc(
-          doc(db, "session", "current"),
-          sessionData
-        );
-
+      if (data.isOpen && data.date === today) {
         sessionIsOpen    = true;
-        currentSessionId = sessionId;
+        currentSessionId = data.sessionId;
+        currentOpenTime  = data.openTime;
+        currentCloseTime = data.closeTime;
 
-        updateSessionUI(true, openTime, closeTime);
-        generateQRCode(sessionId);
+        document.getElementById("openTime")
+          .value = data.openTime  || "07:00";
+        document.getElementById("closeTime")
+          .value = data.closeTime || "08:30";
+
+        updateSessionBadge(true);
+        generateQRCode(data.sessionId);
 
         document.getElementById("sessionInfoText")
           .textContent =
             t("sessionActive")
-              .replace("{open}",  openTime)
-              .replace("{close}", closeTime);
+              .replace("{open}",  data.openTime)
+              .replace("{close}", data.closeTime);
 
-        alert(t("sessionStarted"));
-
-      } catch (error) {
-        console.error("Start session error:", error);
-        alert("Error starting session: " +
-          error.message);
-      }
-    }
-
-
-    // ==========================================
-    // END SESSION
-    // ==========================================
-
-    async function endSession() {
-      if (!confirm(t("confirmEnd"))) return;
-
-      try {
-        await setDoc(
-          doc(db, "session", "current"),
-          {
-            isOpen:    false,
-            sessionId: currentSessionId || "",
-            date:      new Date()
-              .toLocaleDateString("en-CA"),
-            endedAt:   new Date().toISOString()
-          }
-        );
-
-        sessionIsOpen = false;
-
-        updateSessionUI(false, "", "");
-
-        document.getElementById("qrPanel")
-          .style.display = "none";
-
-        document.getElementById("sessionInfoText")
-          .textContent = t("sessionEnded");
-
-        alert(t("sessionEnded"));
-
-      } catch (error) {
-        console.error("End session error:", error);
-        alert("Error ending session: " +
-          error.message);
-      }
-    }
-
-
-    // ==========================================
-    // UPDATE SESSION UI
-    // ==========================================
-
-    function updateSessionUI(
-      isOpen, openTime, closeTime
-    ) {
-      const badge =
-        document.getElementById("sessionStatusBadge");
-      const startBtn =
-        document.getElementById("startSessionBtn");
-      const endBtn =
-        document.getElementById("endSessionBtn");
-
-      if (isOpen) {
-        badge.className =
-          "session-status-badge open";
-        badge.innerHTML =
-          "🟢 " + t("sessionOpen");
-        startBtn.style.display = "none";
-        endBtn.style.display   = "flex";
       } else {
-        badge.className =
-          "session-status-badge closed";
-        badge.innerHTML =
-          "🔴 " + t("sessionClosed");
-        startBtn.style.display = "flex";
-        endBtn.style.display   = "none";
+        sessionIsOpen = false;
+        updateSessionBadge(false);
       }
+
+    } catch (error) {
+      console.error("Load session error:", error);
     }
+  }
 
 
-    // ==========================================
-    // LOAD SESSION STATUS ON PAGE OPEN
-    // ==========================================
+  // ==========================================
+  // LOAD ATTENDANCE
+  // ==========================================
 
-    async function loadSessionStatus() {
-      try {
-        const sessionDoc =
-          await getDoc(
-            doc(db, "session", "current")
-          );
+  async function loadAttendance() {
+    const tbody =
+      document.getElementById(
+        "attendanceTableBody"
+      );
 
-        if (!sessionDoc.exists()) {
-          updateSessionUI(false, "", "");
-          return;
-        }
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="8" class="table-loading">
+          ⏳ ${t("loading")}
+        </td>
+      </tr>
+    `;
 
-        const data = sessionDoc.data();
-        const today =
-          new Date().toLocaleDateString("en-CA");
-
-        if (data.isOpen && data.date === today) {
-          sessionIsOpen    = true;
-          currentSessionId = data.sessionId;
-
-          document.getElementById("openTime")
-            .value = data.openTime || "07:00";
-          document.getElementById("closeTime")
-            .value = data.closeTime || "08:30";
-
-          updateSessionUI(
-            true, data.openTime, data.closeTime
-          );
-          generateQRCode(data.sessionId);
-
-          document.getElementById("sessionInfoText")
-            .textContent =
-              t("sessionActive")
-                .replace("{open}",  data.openTime)
-                .replace("{close}", data.closeTime);
-
-        } else {
-          sessionIsOpen = false;
-          updateSessionUI(false, "", "");
-        }
-
-      } catch (error) {
-        console.error("Load session error:", error);
-      }
-    }
-
-
-    // ==========================================
-    // LOAD ATTENDANCE FROM FIREBASE
-    // ==========================================
-
-    async function loadAttendance() {
-      const tbody =
-        document.getElementById(
-          "attendanceTableBody"
+    try {
+      const snapshot =
+        await getDocs(
+          collection(db, "attendance")
         );
 
+      allRecords = [];
+
+      snapshot.forEach(function (document) {
+        const d = document.data();
+        allRecords.push({
+          id:        document.id,
+          fullName:  d.fullName  || "",
+          age:       d.age       ?? "",
+          grade:     d.grade     || "",
+          latitude:  d.latitude  ?? "",
+          longitude: d.longitude ?? "",
+          date:      d.date      || "",
+          time:      d.time      || "",
+          status:    d.status    || "Present"
+        });
+      });
+
+      allRecords.sort(function (a, b) {
+        return (
+          `${b.date} ${b.time}`.localeCompare(
+          `${a.date} ${a.time}`)
+        );
+      });
+
+      updateStats();
+      displayRecords(allRecords);
+
+      document.getElementById("lastUpdated")
+        .textContent =
+          new Date().toLocaleTimeString([], {
+            hour: "2-digit", minute: "2-digit"
+          });
+
+    } catch (error) {
+      console.error(error);
       tbody.innerHTML = `
         <tr>
-          <td colspan="8" class="table-loading">
-            ⏳ Loading...
+          <td colspan="8"
+            style="padding:40px;
+                   text-align:center;
+                   color:#dc2626;">
+            ❌ ${escapeHTML(t("loadError"))}<br>
+            <small>
+              ${escapeHTML(error.message)}
+            </small>
           </td>
         </tr>
       `;
+    }
+  }
 
-      try {
-        const snapshot =
-          await getDocs(
-            collection(db, "attendance")
-          );
 
-        allRecords = [];
+  // ==========================================
+  // DISPLAY RECORDS
+  // ==========================================
 
-        snapshot.forEach(function (document) {
-          const d = document.data();
-          allRecords.push({
-            id:        document.id,
-            fullName:  d.fullName  || "",
-            age:       d.age       ?? "",
-            grade:     d.grade     || "",
-            latitude:  d.latitude  ?? "",
-            longitude: d.longitude ?? "",
-            date:      d.date      || "",
-            time:      d.time      || "",
-            status:    d.status    || "Present"
-          });
-        });
+  function displayRecords(records) {
+    const tbody =
+      document.getElementById(
+        "attendanceTableBody"
+      );
 
-        allRecords.sort(function (a, b) {
-          return (
-            `${b.date} ${b.time}`.localeCompare(
-            `${a.date} ${a.time}`)
-          );
-        });
+    document.getElementById("recordCount")
+      .textContent =
+        `${records.length} ${t("results")}`;
 
-        updateStats();
-        displayRecords(allRecords);
+    if (records.length === 0) {
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="8"
+            style="padding:55px 20px;
+                   text-align:center;
+                   color:#64748b;">
+            <div style="font-size:48px;
+                        margin-bottom:12px;">
+              📭
+            </div>
+            <strong>
+              ${escapeHTML(t("noRecords"))}
+            </strong>
+            <p style="margin-top:6px;
+                      font-size:13px;">
+              ${escapeHTML(t("noRecordsSub"))}
+            </p>
+          </td>
+        </tr>
+      `;
+      return;
+    }
 
-        document.getElementById("lastUpdated")
-          .textContent =
-            new Date().toLocaleTimeString([], {
-              hour: "2-digit", minute: "2-digit"
-            });
-
-      } catch (error) {
-        console.error(error);
-        tbody.innerHTML = `
+    tbody.innerHTML =
+      records.map(function (record, index) {
+        return `
           <tr>
-            <td colspan="8"
-              style="padding:40px;
-                     text-align:center;
-                     color:#dc2626;">
-              ❌ ${escapeHTML(t("loadError"))}<br>
-              <small>
-                ${escapeHTML(error.message)}
-              </small>
+            <td style="color:#94a3b8;">
+              ${index + 1}
+            </td>
+            <td>
+              <span class="teacher-name">
+                ${escapeHTML(record.fullName)}
+              </span>
+            </td>
+            <td>${escapeHTML(record.age)}</td>
+            <td>${escapeHTML(record.grade)}</td>
+            <td style="white-space:nowrap;">
+              ${escapeHTML(record.date)}
+            </td>
+            <td style="white-space:nowrap;
+                       color:#64748b;">
+              ${escapeHTML(record.time)}
+            </td>
+            <td>
+              <span class="badge-present">
+                ${escapeHTML(t("present"))}
+              </span>
+            </td>
+            <td>
+              <button
+                class="profile-btn"
+                data-id="${escapeHTML(record.id)}"
+              >
+                ${t("viewBtn")}
+              </button>
             </td>
           </tr>
         `;
-      }
-    }
+      }).join("");
 
-
-    // ==========================================
-    // DISPLAY RECORDS
-    // ==========================================
-
-    function displayRecords(records) {
-      const tbody =
-        document.getElementById(
-          "attendanceTableBody"
+    document.querySelectorAll(".profile-btn")
+      .forEach(function (btn) {
+        btn.addEventListener("click",
+          function () {
+            const id =
+              btn.getAttribute("data-id");
+            const record =
+              allRecords.find(function (r) {
+                return r.id === id;
+              });
+            if (record) openProfile(record);
+          }
         );
-
-      document.getElementById("recordCount")
-        .textContent =
-          `${records.length} ${t("results")}`;
-
-      if (records.length === 0) {
-        tbody.innerHTML = `
-          <tr>
-            <td colspan="8"
-              style="padding:55px 20px;
-                     text-align:center;
-                     color:#64748b;">
-              <div style="font-size:48px;
-                          margin-bottom:12px;">
-                📭
-              </div>
-              <strong>
-                ${escapeHTML(t("noRecords"))}
-              </strong>
-              <p style="margin-top:6px;
-                        font-size:13px;">
-                ${escapeHTML(t("noRecordsSub"))}
-              </p>
-            </td>
-          </tr>
-        `;
-        return;
-      }
-
-      tbody.innerHTML =
-        records.map(function (record, index) {
-          return `
-            <tr>
-              <td style="color:#94a3b8;">
-                ${index + 1}
-              </td>
-              <td>
-                <span class="teacher-name">
-                  ${escapeHTML(record.fullName)}
-                </span>
-              </td>
-              <td>${escapeHTML(record.age)}</td>
-              <td>${escapeHTML(record.grade)}</td>
-              <td style="white-space:nowrap;">
-                ${escapeHTML(record.date)}
-              </td>
-              <td style="white-space:nowrap;
-                         color:#64748b;">
-                ${escapeHTML(record.time)}
-              </td>
-              <td>
-                <span class="badge-present">
-                  ${escapeHTML(t("present"))}
-                </span>
-              </td>
-              <td>
-                <button
-                  class="profile-btn"
-                  data-id="${escapeHTML(record.id)}"
-                >
-                  ${t("viewBtn")}
-                </button>
-              </td>
-            </tr>
-          `;
-        }).join("");
-
-      document.querySelectorAll(".profile-btn")
-        .forEach(function (btn) {
-          btn.addEventListener("click",
-            function () {
-              const id =
-                btn.getAttribute("data-id");
-              const record =
-                allRecords.find(function (r) {
-                  return r.id === id;
-                });
-              if (record) openProfile(record);
-            }
-          );
-        });
-    }
+      });
+  }
 
 
-    // ==========================================
-    // UPDATE STATS
-    // ==========================================
+  // ==========================================
+  // UPDATE STATS
+  // ==========================================
 
-    function updateStats() {
-      document.getElementById("totalCount")
-        .textContent = allRecords.length;
+  function updateStats() {
+    document.getElementById("totalCount")
+      .textContent = allRecords.length;
 
-      const today =
-        new Date().toLocaleDateString("en-CA");
+    const today =
+      new Date().toLocaleDateString("en-CA");
 
-      const todayPresent =
+    document.getElementById("todayCount")
+      .textContent =
         allRecords.filter(function (r) {
           return r.date === today;
         }).length;
 
-      document.getElementById("todayCount")
-        .textContent = todayPresent;
-
-      // Update absent count from class list
-      checkAbsentList(true);
-    }
+    checkAbsentList(true);
+  }
 
 
-    // ==========================================
-    // CHECK ABSENT LIST
-    // ==========================================
+  // ==========================================
+  // CHECK ABSENT LIST
+  // ==========================================
 
-    function checkAbsentList(
-      silentUpdate = false
-    ) {
-      const classListText =
-        document.getElementById("classListInput")
-          .value.trim();
+  function checkAbsentList(
+    silentUpdate = false
+  ) {
+    const classListText =
+      document.getElementById("classListInput")
+        .value.trim();
 
-      const absentList =
-        document.getElementById("absentList");
+    const absentListEl =
+      document.getElementById("absentList");
 
-      if (!classListText) {
-        if (!silentUpdate) {
-          absentList.innerHTML =
-            `<p style="color:#64748b;
-                       font-size:13px;
-                       margin-top:10px;">
-              Please enter student names above.
-            </p>`;
-        }
-        document.getElementById("absentCount")
-          .textContent = 0;
-        return;
-      }
-
-      const today =
-        new Date().toLocaleDateString("en-CA");
-
-      const presentToday =
-        allRecords
-          .filter(function (r) {
-            return r.date === today;
-          })
-          .map(function (r) {
-            return r.fullName
-              .trim().toLowerCase();
-          });
-
-      const classList =
-        classListText
-          .split("\n")
-          .map(function (name) {
-            return name.trim();
-          })
-          .filter(function (name) {
-            return name.length > 0;
-          });
-
-      let absentCount = 0;
-      let html = "";
-
-      classList.forEach(function (studentName) {
-        const isPresent =
-          presentToday.includes(
-            studentName.toLowerCase()
-          );
-
-        if (isPresent) {
-          html += `
-            <div class="absent-student-row
-              present-row">
-              <span>${escapeHTML(studentName)}</span>
-              <span>${t("present")}</span>
-            </div>
-          `;
-        } else {
-          absentCount++;
-          html += `
-            <div class="absent-student-row
-              absent-row">
-              <span>${escapeHTML(studentName)}</span>
-              <span>${t("absent")}</span>
-            </div>
-          `;
-        }
-      });
-
-      document.getElementById("absentCount")
-        .textContent = absentCount;
-
+    if (!classListText) {
       if (!silentUpdate) {
-        absentList.innerHTML = html;
+        absentListEl.innerHTML =
+          `<p style="color:#64748b;
+                     font-size:13px;
+                     margin-top:10px;">
+            ${escapeHTML(t("enterNamesHint"))}
+          </p>`;
       }
+      document.getElementById("absentCount")
+        .textContent = "0";
+      return;
     }
 
+    const today =
+      new Date().toLocaleDateString("en-CA");
 
-    // ==========================================
-    // SEARCH
-    // ==========================================
-
-    function searchRecords() {
-      const term =
-        document.getElementById("searchInput")
-          .value.toLowerCase().trim();
-
-      const resultText =
-        document.getElementById("searchResultText");
-
-      if (term === "") {
-        displayRecords(allRecords);
-        resultText.textContent = "";
-        return;
-      }
-
-      const filtered =
-        allRecords.filter(function (r) {
-          return (
-            r.fullName.toLowerCase()
-              .includes(term) ||
-            r.grade.toLowerCase()
-              .includes(term)
-          );
+    const presentToday =
+      allRecords
+        .filter(function (r) {
+          return r.date === today;
+        })
+        .map(function (r) {
+          return r.fullName.trim().toLowerCase();
         });
 
-      displayRecords(filtered);
-      resultText.textContent =
-        `${filtered.length} ${t("results")}`;
-    }
+    const classList =
+      classListText
+        .split("\n")
+        .map(function (name) {
+          return name.trim();
+        })
+        .filter(function (name) {
+          return name.length > 0;
+        });
 
+    let absentCount = 0;
+    let html = "";
 
-    // ==========================================
-    // PROFILE MODAL
-    // ==========================================
+    classList.forEach(function (studentName) {
+      const isPresent =
+        presentToday.includes(
+          studentName.toLowerCase()
+        );
 
-    function openProfile(record) {
-      document.getElementById("profileName")
-        .textContent = record.fullName || "—";
-      document.getElementById("profileGradeHeader")
-        .textContent = record.grade || "—";
-      document.getElementById("profileAge")
-        .textContent = record.age || "—";
-      document.getElementById("profileGrade")
-        .textContent = record.grade || "—";
-      document.getElementById("profileDate")
-        .textContent = record.date || "—";
-      document.getElementById("profileTime")
-        .textContent = record.time || "—";
-      document.getElementById("profileStatus")
-        .textContent = t("present");
-      document.getElementById("profileLat")
-        .textContent = record.latitude || "—";
-      document.getElementById("profileLon")
-        .textContent = record.longitude || "—";
-
-      document.getElementById("profileModal")
-        .classList.add("show");
-    }
-
-    function closeProfile() {
-      document.getElementById("profileModal")
-        .classList.remove("show");
-    }
-
-    document.getElementById("closeProfileBtn")
-      .addEventListener("click", closeProfile);
-
-    document.getElementById("profileModal")
-      .addEventListener("click", function (e) {
-        if (e.target.id === "profileModal") {
-          closeProfile();
-        }
-      });
-
-
-    // ==========================================
-    // EXPORT CSV
-    // ==========================================
-
-    function exportToCSV() {
-      if (allRecords.length === 0) {
-        alert(t("exportEmpty"));
-        return;
+      if (isPresent) {
+        html += `
+          <div class="absent-student-row
+            present-row">
+            <span>
+              ${escapeHTML(studentName)}
+            </span>
+            <span>${t("present")}</span>
+          </div>
+        `;
+      } else {
+        absentCount++;
+        html += `
+          <div class="absent-student-row
+            absent-row">
+            <span>
+              ${escapeHTML(studentName)}
+            </span>
+            <span>${t("absent")}</span>
+          </div>
+        `;
       }
+    });
 
-      function csvVal(v) {
-        return `"${
-          String(v ?? "").replace(/"/g, '""')
-        }"`;
-      }
+    document.getElementById("absentCount")
+      .textContent = absentCount;
 
-      const headers = [
-        t("colNo"), t("colName"), t("colAge"),
-        t("colGrade"), t("profileLat"),
-        t("profileLon"), t("colDate"),
-        t("colTime"), t("colStatus")
-      ];
+    if (!silentUpdate) {
+      absentListEl.innerHTML = html;
+    }
+  }
 
-      let csv =
-        headers.map(csvVal).join(",") + "\n";
 
-      allRecords.forEach(function (r, i) {
-        csv += [
-          i + 1, r.fullName, r.age,
-          r.grade, r.latitude, r.longitude,
-          r.date, r.time, t("present")
-        ].map(csvVal).join(",") + "\n";
-      });
+  // ==========================================
+  // SEARCH
+  // ==========================================
 
-      const blob = new Blob(
-        ["\uFEFF" + csv],
-        { type: "text/csv;charset=utf-8;" }
-      );
+  function searchRecords() {
+    const term =
+      document.getElementById("searchInput")
+        .value.toLowerCase().trim();
 
-      const url = URL.createObjectURL(blob);
-      const a   = document.createElement("a");
-      a.href     = url;
-      a.download =
-        `attendance-${
-          new Date().toLocaleDateString("en-CA")
-        }.csv`;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
+    const resultText =
+      document.getElementById("searchResultText");
+
+    if (term === "") {
+      displayRecords(allRecords);
+      resultText.textContent = "";
+      return;
     }
 
-
-    // ==========================================
-    // BUTTON EVENTS
-    // ==========================================
-
-    document.getElementById("startSessionBtn")
-      .addEventListener("click", startSession);
-
-    document.getElementById("endSessionBtn")
-      .addEventListener("click", endSession);
-
-    document.getElementById("refreshBtn")
-      .addEventListener("click", loadAttendance);
-
-    document.getElementById("exportBtn")
-      .addEventListener("click", exportToCSV);
-
-    document.getElementById("searchInput")
-      .addEventListener("input", searchRecords);
-
-    document.getElementById("checkAbsentBtn")
-      .addEventListener("click", function () {
-        checkAbsentList(false);
-      });
-
-    document.getElementById("clearAbsentBtn")
-      .addEventListener("click", function () {
-        document.getElementById("classListInput")
-          .value = "";
-        document.getElementById("absentList")
-          .innerHTML = "";
-        document.getElementById("absentCount")
-          .textContent = "0";
-      });
-
-    document.getElementById("teacherLangBtn")
-      .addEventListener("click", function () {
-        applyTeacherLang(
-          tLang === "en" ? "km" : "en"
+    const filtered =
+      allRecords.filter(function (r) {
+        return (
+          r.fullName.toLowerCase()
+            .includes(term) ||
+          r.grade.toLowerCase()
+            .includes(term)
         );
       });
 
+    displayRecords(filtered);
+    resultText.textContent =
+      `${filtered.length} ${t("results")}`;
+  }
 
-    // ==========================================
-    // START
-    // ==========================================
 
-    applyTeacherLang(tLang);
-    loadAttendance();
-    loadSessionStatus();
+  // ==========================================
+  // PROFILE MODAL
+  // ==========================================
 
-  </script>
+  function openProfile(record) {
+    document.getElementById("profileName")
+      .textContent = record.fullName || "—";
+    document.getElementById("profileGradeHeader")
+      .textContent = record.grade || "—";
+    document.getElementById("profileAge")
+      .textContent = record.age || "—";
+    document.getElementById("profileGrade")
+      .textContent = record.grade || "—";
+    document.getElementById("profileDate")
+      .textContent = record.date || "—";
+    document.getElementById("profileTime")
+      .textContent = record.time || "—";
+    document.getElementById("profileStatus")
+      .textContent = t("present");
+    document.getElementById("profileLat")
+      .textContent = record.latitude || "—";
+    document.getElementById("profileLon")
+      .textContent = record.longitude || "—";
+
+    document.getElementById("profileModal")
+      .classList.add("show");
+  }
+
+  function closeProfile() {
+    document.getElementById("profileModal")
+      .classList.remove("show");
+  }
+
+  document.getElementById("closeProfileBtn")
+    .addEventListener("click", closeProfile);
+
+  document.getElementById("profileModal")
+    .addEventListener("click", function (e) {
+      if (e.target.id === "profileModal") {
+        closeProfile();
+      }
+    });
+
+
+  // ==========================================
+  // EXPORT CSV
+  // ==========================================
+
+  function exportToCSV() {
+    if (allRecords.length === 0) {
+      alert(t("exportEmpty"));
+      return;
+    }
+
+    function csvVal(v) {
+      return `"${
+        String(v ?? "").replace(/"/g, '""')
+      }"`;
+    }
+
+    const headers = [
+      t("colNo"),    t("colName"),
+      t("colAge"),   t("colGrade"),
+      t("profileLat"), t("profileLon"),
+      t("colDate"),  t("colTime"),
+      t("colStatus")
+    ];
+
+    let csv =
+      headers.map(csvVal).join(",") + "\n";
+
+    allRecords.forEach(function (r, i) {
+      csv += [
+        i + 1,    r.fullName,
+        r.age,    r.grade,
+        r.latitude, r.longitude,
+        r.date,   r.time,
+        t("present")
+      ].map(csvVal).join(",") + "\n";
+    });
+
+    const blob = new Blob(
+      ["\uFEFF" + csv],
+      { type: "text/csv;charset=utf-8;" }
+    );
+
+    const url = URL.createObjectURL(blob);
+    const a   = document.createElement("a");
+    a.href     = url;
+    a.download =
+      `attendance-${
+        new Date().toLocaleDateString("en-CA")
+      }.csv`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  }
+
+
+  // ==========================================
+  // BUTTON EVENTS
+  // ==========================================
+
+  document.getElementById("startSessionBtn")
+    .addEventListener("click", startSession);
+
+  document.getElementById("endSessionBtn")
+    .addEventListener("click", endSession);
+
+  document.getElementById("refreshBtn")
+    .addEventListener("click", loadAttendance);
+
+  document.getElementById("exportBtn")
+    .addEventListener("click", exportToCSV);
+
+  document.getElementById("searchInput")
+    .addEventListener("input", searchRecords);
+
+  document.getElementById("checkAbsentBtn")
+    .addEventListener("click", function () {
+      checkAbsentList(false);
+    });
+
+  document.getElementById("clearAbsentBtn")
+    .addEventListener("click", function () {
+      document.getElementById("classListInput")
+        .value = "";
+      document.getElementById("absentList")
+        .innerHTML = "";
+      document.getElementById("absentCount")
+        .textContent = "0";
+    });
+
+  document.getElementById("teacherLangBtn")
+    .addEventListener("click", function () {
+      applyTeacherLang(
+        tLang === "en" ? "km" : "en"
+      );
+    });
+
+
+  // ==========================================
+  // START
+  // ==========================================
+
+  applyTeacherLang(tLang);
+  loadAttendance();
+  loadSessionStatus();
+
+</script>
 
 </body>
 </html>
