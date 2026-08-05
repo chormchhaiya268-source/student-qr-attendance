@@ -120,6 +120,29 @@
       <img id="qrCodeImage" src=""
         alt="QR Code">
     </div>
+
+    <!-- ✅ NEW: Shows the exact URL the QR code points to -->
+    <div style="margin:10px auto;
+                max-width:400px;
+                background:#f1f5f9;
+                border-radius:8px;
+                padding:10px 14px;
+                text-align:center;">
+      <p style="font-size:11px;
+                color:#64748b;
+                margin:0 0 4px 0;">
+        QR Code URL (verify this is GitHub Pages):
+      </p>
+      <a id="qrUrlDisplay"
+         href="#"
+         target="_blank"
+         style="font-size:11px;
+                color:#1a73e8;
+                word-break:break-all;
+                text-decoration:underline;">
+      </a>
+    </div>
+
     <p class="qr-instructions"
       data-t="qrInstructions">
       Show this QR code to students.
@@ -364,25 +387,60 @@
 
   // ==========================================
   // FIREBASE CONFIG
-  // Replace with your real values
   // ==========================================
 
   const firebaseConfig = {
-  apiKey: "AIzaSyDpKCJ9xVeq2BY07aDwzzQ1qWvbStRuZLI",
-  authDomain: "student-qr-attendance-90323.firebaseapp.com",
-  projectId: "student-qr-attendance-90323",
-  storageBucket: "student-qr-attendance-90323.firebasestorage.app",
-  messagingSenderId: "45837607105",
-  appId: "1:45837607105:web:29f7dd8350f1dc06bd7440"
-};
+    apiKey: "AIzaSyDpKCJ9xVeq2BY07aDwzzQ1qWvbStRuZLI",
+    authDomain: "student-qr-attendance-90323.firebaseapp.com",
+    projectId: "student-qr-attendance-90323",
+    storageBucket: "student-qr-attendance-90323.firebasestorage.app",
+    messagingSenderId: "45837607105",
+    appId: "1:45837607105:web:29f7dd8350f1dc06bd7440"
+  };
 
   const app = initializeApp(firebaseConfig);
   const db  = getFirestore(app);
 
 
   // ==========================================
+  // ✅ GET CORRECT GITHUB PAGES BASE URL
+  // Works on GitHub Pages, Live Server,
+  // and localhost automatically
+  // ==========================================
+
+  function getStudentPageUrl() {
+    const hostname = window.location.hostname;
+    const origin   = window.location.origin;
+    const pathname = window.location.pathname;
+
+    // Remove /teacher.html from the path
+    // to get the base folder path
+    // Example:
+    // /MY-REPO/teacher.html → /MY-REPO/
+    const basePath = pathname.replace(
+      /\/[^\/]*\.html$/,
+      "/"
+    );
+
+    // Build the full student page URL
+    // Example:
+    // https://username.github.io/MY-REPO/index.html
+    const studentUrl =
+      origin + basePath + "index.html";
+
+    console.log(
+      "✅ Student page URL:", studentUrl
+    );
+    console.log(
+      "✅ Hostname:", hostname
+    );
+
+    return studentUrl;
+  }
+
+
+  // ==========================================
   // COMPLETE TEACHER TRANSLATIONS
-  // Every single text on teacher dashboard
   // ==========================================
 
   const tt = {
@@ -620,7 +678,6 @@
 
   // ==========================================
   // APPLY TEACHER LANGUAGE
-  // Translates every element on dashboard
   // ==========================================
 
   function applyTeacherLang(lang) {
@@ -710,15 +767,11 @@
   // DATA
   // ==========================================
 
-  let allRecords     = [];
-  let sessionIsOpen  = false;
+  let allRecords       = [];
+  let sessionIsOpen    = false;
   let currentSessionId = null;
   let currentOpenTime  = null;
   let currentCloseTime = null;
-
-  // Change this URL when you publish online
-  const STUDENT_PAGE_URL =
-    "http://127.0.0.1:5500/index.html";
 
 
   // ==========================================
@@ -750,29 +803,58 @@
 
 
   // ==========================================
-  // GENERATE QR CODE
+  // ✅ GENERATE QR CODE
+  // Uses GitHub Pages URL automatically.
+  // No more localhost or 127.0.0.1
   // ==========================================
 
   function generateQRCode(sessionId) {
-    const url =
-      STUDENT_PAGE_URL +
-      "?session=" + sessionId;
 
+    // Get the correct student page URL
+    // based on where this page is hosted
+    const studentPageUrl = getStudentPageUrl();
+
+    // Build full attendance URL with session ID
+    // Example:
+    // https://username.github.io/REPO/index.html
+    //   ?session=2025-01-15-ABC123
+    const attendanceUrl =
+      studentPageUrl + "?session=" + sessionId;
+
+    console.log(
+      "✅ QR Code attendance URL:",
+      attendanceUrl
+    );
+
+    // Build QR code image using free API
     const qrApiUrl =
       "https://api.qrserver.com/v1/create-qr-code/" +
       "?size=200x200&data=" +
-      encodeURIComponent(url);
+      encodeURIComponent(attendanceUrl);
 
+    // Set the QR code image
     document.getElementById("qrCodeImage")
       .src = qrApiUrl;
 
+    // Show session ID info
     document.getElementById("qrSessionInfo")
       .textContent =
         t("qrSession") + ": " + sessionId;
 
+    // ✅ Show the full URL below the QR code
+    // so the teacher can verify it is correct
+    const urlDisplay =
+      document.getElementById("qrUrlDisplay");
+    if (urlDisplay) {
+      urlDisplay.textContent = attendanceUrl;
+      urlDisplay.href        = attendanceUrl;
+    }
+
+    // Show the QR panel
     document.getElementById("qrPanel")
       .style.display = "block";
 
+    // Download button
     document.getElementById("downloadQrBtn")
       .onclick = function () {
         const link = document.createElement("a");
