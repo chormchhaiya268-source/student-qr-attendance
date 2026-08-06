@@ -20,7 +20,9 @@
 <body>
 <div class="page-wrapper">
 
-  <!-- Language switch -->
+  <!-- ======================================
+       LANGUAGE SWITCH — top right
+       ====================================== -->
   <div class="language-area">
     <button id="languageButton"
       class="language-button">
@@ -28,14 +30,38 @@
     </button>
   </div>
 
-  <!-- Header -->
+  <!-- ======================================
+       HEADER
+       Logo on left, title beside it
+       ====================================== -->
   <header class="header">
-    <div class="header-icon">🏫</div>
-    <h1 data-i18n="title"></h1>
-    <p data-i18n="subtitle"></p>
+
+    <!-- ✅ Logo + title row -->
+    <div class="header-top">
+
+      <!-- School logo -->
+      <img
+        src="school-logo.png"
+        alt="School Logo"
+        class="school-logo"
+      >
+
+      <!-- Title text group -->
+      <div class="header-title-group">
+        <h1 data-i18n="title">
+          QR Attendance System
+        </h1>
+        <p data-i18n="subtitle">
+          Tepranom High School
+        </p>
+      </div>
+
+    </div>
   </header>
 
-  <!-- Session status banner -->
+  <!-- ======================================
+       SESSION STATUS BANNER
+       ====================================== -->
   <div class="session-banner"
     id="sessionBanner"
     style="display:none;">
@@ -43,7 +69,9 @@
     <span id="sessionBannerText"></span>
   </div>
 
-  <!-- Location status box -->
+  <!-- ======================================
+       LOCATION STATUS BOX
+       ====================================== -->
   <div class="location-box" id="locationBox">
     <div class="location-icon">📍</div>
     <div class="location-text">
@@ -54,7 +82,9 @@
     </div>
   </div>
 
-  <!-- Distance status box -->
+  <!-- ======================================
+       DISTANCE STATUS BOX
+       ====================================== -->
   <div class="distance-box" id="distanceBox"
     style="display:none;">
     <div class="distance-icon"
@@ -66,7 +96,6 @@
                color:#64748b;
                margin-top:4px;"></p>
     </div>
-    <!-- Try again button shown when too far -->
     <button id="retryLocationBtn"
       style="display:none;
              margin-top:10px;
@@ -85,7 +114,9 @@
     </button>
   </div>
 
-  <!-- Attendance form -->
+  <!-- ======================================
+       ATTENDANCE FORM
+       ====================================== -->
   <main class="form-card" id="formCard">
 
     <h2 class="form-title"
@@ -96,13 +127,15 @@
       <!-- Student ID -->
       <div class="form-group">
         <label for="studentId">
-          <span data-i18n="studentIdLabel"></span>
+          <span data-i18n="studentIdLabel">
+          </span>
           <span class="required">*</span>
         </label>
         <input
           type="text"
           id="studentId"
-          data-i18n-placeholder="studentIdPlaceholder"
+          data-i18n-placeholder=
+            "studentIdPlaceholder"
         >
         <span class="field-error"
           id="studentIdError"></span>
@@ -111,13 +144,15 @@
       <!-- Full name -->
       <div class="form-group">
         <label for="fullName">
-          <span data-i18n="fullNameLabel"></span>
+          <span data-i18n="fullNameLabel">
+          </span>
           <span class="required">*</span>
         </label>
         <input
           type="text"
           id="fullName"
-          data-i18n-placeholder="fullNamePlaceholder"
+          data-i18n-placeholder=
+            "fullNamePlaceholder"
         >
         <span class="field-error"
           id="nameError"></span>
@@ -149,14 +184,14 @@
         <input
           type="text"
           id="grade"
-          data-i18n-placeholder="gradePlaceholder"
+          data-i18n-placeholder=
+            "gradePlaceholder"
         >
         <span class="field-error"
           id="gradeError"></span>
       </div>
 
       <!-- Submit button -->
-      <!-- Disabled until location is verified -->
       <button
         type="submit"
         class="submit-btn"
@@ -168,7 +203,9 @@
     </form>
   </main>
 
-  <!-- Session closed card -->
+  <!-- ======================================
+       SESSION CLOSED CARD
+       ====================================== -->
   <div class="session-closed-card"
     id="sessionClosedCard"
     style="display:none;">
@@ -177,7 +214,9 @@
     <p data-i18n="sessionClosedMsg"></p>
   </div>
 
-  <!-- Success card -->
+  <!-- ======================================
+       SUCCESS CARD
+       ====================================== -->
   <section class="success-card"
     id="successCard"
     style="display:none;">
@@ -190,7 +229,9 @@
       id="successDetails"></div>
   </section>
 
-  <!-- Error card -->
+  <!-- ======================================
+       ERROR CARD
+       ====================================== -->
   <section class="error-card"
     id="errorCard"
     style="display:none;">
@@ -199,7 +240,9 @@
       id="errorMessage"></p>
   </section>
 
-  <!-- Loading overlay -->
+  <!-- ======================================
+       LOADING OVERLAY
+       ====================================== -->
   <div class="loading-overlay"
     id="loadingOverlay"
     style="display:none;">
@@ -208,7 +251,9 @@
       data-i18n="savingText"></p>
   </div>
 
-  <!-- Footer -->
+  <!-- ======================================
+       FOOTER
+       ====================================== -->
   <footer class="footer">
     <p data-i18n="footerSecurity"></p>
     <p data-i18n="footerSchool"></p>
