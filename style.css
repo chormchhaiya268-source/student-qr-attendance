@@ -102,7 +102,9 @@ body.khmer {
 }
 
 /* =========================================
-   HEADER
+   STUDENT PAGE HEADER
+   Logo on left, title in center,
+   language button on top-right
 ========================================= */
 
 .header {
@@ -110,33 +112,61 @@ body.khmer {
   padding: 10px 8px 22px;
 }
 
-.header-icon {
-  width: 72px;
-  height: 72px;
-  margin: 0 auto 14px;
-  border-radius: 20px;
-  background: linear-gradient(
-    135deg, var(--primary), #7c3aed
-  );
-  display: grid;
-  place-items: center;
-  font-size: 34px;
-  box-shadow: 0 10px 28px rgba(29,78,216,0.28);
+/* ✅ NEW: Logo + title row inside header */
+.header-top {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
 }
 
-.header h1 {
-  font-size: clamp(22px, 5.5vw, 30px);
+/* ✅ NEW: School logo on student page */
+.school-logo {
+  width: 65px;
+  height: 65px;
+  object-fit: contain;
+  border-radius: 12px;
+  flex-shrink: 0;
+  /* Soft shadow to make logo pop */
+  filter: drop-shadow(
+    0 4px 10px rgba(15, 23, 42, 0.15)
+  );
+}
+
+/* ✅ NEW: Title text beside the logo */
+.header-title-group {
+  text-align: left;
+}
+
+.header-title-group h1 {
+  font-size: clamp(18px, 5vw, 26px);
   font-weight: 700;
   color: var(--text);
   letter-spacing: -0.4px;
   line-height: 1.3;
 }
 
-.header p {
-  margin-top: 8px;
+.header-title-group p {
+  margin-top: 4px;
   color: var(--muted);
-  font-size: 14px;
-  line-height: 1.7;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+/* Keep old .header-icon for backward compat
+   but hide it since we now use the logo */
+.header-icon {
+  display: none;
+}
+
+/* Old h1 and p directly in .header
+   (used as fallback, now inside
+   .header-title-group instead) */
+.header > h1,
+.header > p {
+  display: none;
 }
 
 /* =========================================
@@ -215,7 +245,8 @@ body.khmer {
   background: var(--success-light);
 }
 
-.location-box.allowed .location-text p:first-child {
+.location-box.allowed
+.location-text p:first-child {
   color: #14532d;
 }
 
@@ -225,7 +256,8 @@ body.khmer {
   background: var(--danger-light);
 }
 
-.location-box.denied .location-text p:first-child {
+.location-box.denied
+.location-text p:first-child {
   color: #7f1d1d;
 }
 
@@ -246,6 +278,7 @@ body.khmer {
   transition: all 0.3s;
   font-size: 13px;
   font-weight: 600;
+  flex-wrap: wrap;
 }
 
 .distance-box.inside {
@@ -395,14 +428,15 @@ body.khmer {
   font-weight: 700;
 }
 
-.checkbox-label input:checked + .checkbox-custom {
+.checkbox-label
+input:checked + .checkbox-custom {
   background: var(--primary);
   border-color: var(--primary);
   color: var(--white);
 }
 
-.checkbox-label input:checked +
-.checkbox-custom::after {
+.checkbox-label
+input:checked + .checkbox-custom::after {
   content: "✓";
 }
 
@@ -494,8 +528,14 @@ body.khmer {
 }
 
 @keyframes fadeUp {
-  from { opacity: 0; transform: translateY(16px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .success-icon {
@@ -625,7 +665,7 @@ body.khmer {
 }
 
 /* =========================================
-   TEACHER DASHBOARD
+   TEACHER DASHBOARD — BODY
 ========================================= */
 
 .teacher-body {
@@ -633,27 +673,58 @@ body.khmer {
   min-height: 100vh;
 }
 
+/* =========================================
+   TEACHER HEADER
+   Logo on left, title beside it,
+   buttons on right
+========================================= */
+
 .teacher-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 14px;
-  padding: 18px 28px;
+  padding: 14px 28px;
   background: #0f172a;
   color: var(--white);
   box-shadow: 0 4px 20px rgba(0,0,0,0.20);
 }
 
+/* ✅ NEW: Left side of teacher header
+   holds logo + title text together */
+.teacher-header-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+/* ✅ NEW: School logo in teacher header */
+.teacher-logo {
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+  border-radius: 10px;
+  flex-shrink: 0;
+  /* White glow so logo stands out on dark
+     background */
+  filter: drop-shadow(
+    0 2px 8px rgba(255, 255, 255, 0.20)
+  );
+}
+
+/* Title text group beside the teacher logo */
 .teacher-header-left h1 {
   font-size: 20px;
   font-weight: 700;
+  line-height: 1.3;
 }
 
 .teacher-header-left p {
-  margin-top: 3px;
-  font-size: 13px;
+  margin-top: 2px;
+  font-size: 12px;
   opacity: 0.65;
+  line-height: 1.4;
 }
 
 .teacher-header-right {
@@ -662,6 +733,10 @@ body.khmer {
   flex-wrap: wrap;
   gap: 9px;
 }
+
+/* =========================================
+   TEACHER LANGUAGE BUTTON
+========================================= */
 
 .teacher-lang-btn {
   padding: 8px 16px;
@@ -679,6 +754,10 @@ body.khmer {
 .teacher-lang-btn:hover {
   background: rgba(255,255,255,0.12);
 }
+
+/* =========================================
+   BUTTONS
+========================================= */
 
 .btn {
   min-height: 40px;
@@ -701,30 +780,11 @@ body.khmer {
   box-shadow: var(--shadow-sm);
 }
 
-.btn-white {
-  background: var(--white);
-  color: var(--primary-dark);
-}
-
-.btn-green {
-  background: #16a34a;
-  color: var(--white);
-}
-
-.btn-red {
-  background: var(--danger);
-  color: var(--white);
-}
-
-.btn-blue {
-  background: var(--primary);
-  color: var(--white);
-}
-
-.btn-orange {
-  background: #ea580c;
-  color: var(--white);
-}
+.btn-white  { background: var(--white);   color: var(--primary-dark); }
+.btn-green  { background: #16a34a;        color: var(--white); }
+.btn-red    { background: var(--danger);  color: var(--white); }
+.btn-blue   { background: var(--primary); color: var(--white); }
+.btn-orange { background: #ea580c;        color: var(--white); }
 
 /* =========================================
    SESSION CONTROL PANEL
@@ -746,6 +806,7 @@ body.khmer {
   display: flex;
   align-items: center;
   gap: 8px;
+  flex-wrap: wrap;
 }
 
 .session-controls {
@@ -805,7 +866,9 @@ body.khmer {
   color: var(--danger);
 }
 
-/* QR Code panel */
+/* =========================================
+   QR CODE PANEL
+========================================= */
 
 .qr-panel {
   padding: 22px;
@@ -856,7 +919,9 @@ body.khmer {
   margin-bottom: 12px;
 }
 
-/* Absent list panel */
+/* =========================================
+   ABSENT LIST PANEL
+========================================= */
 
 .absent-panel {
   padding: 22px;
@@ -892,9 +957,7 @@ body.khmer {
   box-shadow: 0 0 0 3px rgba(29,78,216,0.10);
 }
 
-.absent-list {
-  margin-top: 14px;
-}
+.absent-list { margin-top: 14px; }
 
 .absent-student-row {
   display: flex;
@@ -919,13 +982,19 @@ body.khmer {
   border: 1px solid #fecaca;
 }
 
-/* Teacher content */
+/* =========================================
+   TEACHER CONTENT AREA
+========================================= */
 
 .teacher-content {
   width: min(100% - 32px, 1200px);
   margin: 0 auto;
   padding: 26px 0 50px;
 }
+
+/* =========================================
+   STATS ROW
+========================================= */
 
 .stats-row {
   display: grid;
@@ -955,6 +1024,10 @@ body.khmer {
   font-size: 12px;
   color: var(--muted);
 }
+
+/* =========================================
+   SEARCH BAR
+========================================= */
 
 .search-bar-container {
   padding: 18px 20px;
@@ -996,6 +1069,10 @@ body.khmer {
   color: var(--muted);
   min-height: 18px;
 }
+
+/* =========================================
+   ATTENDANCE TABLE
+========================================= */
 
 .table-container {
   border-radius: var(--radius-md);
@@ -1052,7 +1129,8 @@ body.khmer {
   background: #f8fbff;
 }
 
-.attendance-table tbody tr:last-child td {
+.attendance-table
+tbody tr:last-child td {
   border-bottom: none;
 }
 
@@ -1141,7 +1219,8 @@ body.khmer {
   background: linear-gradient(
     135deg, var(--primary), #7c3aed
   );
-  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  border-radius:
+    var(--radius-lg) var(--radius-lg) 0 0;
   color: var(--white);
   text-align: center;
 }
@@ -1184,7 +1263,9 @@ body.khmer {
   font-size: 14px;
 }
 
-.profile-row:last-child { border-bottom: none; }
+.profile-row:last-child {
+  border-bottom: none;
+}
 
 .profile-row-label {
   color: var(--muted);
@@ -1235,14 +1316,28 @@ body.khmer {
 
 @media (max-width: 700px) {
   .teacher-header {
-    padding: 14px 16px;
+    padding: 12px 16px;
     flex-direction: column;
     align-items: flex-start;
   }
 
-  .teacher-header-left h1 { font-size: 18px; }
-  .teacher-header-right { width: 100%; }
-  .teacher-content { padding: 16px 0 40px; }
+  /* Logo shrinks slightly on mobile */
+  .teacher-logo {
+    width: 46px;
+    height: 46px;
+  }
+
+  .teacher-header-left h1 {
+    font-size: 17px;
+  }
+
+  .teacher-header-right {
+    width: 100%;
+  }
+
+  .teacher-content {
+    padding: 16px 0 40px;
+  }
 
   .stats-row {
     grid-template-columns: repeat(2, 1fr);
@@ -1258,11 +1353,47 @@ body.khmer {
     flex-direction: column;
     align-items: flex-start;
   }
+
+  /* Student page logo shrinks on mobile */
+  .school-logo {
+    width: 52px;
+    height: 52px;
+  }
+
+  /* Student header stacks on very small
+     screens */
+  .header-top {
+    flex-direction: row;
+    justify-content: center;
+  }
 }
 
 @media (max-width: 420px) {
-  .page-wrapper { width: calc(100% - 16px); }
-  .form-card { padding: 20px 14px; }
-  .header h1 { font-size: 20px; }
-  .stats-row { grid-template-columns: 1fr; }
+  .page-wrapper {
+    width: calc(100% - 16px);
+  }
+
+  .form-card {
+    padding: 20px 14px;
+  }
+
+  .header-title-group h1 {
+    font-size: 18px;
+  }
+
+  .stats-row {
+    grid-template-columns: 1fr;
+  }
+
+  /* Stack logo and title vertically on
+     very small phones */
+  .header-top {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .header-title-group {
+    text-align: center;
+  }
 }
