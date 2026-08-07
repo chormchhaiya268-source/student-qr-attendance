@@ -4,13 +4,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport"
-    content="width=device-width, initial-scale=1.0">
+    content="width=device-width,
+             initial-scale=1.0">
   <title>Teacher Dashboard - Tepranom</title>
   <link rel="stylesheet" href="style.css">
   <link rel="preconnect"
     href="https://fonts.googleapis.com">
   <link rel="preconnect"
-    href="https://fonts.gstatic.com" crossorigin>
+    href="https://fonts.gstatic.com"
+    crossorigin>
   <link
     href="https://fonts.googleapis.com/css2?family=Battambang:wght@400;700&family=Kantumruy+Pro:ital,wght@0,100..700;1,100..700&display=swap"
     rel="stylesheet">
@@ -20,22 +22,15 @@
 
 <!-- ==========================================
      TEACHER HEADER
-     School logo on left, title beside it,
-     buttons on right
      ========================================== -->
 <header class="teacher-header">
 
-  <!-- Left side: logo + title -->
+  <!-- Left: logo + title -->
   <div class="teacher-header-left">
-
-    <!-- ✅ School logo -->
     <img
       src="school-logo.png"
       alt="School Logo"
-      class="teacher-logo"
-    >
-
-    <!-- Title text beside logo -->
+      class="teacher-logo">
     <div>
       <h1>
         <span data-t="dashTitle">
@@ -46,11 +41,19 @@
         Tepranom High School
       </p>
     </div>
-
   </div>
 
-  <!-- Right side: buttons -->
+  <!-- Right: buttons -->
   <div class="teacher-header-right">
+
+    <!-- Teacher email display -->
+    <div class="teacher-email-badge"
+      id="teacherEmailBadge"
+      style="display:none;">
+      <span>👤</span>
+      <span id="teacherEmailText"></span>
+    </div>
+
     <button id="teacherLangBtn"
       class="teacher-lang-btn">
       ខ្មែរ
@@ -73,16 +76,21 @@
         Export CSV
       </span>
     </button>
-  </div>
 
+    <!-- ✅ LOGOUT BUTTON -->
+    <button id="logoutBtn"
+      class="btn btn-red">
+      <span data-t="logoutBtn">
+        Logout
+      </span>
+    </button>
+
+  </div>
 </header>
 
 <main class="teacher-content">
 
-  <!-- ========================================
-       STUDENT LIST MANAGER
-       Saves students permanently to Firebase
-       ======================================== -->
+  <!-- STUDENT LIST MANAGER -->
   <div class="session-panel">
     <div class="session-panel-title">
       👥
@@ -94,11 +102,9 @@
               color:#64748b;
               margin-bottom:12px;"
       data-t="studentListHint">
-      Add students here. They are saved
-      permanently and used for every session.
+      Add students here.
     </p>
 
-    <!-- Add new student form -->
     <div style="display:flex;
                 gap:10px;
                 flex-wrap:wrap;
@@ -174,7 +180,6 @@
       </button>
     </div>
 
-    <!-- Saved student list table -->
     <div class="table-scroll"
       style="max-height:260px;
              overflow-y:auto;
@@ -213,9 +218,7 @@
              min-height:20px;"></p>
   </div>
 
-  <!-- ========================================
-       SESSION CONTROL
-       ======================================== -->
+  <!-- SESSION CONTROL -->
   <div class="session-panel">
     <div class="session-panel-title">
       🎛️
@@ -268,9 +271,7 @@
              color:#64748b;"></p>
   </div>
 
-  <!-- ========================================
-       QR CODE PANEL
-       ======================================== -->
+  <!-- QR CODE PANEL -->
   <div class="qr-panel" id="qrPanel"
     style="display:none;">
     <div class="qr-panel-title"
@@ -283,8 +284,6 @@
       <img id="qrCodeImage" src=""
         alt="QR Code">
     </div>
-
-    <!-- URL verification display -->
     <div style="margin:10px auto;
                 max-width:400px;
                 background:#f1f5f9;
@@ -305,7 +304,6 @@
                 text-decoration:underline;">
       </a>
     </div>
-
     <p class="qr-instructions"
       data-t="qrInstructions">
       Show this QR code to students.
@@ -323,9 +321,7 @@
     </div>
   </div>
 
-  <!-- ========================================
-       STATS
-       ======================================== -->
+  <!-- STATS -->
   <section class="stats-row">
     <div class="stat-card">
       <div class="stat-number"
@@ -368,9 +364,7 @@
     </div>
   </section>
 
-  <!-- ========================================
-       SEARCH
-       ======================================== -->
+  <!-- SEARCH -->
   <section class="search-bar-container">
     <h3 data-t="searchTitle">
       🔍 Find a Student
@@ -387,9 +381,7 @@
       id="searchResultText"></p>
   </section>
 
-  <!-- ========================================
-       ATTENDANCE TABLE
-       ======================================== -->
+  <!-- ATTENDANCE TABLE -->
   <section class="table-container">
     <div class="table-header">
       <h2 data-t="tableTitle">
@@ -440,9 +432,7 @@
 
 </main>
 
-<!-- ==========================================
-     PROFILE MODAL
-     ========================================== -->
+<!-- PROFILE MODAL -->
 <div id="profileModal"
   class="profile-modal">
   <div class="profile-content">
@@ -462,33 +452,25 @@
       </div>
       <div class="profile-row">
         <span class="profile-row-label"
-          data-t="profileAge">
-          Age
-        </span>
+          data-t="profileAge">Age</span>
         <span class="profile-row-value"
           id="profileAge"></span>
       </div>
       <div class="profile-row">
         <span class="profile-row-label"
-          data-t="profileGrade">
-          Grade
-        </span>
+          data-t="profileGrade">Grade</span>
         <span class="profile-row-value"
           id="profileGrade"></span>
       </div>
       <div class="profile-row">
         <span class="profile-row-label"
-          data-t="profileDate">
-          Date
-        </span>
+          data-t="profileDate">Date</span>
         <span class="profile-row-value"
           id="profileDate"></span>
       </div>
       <div class="profile-row">
         <span class="profile-row-label"
-          data-t="profileTime">
-          Time
-        </span>
+          data-t="profileTime">Time</span>
         <span class="profile-row-value"
           id="profileTime"></span>
       </div>
@@ -535,9 +517,17 @@
   </div>
 </div>
 
-<!-- ==========================================
-     JAVASCRIPT — COMPLETE
-     ========================================== -->
+<!-- AUTH LOADING OVERLAY
+     Shows while checking login status -->
+<div id="authOverlay"
+  class="loading-overlay"
+  style="display:flex;">
+  <div class="loading-spinner"></div>
+  <p class="loading-text">
+    Checking login...
+  </p>
+</div>
+
 <script type="module">
 
 // ============================================
@@ -559,6 +549,13 @@ import {
   writeBatch
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
+// ✅ ADD Firebase Auth import
+import {
+  getAuth,
+  onAuthStateChanged,
+  signOut
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
 // ============================================
 // FIREBASE CONFIG
 // ============================================
@@ -577,12 +574,24 @@ const firebaseConfig = {
     "1:45837607105:web:29f7dd8350f1dc06bd7440"
 };
 
-const app = initializeApp(firebaseConfig);
-const db  = getFirestore(app);
+const app  = initializeApp(firebaseConfig);
+const db   = getFirestore(app);
+const auth = getAuth(app);
 
 // ============================================
-// GET GITHUB PAGES BASE URL AUTOMATICALLY
-// Works on GitHub Pages and Live Server
+// GET LOGIN PAGE URL
+// ============================================
+function getLoginPageUrl() {
+  const origin   = window.location.origin;
+  const pathname = window.location.pathname;
+  const basePath = pathname.replace(
+    /\/[^\/]*\.html$/, "/"
+  );
+  return origin + basePath + "login.html";
+}
+
+// ============================================
+// GET STUDENT PAGE URL
 // ============================================
 function getStudentPageUrl() {
   const origin   = window.location.origin;
@@ -594,11 +603,52 @@ function getStudentPageUrl() {
 }
 
 // ============================================
+// ✅ AUTH GUARD
+// Check if teacher is logged in
+// If not logged in redirect to login page
+// ============================================
+onAuthStateChanged(auth, function (user) {
+  // Hide the auth loading overlay
+  const authOverlay =
+    document.getElementById("authOverlay");
+
+  if (!user) {
+    // Not logged in
+    // Redirect to login page immediately
+    window.location.href = getLoginPageUrl();
+    return;
+  }
+
+  // ✅ Teacher is logged in
+  // Show their email in the header
+  const emailBadge =
+    document.getElementById(
+      "teacherEmailBadge"
+    );
+  const emailText =
+    document.getElementById("teacherEmailText");
+
+  if (emailBadge && emailText) {
+    emailText.textContent = user.email;
+    emailBadge.style.display = "flex";
+  }
+
+  // Hide auth overlay and show dashboard
+  if (authOverlay) {
+    authOverlay.style.display = "none";
+  }
+
+  // Load all dashboard data
+  applyTeacherLang(tLang);
+  loadStudents();
+  loadSessionStatus();
+});
+
+// ============================================
 // TRANSLATIONS — ENGLISH AND KHMER
 // ============================================
 const tt = {
   en: {
-    // Header
     dashTitle:
       "Teacher Dashboard",
     dashSubtitle:
@@ -607,8 +657,14 @@ const tt = {
     refresh:      "Refresh",
     export:       "Export CSV",
     langBtn:      "ខ្មែរ",
+    logoutBtn:    "Logout",
+    logoutConfirm:
+      "Are you sure you want to logout?",
+    logoutSuccess:
+      "Logged out successfully.",
+    loggedInAs:   "Logged in as",
 
-    // Student list manager
+    // Student list
     studentListTitle:
       "Student List Manager",
     studentListHint:
@@ -632,11 +688,11 @@ const tt = {
     studentIdExists:
       "A student with this ID already exists.",
     noStudentsYet:
-      "No students added yet. Add students above.",
+      "No students added yet.",
     confirmRemove:
       "Remove this student from the list?",
 
-    // Session panel
+    // Session
     sessionControlTitle: "Session Control",
     sessionOpen:         "Open",
     sessionClosed:       "Closed",
@@ -647,9 +703,9 @@ const tt = {
     sessionActive:
       "Session is active from {open} to {close}.",
     sessionStarted:
-      "Session started. Attendance records created for all students.",
+      "Session started. Records created for all students.",
     sessionEnded:
-      "Session ended. Students can no longer check in.",
+      "Session ended.",
     confirmEnd:
       "Are you sure you want to end the session?",
     setTimesAlert:
@@ -659,13 +715,13 @@ const tt = {
     sessionError:
       "Error with session. Please try again.",
     noStudentsError:
-      "Please add students to the list before starting a session.",
+      "Please add students before starting a session.",
 
-    // QR code
+    // QR
     qrTitle:
       "📱 Today's QR Code",
     qrInstructions:
-      "Show this QR code to students. Students scan it with their phone camera.",
+      "Show this QR code to students.",
     downloadQr:  "⬇ Download QR Code",
     qrSession:   "Session",
 
@@ -694,7 +750,7 @@ const tt = {
     colProfile: "Profile",
     viewBtn:    "👁 View",
 
-    // Profile modal
+    // Profile
     profileAge:      "Age",
     profileGrade:    "Grade / Class",
     profileDate:     "Date",
@@ -705,7 +761,7 @@ const tt = {
     profileDistance: "Distance from School",
     closeProfile:    "Close",
 
-    // Status values
+    // Status
     notCheckedInYet: "Not Checked In Yet",
     present:         "✅ Present",
     absent:          "❌ Absent",
@@ -719,13 +775,11 @@ const tt = {
       "Could not load attendance records.",
     loading: "Loading...",
 
-    // Export
     exportEmpty:
       "There are no records to export."
   },
 
   km: {
-    // Header
     dashTitle:
       "ផ្ទាំងគ្រប់គ្រងគ្រូ",
     dashSubtitle:
@@ -734,12 +788,18 @@ const tt = {
     refresh:      "ផ្ទុកឡើងវិញ",
     export:       "នាំចេញ CSV",
     langBtn:      "English",
+    logoutBtn:    "ចាកចេញ",
+    logoutConfirm:
+      "តើអ្នកពិតជាចង់ចាកចេញមែនទេ?",
+    logoutSuccess:
+      "បានចាកចេញដោយជោគជ័យ។",
+    loggedInAs:   "ចូលប្រើក្នុងនាម",
 
-    // Student list manager
+    // Student list
     studentListTitle:
       "កម្មវិធីគ្រប់គ្រងបញ្ជីសិស្ស",
     studentListHint:
-      "បន្ថែមសិស្សនៅទីនេះ។ ព័ត៌មានត្រូវបានរក្សាទុកជាអចិន្ត្រៃយ៍ និងប្រើសម្រាប់រាល់វគ្គ។",
+      "បន្ថែមសិស្សនៅទីនេះ។ ព័ត៌មានត្រូវបានរក្សាទុកជាអចិន្ត្រៃយ៍។",
     labelStudentName:  "ឈ្មោះពេញ",
     labelStudentId:    "លេខសម្គាល់សិស្ស",
     labelStudentAge:   "អាយុ",
@@ -759,11 +819,11 @@ const tt = {
     studentIdExists:
       "មានសិស្សដែលមានលេខសម្គាល់នេះហើយ។",
     noStudentsYet:
-      "មិនទាន់មានសិស្សទេ។ សូមបន្ថែមសិស្សខាងលើ។",
+      "មិនទាន់មានសិស្សទេ។",
     confirmRemove:
       "លុបសិស្សនេះចេញពីបញ្ជីមែនទេ?",
 
-    // Session panel
+    // Session
     sessionControlTitle: "គ្រប់គ្រងវគ្គ",
     sessionOpen:         "បើក",
     sessionClosed:       "បិទ",
@@ -774,9 +834,9 @@ const tt = {
     sessionActive:
       "វគ្គកំពុងដំណើរការពី {open} ដល់ {close}។",
     sessionStarted:
-      "វគ្គបានចាប់ផ្ដើម។ កំណត់ត្រាវត្តមានត្រូវបានបង្កើតសម្រាប់សិស្សទាំងអស់។",
+      "វគ្គបានចាប់ផ្ដើម។ កំណត់ត្រាត្រូវបានបង្កើត។",
     sessionEnded:
-      "វគ្គបានបញ្ចប់។ សិស្សមិនអាចចុះវត្តមានទៀតទេ។",
+      "វគ្គបានបញ្ចប់។",
     confirmEnd:
       "តើអ្នកពិតជាចង់បញ្ចប់វគ្គមែនទេ?",
     setTimesAlert:
@@ -784,15 +844,15 @@ const tt = {
     timeOrderAlert:
       "ម៉ោងបិទត្រូវតែក្រោយម៉ោងបើក។",
     sessionError:
-      "មានបញ្ហាជាមួយវគ្គ។ សូមព្យាយាមម្តងទៀត។",
+      "មានបញ្ហាជាមួយវគ្គ។",
     noStudentsError:
-      "សូមបន្ថែមសិស្សទៅក្នុងបញ្ជីមុននឹងចាប់ផ្ដើមវគ្គ។",
+      "សូមបន្ថែមសិស្សមុននឹងចាប់ផ្ដើមវគ្គ។",
 
-    // QR code
+    // QR
     qrTitle:
       "📱 QR Code ថ្ងៃនេះ",
     qrInstructions:
-      "បង្ហាញ QR Code នេះដល់សិស្ស។ សិស្សស្កេន QR Code ដោយប្រើកាមេរ៉ាទូរស័ព្ទ។",
+      "បង្ហាញ QR Code នេះដល់សិស្ស។",
     downloadQr:  "⬇ ទាញយក QR Code",
     qrSession:   "វគ្គ",
 
@@ -821,7 +881,7 @@ const tt = {
     colProfile: "ព័ត៌មាន",
     viewBtn:    "👁 មើល",
 
-    // Profile modal
+    // Profile
     profileAge:      "អាយុ",
     profileGrade:    "ថ្នាក់រៀន",
     profileDate:     "កាលបរិច្ឆេទ",
@@ -832,7 +892,7 @@ const tt = {
     profileDistance: "ចម្ងាយពីសាលា",
     closeProfile:    "បិទ",
 
-    // Status values
+    // Status
     notCheckedInYet: "មិនទាន់ចុះវត្តមាន",
     present:         "✅ មានវត្តមាន",
     absent:          "❌ អវត្តមាន",
@@ -841,12 +901,11 @@ const tt = {
     noRecords:
       "រកមិនឃើញកំណត់ត្រាវត្តមានទេ។",
     noRecordsSub:
-      "ចាប់ផ្ដើមវគ្គដើម្បីបង្កើតកំណត់ត្រាវត្តមាន។",
+      "ចាប់ផ្ដើមវគ្គដើម្បីបង្កើតកំណត់ត្រា។",
     loadError:
-      "មិនអាចផ្ទុកកំណត់ត្រាវត្តមានបានទេ។",
+      "មិនអាចផ្ទុកកំណត់ត្រាបានទេ។",
     loading: "កំពុងផ្ទុក…",
 
-    // Export
     exportEmpty:
       "មិនមានទិន្នន័យដើម្បីនាំចេញទេ។"
   }
@@ -875,7 +934,7 @@ let currentCloseTime    = null;
 let unsubscribeListener = null;
 
 // ============================================
-// SAFE HTML — prevents XSS attacks
+// SAFE HTML
 // ============================================
 function escapeHTML(value) {
   return String(value ?? "")
@@ -887,7 +946,7 @@ function escapeHTML(value) {
 }
 
 // ============================================
-// APPLY LANGUAGE TO ENTIRE PAGE
+// APPLY LANGUAGE
 // ============================================
 function applyTeacherLang(lang) {
   tLang = lang;
@@ -904,7 +963,6 @@ function applyTeacherLang(lang) {
       ? "ផ្ទាំងគ្រប់គ្រងគ្រូ - វិទ្យាល័យទេពប្រណម្យ"
       : "Teacher Dashboard - Tepranom";
 
-  // Translate all data-t elements
   document.querySelectorAll("[data-t]")
     .forEach(function (el) {
       const key = el.getAttribute("data-t");
@@ -912,7 +970,6 @@ function applyTeacherLang(lang) {
       if (val !== key) el.textContent = val;
     });
 
-  // Translate all data-t-placeholder elements
   document.querySelectorAll(
     "[data-t-placeholder]"
   ).forEach(function (el) {
@@ -922,14 +979,12 @@ function applyTeacherLang(lang) {
     if (val !== key) el.placeholder = val;
   });
 
-  // Language button text
   const langBtn =
     document.getElementById("teacherLangBtn");
   if (langBtn) {
     langBtn.textContent = t("langBtn");
   }
 
-  // Search placeholder
   const searchInput =
     document.getElementById("searchInput");
   if (searchInput) {
@@ -937,7 +992,6 @@ function applyTeacherLang(lang) {
       t("searchPlaceholder");
   }
 
-  // Redraw everything with new language
   renderStudentList();
   displayRecords(allRecords);
   updateSessionBadge(sessionIsOpen);
@@ -945,7 +999,7 @@ function applyTeacherLang(lang) {
 }
 
 // ============================================
-// RETRANSLATE SESSION INFO TEXT
+// RETRANSLATE SESSION INFO
 // ============================================
 function retranslateSessionInfo() {
   const infoText =
@@ -1013,14 +1067,11 @@ function generateSessionId() {
 
 // ============================================
 // GENERATE QR CODE
-// Uses GitHub Pages URL automatically
 // ============================================
 function generateQRCode(sessionId) {
   const studentPageUrl = getStudentPageUrl();
   const attendanceUrl  =
     studentPageUrl + "?session=" + sessionId;
-
-  console.log("✅ QR Code URL:", attendanceUrl);
 
   const qrApiUrl =
     "https://api.qrserver.com/v1/" +
@@ -1029,7 +1080,6 @@ function generateQRCode(sessionId) {
 
   document.getElementById("qrCodeImage")
     .src = qrApiUrl;
-
   document.getElementById("qrSessionInfo")
     .textContent =
       t("qrSession") + ": " + sessionId;
@@ -1048,18 +1098,16 @@ function generateQRCode(sessionId) {
     .onclick = function () {
       const link =
         document.createElement("a");
-      link.href =
-        qrApiUrl;
-      link.download =
+      link.href      = qrApiUrl;
+      link.download  =
         "qr-" + sessionId + ".png";
-      link.target = "_blank";
+      link.target    = "_blank";
       link.click();
     };
 }
 
 // ============================================
-// LOAD STUDENTS FROM FIREBASE
-// Collection: students/
+// LOAD STUDENTS
 // ============================================
 async function loadStudents() {
   try {
@@ -1070,8 +1118,7 @@ async function loadStudents() {
     allStudents = [];
     snap.forEach(function (d) {
       allStudents.push({
-        id: d.id,
-        ...d.data()
+        id: d.id, ...d.data()
       });
     });
     allStudents.sort(function (a, b) {
@@ -1087,7 +1134,7 @@ async function loadStudents() {
 }
 
 // ============================================
-// RENDER STUDENT LIST TABLE
+// RENDER STUDENT LIST
 // ============================================
 function renderStudentList() {
   const tbody =
@@ -1144,7 +1191,7 @@ function renderStudentList() {
 }
 
 // ============================================
-// ADD STUDENT TO FIREBASE
+// ADD STUDENT
 // ============================================
 async function addStudent() {
   const nameEl =
@@ -1162,12 +1209,9 @@ async function addStudent() {
     nameEl.value.trim();
   const studentId =
     idEl.value.trim().toUpperCase();
-  const age =
-    ageEl.value.trim();
-  const grade =
-    gradeEl.value.trim();
+  const age   = ageEl.value.trim();
+  const grade = gradeEl.value.trim();
 
-  // Validate all fields are filled
   if (!fullName || !studentId ||
       !age || !grade) {
     msgEl.style.color = "#dc2626";
@@ -1175,7 +1219,6 @@ async function addStudent() {
     return;
   }
 
-  // Check for duplicate student ID
   const exists = allStudents.some(
     function (s) {
       return s.studentId === studentId;
@@ -1188,8 +1231,6 @@ async function addStudent() {
   }
 
   try {
-    // Save to Firebase
-    // Document ID = studentId for easy lookup
     await setDoc(
       doc(db, "students", studentId),
       {
@@ -1201,7 +1242,6 @@ async function addStudent() {
       }
     );
 
-    // Clear inputs after adding
     nameEl.value  = "";
     idEl.value    = "";
     ageEl.value   = "";
@@ -1209,7 +1249,6 @@ async function addStudent() {
 
     msgEl.style.color = "#16a34a";
     msgEl.textContent = t("studentAdded");
-
     await loadStudents();
 
     setTimeout(function () {
@@ -1225,7 +1264,7 @@ async function addStudent() {
 }
 
 // ============================================
-// REMOVE STUDENT FROM FIREBASE
+// REMOVE STUDENT
 // ============================================
 async function removeStudent(studentId) {
   if (!confirm(t("confirmRemove"))) return;
@@ -1234,18 +1273,14 @@ async function removeStudent(studentId) {
     await deleteDoc(
       doc(db, "students", studentId)
     );
-
     const msgEl =
       document.getElementById("studentListMsg");
     msgEl.style.color = "#16a34a";
     msgEl.textContent = t("studentRemoved");
-
     await loadStudents();
-
     setTimeout(function () {
       msgEl.textContent = "";
     }, 3000);
-
   } catch (err) {
     console.error(
       "Remove student error:", err
@@ -1253,13 +1288,10 @@ async function removeStudent(studentId) {
   }
 }
 
-// Make removeStudent available globally
-// for inline onclick buttons
 window._removeStudent = removeStudent;
 
 // ============================================
 // START SESSION
-// Creates attendance records for ALL students
 // ============================================
 async function startSession() {
   const openTime =
@@ -1285,7 +1317,6 @@ async function startSession() {
     new Date().toLocaleDateString("en-CA");
 
   try {
-    // Step 1: Save session to Firebase
     await setDoc(
       doc(db, "session", "current"),
       {
@@ -1298,15 +1329,8 @@ async function startSession() {
       }
     );
 
-    // Step 2: Create default attendance
-    // records for every student using
-    // batch write for efficiency
     const batch = writeBatch(db);
-
     allStudents.forEach(function (student) {
-      // Path:
-      // sessionAttendance/{sessionId}/
-      //   records/{studentId}
       const recordRef = doc(
         db,
         "sessionAttendance",
@@ -1314,7 +1338,6 @@ async function startSession() {
         "records",
         student.studentId
       );
-
       batch.set(recordRef, {
         fullName:           student.fullName,
         studentId:          student.studentId,
@@ -1322,7 +1345,6 @@ async function startSession() {
         grade:              student.grade,
         sessionId:          sessionId,
         date:               today,
-        // Default = not checked in
         checkInDate:        "មិនទាន់ចុះវត្តមាន",
         checkInTime:        "មិនទាន់ចុះវត្តមាន",
         status:             "notCheckedInYet",
@@ -1332,10 +1354,8 @@ async function startSession() {
         distanceFromSchool: ""
       });
     });
-
     await batch.commit();
 
-    // Update local state
     sessionIsOpen    = true;
     currentSessionId = sessionId;
     currentOpenTime  = openTime;
@@ -1350,9 +1370,7 @@ async function startSession() {
           .replace("{open}",  openTime)
           .replace("{close}", closeTime);
 
-    // Start real-time listener
     startRealtimeListener(sessionId);
-
     alert(t("sessionStarted"));
 
   } catch (error) {
@@ -1377,9 +1395,9 @@ async function endSession() {
       {
         isOpen:    false,
         sessionId: currentSessionId || "",
-        date:      new Date()
+        date: new Date()
           .toLocaleDateString("en-CA"),
-        endedAt:   new Date().toISOString()
+        endedAt: new Date().toISOString()
       }
     );
 
@@ -1387,14 +1405,12 @@ async function endSession() {
     currentOpenTime  = null;
     currentCloseTime = null;
 
-    // Stop real-time listener
     if (unsubscribeListener) {
       unsubscribeListener();
       unsubscribeListener = null;
     }
 
     updateSessionBadge(false);
-
     document.getElementById("qrPanel")
       .style.display = "none";
     document.getElementById("sessionInfoText")
@@ -1411,7 +1427,7 @@ async function endSession() {
 }
 
 // ============================================
-// LOAD SESSION STATUS ON PAGE LOAD
+// LOAD SESSION STATUS
 // ============================================
 async function loadSessionStatus() {
   try {
@@ -1448,7 +1464,6 @@ async function loadSessionStatus() {
             .replace("{open}",  data.openTime)
             .replace("{close}", data.closeTime);
 
-      // Start real-time listener
       startRealtimeListener(data.sessionId);
 
     } else {
@@ -1465,11 +1480,8 @@ async function loadSessionStatus() {
 
 // ============================================
 // REAL-TIME LISTENER
-// Watches Firebase and updates table
-// automatically when a student checks in
 // ============================================
 function startRealtimeListener(sessionId) {
-  // Cancel existing listener first
   if (unsubscribeListener) {
     unsubscribeListener();
   }
@@ -1481,12 +1493,10 @@ function startRealtimeListener(sessionId) {
     "records"
   );
 
-  // Fires immediately and on every change
   unsubscribeListener = onSnapshot(
     recordsRef,
     function (snapshot) {
       allRecords = [];
-
       snapshot.forEach(function (d) {
         const data = d.data();
         allRecords.push({
@@ -1514,7 +1524,6 @@ function startRealtimeListener(sessionId) {
         });
       });
 
-      // Sort: present first, then not checked in
       allRecords.sort(function (a, b) {
         if (
           a.status === "present" &&
@@ -1545,7 +1554,7 @@ function startRealtimeListener(sessionId) {
 }
 
 // ============================================
-// DISPLAY RECORDS IN TABLE
+// DISPLAY RECORDS
 // ============================================
 function displayRecords(records) {
   const tbody =
@@ -1586,7 +1595,6 @@ function displayRecords(records) {
       const isPresent =
         record.status === "present";
 
-      // Status badge
       const statusBadge = isPresent
         ? `<span class="badge-present">
              ${escapeHTML(t("present"))}
@@ -1598,19 +1606,21 @@ function displayRecords(records) {
                         font-size:12px;
                         font-weight:600;
                         display:inline-block;">
-             ${escapeHTML(t("notCheckedInYet"))}
+             ${escapeHTML(
+               t("notCheckedInYet")
+             )}
            </span>`;
 
-      // Date display
       const dateDisplay = isPresent
         ? escapeHTML(record.checkInDate)
         : `<span style="color:#94a3b8;
                         font-style:italic;
                         font-size:12px;">
-             ${escapeHTML(t("notCheckedInYet"))}
+             ${escapeHTML(
+               t("notCheckedInYet")
+             )}
            </span>`;
 
-      // Time display
       const timeDisplay = isPresent
         ? `<span style="color:#64748b;">
              ${escapeHTML(record.checkInTime)}
@@ -1618,12 +1628,16 @@ function displayRecords(records) {
         : `<span style="color:#94a3b8;
                         font-style:italic;
                         font-size:12px;">
-             ${escapeHTML(t("notCheckedInYet"))}
+             ${escapeHTML(
+               t("notCheckedInYet")
+             )}
            </span>`;
 
       return `
         <tr style="${
-          isPresent ? "" : "background:#fffbeb;"
+          isPresent
+            ? ""
+            : "background:#fffbeb;"
         }">
           <td style="color:#94a3b8;">
             ${index + 1}
@@ -1659,7 +1673,6 @@ function displayRecords(records) {
       `;
     }).join("");
 
-  // Attach profile button click events
   document.querySelectorAll(".profile-btn")
     .forEach(function (btn) {
       btn.addEventListener("click",
@@ -1678,7 +1691,7 @@ function displayRecords(records) {
 }
 
 // ============================================
-// UPDATE STATS CARDS
+// UPDATE STATS
 // ============================================
 function updateStats() {
   const total = allRecords.length;
@@ -1698,7 +1711,7 @@ function updateStats() {
 }
 
 // ============================================
-// SEARCH RECORDS
+// SEARCH
 // ============================================
 function searchRecords() {
   const term =
@@ -1875,6 +1888,22 @@ function exportToCSV() {
 }
 
 // ============================================
+// ✅ LOGOUT
+// ============================================
+async function handleLogout() {
+  if (!confirm(t("logoutConfirm"))) return;
+
+  try {
+    await signOut(auth);
+    // Redirect to login page
+    window.location.href = getLoginPageUrl();
+  } catch (error) {
+    console.error("Logout error:", error);
+    alert(error.message);
+  }
+}
+
+// ============================================
 // BUTTON EVENTS
 // ============================================
 document.getElementById("addStudentBtn")
@@ -1906,18 +1935,14 @@ document.getElementById("teacherLangBtn")
     );
   });
 
-// Press Enter in name field to add student
+// ✅ Logout button
+document.getElementById("logoutBtn")
+  .addEventListener("click", handleLogout);
+
 document.getElementById("newStudentName")
   .addEventListener("keydown", function (e) {
     if (e.key === "Enter") addStudent();
   });
-
-// ============================================
-// START THE APP
-// ============================================
-applyTeacherLang(tLang);
-await loadStudents();
-await loadSessionStatus();
 
 </script>
 
