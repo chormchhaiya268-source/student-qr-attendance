@@ -3,7 +3,7 @@
 ========================================= */
 
 *, *::before, *::after {
-  margin: 0; 
+  margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
@@ -103,8 +103,7 @@ body.khmer {
 
 /* =========================================
    STUDENT PAGE HEADER
-   Logo on left, title in center,
-   language button on top-right
+   Logo on left, title beside it
 ========================================= */
 
 .header {
@@ -112,7 +111,7 @@ body.khmer {
   padding: 10px 8px 22px;
 }
 
-/* ✅ NEW: Logo + title row inside header */
+/* Logo + title row */
 .header-top {
   display: flex;
   align-items: center;
@@ -122,20 +121,19 @@ body.khmer {
   flex-wrap: wrap;
 }
 
-/* ✅ NEW: School logo on student page */
+/* School logo on student page */
 .school-logo {
   width: 65px;
   height: 65px;
   object-fit: contain;
   border-radius: 12px;
   flex-shrink: 0;
-  /* Soft shadow to make logo pop */
   filter: drop-shadow(
     0 4px 10px rgba(15, 23, 42, 0.15)
   );
 }
 
-/* ✅ NEW: Title text beside the logo */
+/* Title text beside the logo */
 .header-title-group {
   text-align: left;
 }
@@ -155,15 +153,12 @@ body.khmer {
   line-height: 1.6;
 }
 
-/* Keep old .header-icon for backward compat
-   but hide it since we now use the logo */
+/* Hide old header icon emoji */
 .header-icon {
   display: none;
 }
 
-/* Old h1 and p directly in .header
-   (used as fallback, now inside
-   .header-title-group instead) */
+/* Hide old h1 and p directly in header */
 .header > h1,
 .header > p {
   display: none;
@@ -365,7 +360,8 @@ body.khmer {
 .form-group input:focus {
   border-color: var(--primary);
   background: var(--white);
-  box-shadow: 0 0 0 4px rgba(29,78,216,0.10);
+  box-shadow: 0 0 0 4px
+    rgba(29,78,216,0.10);
 }
 
 .form-group input.error {
@@ -466,13 +462,15 @@ input:checked + .checkbox-custom::after {
   font-size: 16px;
   font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 8px 20px rgba(29,78,216,0.25);
+  box-shadow: 0 8px 20px
+    rgba(29,78,216,0.25);
   transition: all 0.2s;
 }
 
 .submit-btn:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 12px 26px rgba(29,78,216,0.32);
+  box-shadow: 0 12px 26px
+    rgba(29,78,216,0.32);
 }
 
 .submit-btn:active:not(:disabled) {
@@ -610,7 +608,9 @@ input:checked + .checkbox-custom::after {
   backdrop-filter: blur(4px);
 }
 
-.loading-overlay.active { display: flex; }
+.loading-overlay.active {
+  display: flex;
+}
 
 .loading-spinner {
   width: 50px;
@@ -691,29 +691,25 @@ input:checked + .checkbox-custom::after {
   box-shadow: 0 4px 20px rgba(0,0,0,0.20);
 }
 
-/* ✅ NEW: Left side of teacher header
-   holds logo + title text together */
+/* Left side holds logo + title */
 .teacher-header-left {
   display: flex;
   align-items: center;
   gap: 14px;
 }
 
-/* ✅ NEW: School logo in teacher header */
+/* School logo in teacher header */
 .teacher-logo {
   width: 56px;
   height: 56px;
   object-fit: contain;
   border-radius: 10px;
   flex-shrink: 0;
-  /* White glow so logo stands out on dark
-     background */
   filter: drop-shadow(
-    0 2px 8px rgba(255, 255, 255, 0.20)
+    0 2px 8px rgba(255,255,255,0.20)
   );
 }
 
-/* Title text group beside the teacher logo */
 .teacher-header-left h1 {
   font-size: 20px;
   font-weight: 700;
@@ -740,7 +736,8 @@ input:checked + .checkbox-custom::after {
 
 .teacher-lang-btn {
   padding: 8px 16px;
-  border: 1.5px solid rgba(255,255,255,0.35);
+  border: 1.5px solid
+    rgba(255,255,255,0.35);
   border-radius: 999px;
   background: transparent;
   color: var(--white);
@@ -780,11 +777,30 @@ input:checked + .checkbox-custom::after {
   box-shadow: var(--shadow-sm);
 }
 
-.btn-white  { background: var(--white);   color: var(--primary-dark); }
-.btn-green  { background: #16a34a;        color: var(--white); }
-.btn-red    { background: var(--danger);  color: var(--white); }
-.btn-blue   { background: var(--primary); color: var(--white); }
-.btn-orange { background: #ea580c;        color: var(--white); }
+.btn-white {
+  background: var(--white);
+  color: var(--primary-dark);
+}
+
+.btn-green {
+  background: #16a34a;
+  color: var(--white);
+}
+
+.btn-red {
+  background: var(--danger);
+  color: var(--white);
+}
+
+.btn-blue {
+  background: var(--primary);
+  color: var(--white);
+}
+
+.btn-orange {
+  background: #ea580c;
+  color: var(--white);
+}
 
 /* =========================================
    SESSION CONTROL PANEL
@@ -843,7 +859,8 @@ input:checked + .checkbox-custom::after {
 
 .session-field input[type="time"]:focus {
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(29,78,216,0.10);
+  box-shadow: 0 0 0 3px
+    rgba(29,78,216,0.10);
 }
 
 .session-status-badge {
@@ -954,7 +971,8 @@ input:checked + .checkbox-custom::after {
 
 .class-list-input:focus {
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(29,78,216,0.10);
+  box-shadow: 0 0 0 3px
+    rgba(29,78,216,0.10);
 }
 
 .absent-list { margin-top: 14px; }
@@ -1059,7 +1077,8 @@ input:checked + .checkbox-custom::after {
 
 .search-input:focus {
   border-color: var(--primary);
-  box-shadow: 0 0 0 4px rgba(29,78,216,0.10);
+  box-shadow: 0 0 0 4px
+    rgba(29,78,216,0.10);
   background: var(--white);
 }
 
@@ -1136,8 +1155,8 @@ tbody tr:last-child td {
 
 .teacher-name {
   display: block;
-  font-family: "Battambang", "Kantumruy Pro",
-    Arial, sans-serif;
+  font-family: "Battambang",
+    "Kantumruy Pro", Arial, sans-serif;
   font-size: 15px;
   line-height: 1.8;
   color: var(--text);
@@ -1220,7 +1239,8 @@ tbody tr:last-child td {
     135deg, var(--primary), #7c3aed
   );
   border-radius:
-    var(--radius-lg) var(--radius-lg) 0 0;
+    var(--radius-lg)
+    var(--radius-lg) 0 0;
   color: var(--white);
   text-align: center;
 }
@@ -1239,8 +1259,8 @@ tbody tr:last-child td {
 .profile-header h2 {
   font-size: 20px;
   font-weight: 700;
-  font-family: "Battambang", "Kantumruy Pro",
-    Arial, sans-serif;
+  font-family: "Battambang",
+    "Kantumruy Pro", Arial, sans-serif;
   line-height: 1.5;
   word-break: break-word;
 }
@@ -1278,8 +1298,8 @@ tbody tr:last-child td {
   font-weight: 600;
   text-align: right;
   word-break: break-word;
-  font-family: "Battambang", "Kantumruy Pro",
-    Arial, sans-serif;
+  font-family: "Battambang",
+    "Kantumruy Pro", Arial, sans-serif;
 }
 
 .profile-footer {
@@ -1321,7 +1341,6 @@ tbody tr:last-child td {
     align-items: flex-start;
   }
 
-  /* Logo shrinks slightly on mobile */
   .teacher-logo {
     width: 46px;
     height: 46px;
@@ -1354,14 +1373,11 @@ tbody tr:last-child td {
     align-items: flex-start;
   }
 
-  /* Student page logo shrinks on mobile */
   .school-logo {
     width: 52px;
     height: 52px;
   }
 
-  /* Student header stacks on very small
-     screens */
   .header-top {
     flex-direction: row;
     justify-content: center;
@@ -1385,8 +1401,6 @@ tbody tr:last-child td {
     grid-template-columns: 1fr;
   }
 
-  /* Stack logo and title vertically on
-     very small phones */
   .header-top {
     flex-direction: column;
     align-items: center;
@@ -1395,5 +1409,359 @@ tbody tr:last-child td {
 
   .header-title-group {
     text-align: center;
+  }
+}
+
+/* =========================================
+   LOGIN PAGE
+========================================= */
+
+.login-body {
+  min-height: 100vh;
+  background: linear-gradient(
+    160deg,
+    #e0e7ff 0%,
+    #f1f5f9 50%,
+    #e0f2fe 100%
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  font-family: "Kantumruy Pro",
+    "Poppins", sans-serif;
+}
+
+.login-wrapper {
+  width: 100%;
+  max-width: 440px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.login-lang-area {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Login card */
+.login-card {
+  width: 100%;
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+/* Login header */
+.login-header {
+  padding: 32px 32px 24px;
+  background: linear-gradient(
+    135deg, #0f172a, #1e3a8a
+  );
+  text-align: center;
+  color: var(--white);
+}
+
+.login-logo {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  border-radius: 16px;
+  margin-bottom: 14px;
+  filter: drop-shadow(
+    0 4px 14px rgba(255,255,255,0.25)
+  );
+}
+
+.login-school-name {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--white);
+  line-height: 1.4;
+  margin-bottom: 2px;
+}
+
+.login-school-sub {
+  font-size: 13px;
+  color: rgba(255,255,255,0.70);
+  margin-bottom: 16px;
+  font-family: "Battambang",
+    "Kantumruy Pro", sans-serif;
+}
+
+.login-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--white);
+  margin: 0;
+  padding-top: 12px;
+  border-top: 1px solid
+    rgba(255,255,255,0.15);
+}
+
+/* Login form */
+.login-form {
+  padding: 28px 32px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.login-field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.login-field label {
+  font-size: 14px;
+  font-weight: 700;
+  color: #334155;
+}
+
+/* Input wrapper */
+.login-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.login-input-icon {
+  position: absolute;
+  left: 14px;
+  font-size: 16px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.login-input {
+  width: 100%;
+  min-height: 52px;
+  padding: 12px 48px 12px 44px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: #f8fafc;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 15px;
+  outline: none;
+  transition: all 0.2s;
+}
+
+.login-input::placeholder {
+  color: #94a3b8;
+  font-size: 14px;
+}
+
+.login-input:focus {
+  border-color: var(--primary);
+  background: var(--white);
+  box-shadow: 0 0 0 4px
+    rgba(29,78,216,0.10);
+}
+
+/* Show/hide password button */
+.toggle-password-btn {
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  padding: 4px;
+  line-height: 1;
+  color: var(--muted);
+  transition: opacity 0.2s;
+}
+
+.toggle-password-btn:hover {
+  opacity: 0.7;
+}
+
+/* Field error */
+.login-field-error {
+  display: block;
+  min-height: 16px;
+  font-size: 12px;
+  color: var(--danger);
+  font-weight: 600;
+}
+
+/* Error box */
+.login-error-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 16px;
+  border-radius: var(--radius-sm);
+  background: var(--danger-light);
+  border: 1.5px solid #fecaca;
+  color: #991b1b;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.login-error-box::before {
+  content: "❌";
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+/* Success box */
+.login-success-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 16px;
+  border-radius: var(--radius-sm);
+  background: var(--success-light);
+  border: 1.5px solid #bbf7d0;
+  color: #166534;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.login-success-box::before {
+  content: "✅";
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+/* Login button */
+.login-btn {
+  width: 100%;
+  min-height: 52px;
+  padding: 13px 18px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(
+    135deg, var(--primary), #4f46e5
+  );
+  color: var(--white);
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 8px 20px
+    rgba(29,78,216,0.28);
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.login-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px
+    rgba(29,78,216,0.36);
+}
+
+.login-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Spinner inside login button */
+.login-btn-spinner {
+  width: 20px;
+  height: 20px;
+  border: 3px solid
+    rgba(255,255,255,0.35);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  display: inline-block;
+}
+
+/* Forgot password */
+.forgot-password-area {
+  text-align: center;
+}
+
+.forgot-password-btn {
+  background: none;
+  border: none;
+  color: var(--primary);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+  transition: opacity 0.2s;
+  padding: 4px;
+}
+
+.forgot-password-btn:hover {
+  opacity: 0.75;
+}
+
+/* Login footer */
+.login-footer {
+  font-size: 12px;
+  color: var(--muted);
+  text-align: center;
+}
+
+/* Teacher email badge in header */
+.teacher-email-badge {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 14px;
+  background: rgba(255,255,255,0.12);
+  border: 1px solid
+    rgba(255,255,255,0.25);
+  border-radius: 999px;
+  color: var(--white);
+  font-size: 13px;
+  font-weight: 600;
+  max-width: 220px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* Shake for login error */
+.login-error-box.shake {
+  animation: shake 0.5s ease;
+}
+
+/* =========================================
+   LOGIN RESPONSIVE
+========================================= */
+
+@media (max-width: 480px) {
+  .login-body {
+    padding: 12px;
+    align-items: flex-start;
+    padding-top: 20px;
+  }
+
+  .login-header {
+    padding: 24px 20px 20px;
+  }
+
+  .login-logo {
+    width: 64px;
+    height: 64px;
+  }
+
+  .login-form {
+    padding: 22px 20px 26px;
+  }
+
+  .login-title {
+    font-size: 19px;
+  }
+
+  .teacher-email-badge {
+    max-width: 160px;
+    font-size: 11px;
   }
 }
