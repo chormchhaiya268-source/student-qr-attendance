@@ -103,7 +103,6 @@ body.khmer {
 
 /* =========================================
    STUDENT PAGE HEADER
-   Logo on left, title beside it
 ========================================= */
 
 .header {
@@ -111,7 +110,6 @@ body.khmer {
   padding: 10px 8px 22px;
 }
 
-/* Logo + title row */
 .header-top {
   display: flex;
   align-items: center;
@@ -121,7 +119,6 @@ body.khmer {
   flex-wrap: wrap;
 }
 
-/* School logo on student page */
 .school-logo {
   width: 65px;
   height: 65px;
@@ -133,7 +130,6 @@ body.khmer {
   );
 }
 
-/* Title text beside the logo */
 .header-title-group {
   text-align: left;
 }
@@ -153,12 +149,10 @@ body.khmer {
   line-height: 1.6;
 }
 
-/* Hide old header icon emoji */
 .header-icon {
   display: none;
 }
 
-/* Hide old h1 and p directly in header */
 .header > h1,
 .header > p {
   display: none;
@@ -675,8 +669,6 @@ input:checked + .checkbox-custom::after {
 
 /* =========================================
    TEACHER HEADER
-   Logo on left, title beside it,
-   buttons on right
 ========================================= */
 
 .teacher-header {
@@ -691,14 +683,12 @@ input:checked + .checkbox-custom::after {
   box-shadow: 0 4px 20px rgba(0,0,0,0.20);
 }
 
-/* Left side holds logo + title */
 .teacher-header-left {
   display: flex;
   align-items: center;
   gap: 14px;
 }
 
-/* School logo in teacher header */
 .teacher-logo {
   width: 56px;
   height: 56px;
@@ -1447,7 +1437,6 @@ tbody tr:last-child td {
   justify-content: flex-end;
 }
 
-/* Login card */
 .login-card {
   width: 100%;
   background: var(--white);
@@ -1457,7 +1446,6 @@ tbody tr:last-child td {
   border: 1px solid var(--border);
 }
 
-/* Login header */
 .login-header {
   padding: 32px 32px 24px;
   background: linear-gradient(
@@ -1504,7 +1492,6 @@ tbody tr:last-child td {
     rgba(255,255,255,0.15);
 }
 
-/* Login form */
 .login-form {
   padding: 28px 32px 32px;
   display: flex;
@@ -1524,7 +1511,6 @@ tbody tr:last-child td {
   color: #334155;
 }
 
-/* Input wrapper */
 .login-input-wrap {
   position: relative;
   display: flex;
@@ -1565,7 +1551,6 @@ tbody tr:last-child td {
     rgba(29,78,216,0.10);
 }
 
-/* Show/hide password button */
 .toggle-password-btn {
   position: absolute;
   right: 12px;
@@ -1583,7 +1568,6 @@ tbody tr:last-child td {
   opacity: 0.7;
 }
 
-/* Field error */
 .login-field-error {
   display: block;
   min-height: 16px;
@@ -1592,7 +1576,6 @@ tbody tr:last-child td {
   font-weight: 600;
 }
 
-/* Error box */
 .login-error-box {
   display: flex;
   align-items: center;
@@ -1612,7 +1595,6 @@ tbody tr:last-child td {
   flex-shrink: 0;
 }
 
-/* Success box */
 .login-success-box {
   display: flex;
   align-items: center;
@@ -1632,7 +1614,6 @@ tbody tr:last-child td {
   flex-shrink: 0;
 }
 
-/* Login button */
 .login-btn {
   width: 100%;
   min-height: 52px;
@@ -1667,7 +1648,6 @@ tbody tr:last-child td {
   cursor: not-allowed;
 }
 
-/* Spinner inside login button */
 .login-btn-spinner {
   width: 20px;
   height: 20px;
@@ -1679,7 +1659,6 @@ tbody tr:last-child td {
   display: inline-block;
 }
 
-/* Forgot password */
 .forgot-password-area {
   text-align: center;
 }
@@ -1701,14 +1680,12 @@ tbody tr:last-child td {
   opacity: 0.75;
 }
 
-/* Login footer */
 .login-footer {
   font-size: 12px;
   color: var(--muted);
   text-align: center;
 }
 
-/* Teacher email badge in header */
 .teacher-email-badge {
   display: flex;
   align-items: center;
@@ -1727,7 +1704,6 @@ tbody tr:last-child td {
   text-overflow: ellipsis;
 }
 
-/* Shake for login error */
 .login-error-box.shake {
   animation: shake 0.5s ease;
 }
@@ -1763,5 +1739,165 @@ tbody tr:last-child td {
   .teacher-email-badge {
     max-width: 160px;
     font-size: 11px;
+  }
+}
+
+/* =========================================
+   RATE LIMIT WARNING BOX
+========================================= */
+
+.rate-limit-box {
+  padding: 28px 20px;
+  border: 2px solid #fca5a5;
+  border-radius: var(--radius-lg);
+  background: var(--danger-light);
+  text-align: center;
+  box-shadow: var(--shadow-md);
+  margin-bottom: 14px;
+  animation: fadeUp 0.4s ease;
+}
+
+/* =========================================
+   ATTENDANCE STATUS PANEL
+========================================= */
+
+.attendance-status-panel {
+  padding: 22px;
+  border-radius: var(--radius-md);
+  background: var(--white);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 20px;
+  border-top: 4px solid #16a34a;
+}
+
+.status-panel-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 18px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.status-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(auto-fit, minmax(160px, 1fr));
+  gap: 14px;
+}
+
+.status-card {
+  padding: 16px;
+  border-radius: var(--radius-sm);
+  background: #f8fafc;
+  border: 1.5px solid var(--border);
+  text-align: center;
+  transition: all 0.2s;
+}
+
+.status-card:hover {
+  border-color: #93c5fd;
+  background: #eff6ff;
+}
+
+.status-card-icon {
+  font-size: 22px;
+  margin-bottom: 6px;
+}
+
+.status-card-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+}
+
+.status-card-value {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1.3;
+}
+
+.status-open {
+  border-color: #bbf7d0;
+  background: #f0fdf4;
+}
+
+.status-open .status-card-value {
+  color: #16a34a;
+}
+
+.status-present {
+  border-color: #bbf7d0;
+  background: #f0fdf4;
+}
+
+.status-present-num {
+  color: #16a34a;
+  font-size: 28px;
+}
+
+.status-absent {
+  border-color: #fecaca;
+  background: #fef2f2;
+}
+
+.status-absent-num {
+  color: #dc2626;
+  font-size: 28px;
+}
+
+.status-qr {
+  border-color: #bfdbfe;
+  background: #eff6ff;
+}
+
+.status-qr-active {
+  color: #16a34a;
+  font-size: 15px;
+}
+
+.status-qr-inactive {
+  color: #dc2626;
+  font-size: 15px;
+}
+
+.elapsed-timer {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--primary);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 1px;
+}
+
+.session-id-value {
+  font-size: 11px;
+  font-family: monospace;
+  color: #7c3aed;
+  word-break: break-all;
+  font-weight: 700;
+}
+
+/* =========================================
+   RESPONSIVE — STATUS PANEL
+========================================= */
+
+@media (max-width: 700px) {
+  .status-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 420px) {
+  .status-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .status-card-value {
+    font-size: 16px;
   }
 }
