@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+    content="width=device-width,
+             initial-scale=1.0">
+  <title>Teacher Login - Tepranom</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect"
+    href="https://fonts.googleapis.com">
+  <link rel="preconnect"
+    href="https://fonts.gstatic.com"
+    crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Battambang:wght@400;700&family=Kantumruy+Pro:ital,wght@0,100..700;1,100..700&display=swap"
+    rel="stylesheet">
+</head>
+
+<body class="login-body">
+
+<div class="login-wrapper">
+
+  <!-- ========================================
+       LANGUAGE BUTTON
+       ======================================== -->
+  <div class="login-lang-area">
+    <button id="loginLangBtn"
+      class="language-button">
+      ខ្មែរ
+    </button>
+  </div>
+
+  <!-- ========================================
+       LOGIN CARD
+       ======================================== -->
+  <div class="login-card">
+
+    <!-- School logo and name -->
+    <div class="login-header">
+      <img
+        src="school-logo.png"
+        alt="School Logo"
+        class="login-logo">
+      <h2 class="login-school-name"
+        data-l="schoolName">
+        Tepranom High School
+      </h2>
+      <p class="login-school-sub"
+        data-l="schoolSub">
+        វិទ្យាល័យទេពប្រណម្យ
+      </p>
+      <h1 class="login-title"
+        data-l="loginTitle">
+        Teacher Login
+      </h1>
+    </div>
+
+    <!-- Login form -->
+    <form id="loginForm"
+      class="login-form"
+      novalidate>
+
+      <!-- Email field -->
+      <div class="login-field">
+        <label for="loginEmail"
+          data-l="emailLabel">
+          Email
+        </label>
+        <div class="login-input-wrap">
+          <span class="login-input-icon">
+            ✉️
+          </span>
+          <input
+            type="email"
+            id="loginEmail"
+            class="login-input"
+            data-l-placeholder="emailPlaceholder"
+            placeholder="Enter your email"
+            autocomplete="email"
+            required>
+        </div>
+        <span class="login-field-error"
+          id="emailError"></span>
+      </div>
+
+      <!-- Password field -->
+      <div class="login-field">
+        <label for="loginPassword"
+          data-l="passwordLabel">
+          Password
+        </label>
+        <div class="login-input-wrap">
+          <span class="login-input-icon">
+            🔒
+          </span>
+          <input
+            type="password"
+            id="loginPassword"
+            class="login-input"
+            data-l-placeholder=
+              "passwordPlaceholder"
+            placeholder="Enter your password"
+            autocomplete="current-password"
+            required>
+          <!-- Show/hide password toggle -->
+          <button
+            type="button"
+            id="togglePassword"
+            class="toggle-password-btn"
+            aria-label="Show password">
+            👁
+          </button>
+        </div>
+        <span class="login-field-error"
+          id="passwordError"></span>
+      </div>
+
+      <!-- General error message -->
+      <div class="login-error-box"
+        id="loginErrorBox"
+        style="display:none;">
+        <span id="loginErrorMsg"></span>
+      </div>
+
+      <!-- Success message -->
+      <div class="login-success-box"
+        id="loginSuccessBox"
+        style="display:none;">
+        <span id="loginSuccessMsg"></span>
+      </div>
+
+      <!-- Login button -->
+      <button
+        type="submit"
+        class="login-btn"
+        id="loginBtn">
+        <span id="loginBtnText"
+          data-l="loginBtn">
+          Login
+        </span>
+        <!-- Loading spinner inside button -->
+        <span id="loginSpinner"
+          class="login-btn-spinner"
+          style="display:none;">
+        </span>
+      </button>
+
+      <!-- Forgot password link -->
+      <div class="forgot-password-area">
+        <button
+          type="button"
+          id="forgotPasswordBtn"
+          class="forgot-password-btn"
+          data-l="forgotPassword">
+          Forgot Password?
+        </button>
+      </div>
+
+    </form>
+
+  </div>
+
+  <!-- Footer -->
+  <p class="login-footer"
+    data-l="loginFooter">
+    🔒 Authorized teachers only
+  </p>
+
+</div>
+
+<script type="module" src="login.js">
+</script>
+</body>
+</html>
