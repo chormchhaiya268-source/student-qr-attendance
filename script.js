@@ -1,8 +1,9 @@
 // ================================================
 // script.js
 // Student Attendance Page — Full Logic
-// Fixed: Race condition, case sensitivity,
-// spaces, auto-fill, loading state
+// Fixed: Use document ID for student lookup
+// Fixed: Race condition
+// Fixed: Case sensitivity and spaces
 // ================================================
 
 import {
@@ -40,7 +41,7 @@ const app = initializeApp(firebaseConfig);
 const db  = getFirestore(app);
 
 // ================================================
-// SCHOOL LOCATION CONSTANTS
+// SCHOOL LOCATION
 // ================================================
 const SCHOOL_LATITUDE         = 11.822624138074948;
 const SCHOOL_LONGITUDE        = 104.7536601355822;
@@ -56,10 +57,12 @@ let sessionData      = null;
 let studentLocation  = null;
 let locationVerified = false;
 
-// ✅ FIX: Track whether Firebase has
-// finished loading the student list
-let studentsLoaded   = false;
-let allStudents      = [];
+// ✅ FIX: Student list loaded from Firebase
+// Key = normalized document ID (uppercase)
+// Value = student data object
+// Using a Map for fast exact lookup
+let studentsMap    = new Map();
+let studentsLoaded = false;
 
 // ================================================
 // TRANSLATIONS
@@ -69,7 +72,6 @@ const i18n = {
     title:    "QR Attendance System",
     subtitle: "Tepranom High School",
 
-    // Session
     sessionActive:
       "Session is open. You can check in.",
     sessionClosed:
@@ -83,7 +85,6 @@ const i18n = {
     sessionExpired:
       "This session is no longer active.",
 
-    // Location
     requestingLocation:
       "Requesting your location...",
     locationReason:
@@ -108,35 +109,32 @@ const i18n = {
       "Distance from school",
     meters: "meters",
 
-    // ✅ NEW: Student data loading
     loadingStudents:
       "Loading student data...",
     studentsReady:
-      "Student data loaded. You can now enter your Student ID.",
+      "Ready. Please enter your Student ID.",
 
-    // Form labels
     studentIdLabel:
       "Student ID",
     studentIdPlaceholder:
-      "Enter your Student ID (e.g. STU001)",
+      "Enter your Student ID (e.g. IT15)",
     fullNameLabel:
       "Full Name",
     fullNamePlaceholder:
-      "Enter your full name",
+      "Your full name",
     ageLabel:
       "Age",
     agePlaceholder:
-      "Enter your age",
+      "Your age",
     gradeLabel:
       "Grade / Class",
     gradePlaceholder:
-      "Enter your grade or class",
+      "Your grade or class",
     formTitle:
       "📋 Mark Your Attendance",
     submitButton:
       "✅ Submit Attendance",
 
-    // Validation errors
     errStudentId:
       "Please enter your Student ID.",
     errStudentIdNotFound:
@@ -156,40 +154,32 @@ const i18n = {
     errAlreadyCheckedIn:
       "You have already checked in for this session.",
 
-    // Auto-fill message
     autoFillMsg:
       "✅ Student found. Details filled automatically.",
 
-    // Success
     successTitle:
       "Attendance Marked!",
     successMessage:
       "Your attendance has been recorded successfully.",
 
-    // Loading
     savingText:
       "Saving your attendance...",
 
-    // Footer
     footerSecurity:
       "🔒 Your location is only used to verify attendance.",
     footerSchool:
       "Tepranom High School Attendance System",
 
-    // Status
     notCheckedInYet: "Not Checked In Yet",
     present:         "Present",
-
-    // Table columns used in success details
-    colDate: "Date",
-    colTime: "Time"
+    colDate:         "Date",
+    colTime:         "Time"
   },
 
   km: {
     title:    "ប្រព័ន្ធចុះវត្តមាន QR",
     subtitle: "វិទ្យាល័យទេពប្រណម្យ",
 
-    // Session
     sessionActive:
       "វគ្គកំពុងបើក។ អ្នកអាចចុះវត្តមានបាន។",
     sessionClosed:
@@ -203,7 +193,6 @@ const i18n = {
     sessionExpired:
       "វគ្គនេះលែងសកម្មទៀតហើយ។",
 
-    // Location
     requestingLocation:
       "កំពុងស្នើទីតាំងរបស់អ្នក...",
     locationReason:
@@ -228,35 +217,32 @@ const i18n = {
       "ចម្ងាយពីសាលា",
     meters: "ម៉ែត្រ",
 
-    // ✅ NEW: Student data loading
     loadingStudents:
       "កំពុងផ្ទុកទិន្នន័យសិស្ស...",
     studentsReady:
-      "ទិន្នន័យសិស្សបានផ្ទុករួច។ អ្នកអាចបញ្ចូលលេខសម្គាល់សិស្សបាន។",
+      "រួចរាល់។ សូមបញ្ចូលលេខសម្គាល់សិស្ស។",
 
-    // Form labels
     studentIdLabel:
       "លេខសម្គាល់សិស្ស",
     studentIdPlaceholder:
-      "បញ្ចូលលេខសម្គាល់សិស្ស (ឧ. STU001)",
+      "បញ្ចូលលេខសម្គាល់សិស្ស (ឧ. IT15)",
     fullNameLabel:
       "ឈ្មោះពេញ",
     fullNamePlaceholder:
-      "បញ្ចូលឈ្មោះពេញ",
+      "ឈ្មោះពេញរបស់អ្នក",
     ageLabel:
       "អាយុ",
     agePlaceholder:
-      "បញ្ចូលអាយុ",
+      "អាយុរបស់អ្នក",
     gradeLabel:
       "ថ្នាក់រៀន",
     gradePlaceholder:
-      "បញ្ចូលថ្នាក់រៀន",
+      "ថ្នាក់រៀនរបស់អ្នក",
     formTitle:
       "📋 ចុះវត្តមានរបស់អ្នក",
     submitButton:
       "✅ ដាក់ស្នើវត្តមាន",
 
-    // Validation
     errStudentId:
       "សូមបញ្ចូលលេខសម្គាល់សិស្ស។",
     errStudentIdNotFound:
@@ -276,33 +262,26 @@ const i18n = {
     errAlreadyCheckedIn:
       "អ្នកបានចុះវត្តមានហើយសម្រាប់វគ្គនេះ។",
 
-    // Auto-fill message
     autoFillMsg:
       "✅ រកឃើញសិស្ស។ ព័ត៌មានត្រូវបានបំពេញដោយស្វ័យប្រវត្តិ។",
 
-    // Success
     successTitle:
       "វត្តមានត្រូវបានកត់ត្រា!",
     successMessage:
       "វត្តមានរបស់អ្នកត្រូវបានរក្សាទុកដោយជោគជ័យ។",
 
-    // Loading
     savingText:
       "កំពុងរក្សាទុកវត្តមាន...",
 
-    // Footer
     footerSecurity:
       "🔒 ទីតាំងរបស់អ្នកត្រូវបានប្រើតែសម្រាប់ផ្ទៀងផ្ទាត់វត្តមានប៉ុណ្ណោះ។",
     footerSchool:
       "ប្រព័ន្ធវត្តមានវិទ្យាល័យទេពប្រណម្យ",
 
-    // Status
     notCheckedInYet: "មិនទាន់ចុះវត្តមាន",
     present:         "មានវត្តមាន",
-
-    // Table columns
-    colDate: "កាលបរិច្ឆេទ",
-    colTime: "ម៉ោង"
+    colDate:         "កាលបរិច្ឆេទ",
+    colTime:         "ម៉ោង"
   }
 };
 
@@ -326,7 +305,6 @@ function applyLanguage(lang) {
     "khmer", lang === "km"
   );
 
-  // Translate data-i18n elements
   document.querySelectorAll("[data-i18n]")
     .forEach(function (el) {
       const key = el.getAttribute("data-i18n");
@@ -334,7 +312,6 @@ function applyLanguage(lang) {
       if (val !== key) el.textContent = val;
     });
 
-  // Translate placeholders
   document.querySelectorAll(
     "[data-i18n-placeholder]"
   ).forEach(function (el) {
@@ -344,7 +321,6 @@ function applyLanguage(lang) {
     if (val !== key) el.placeholder = val;
   });
 
-  // Language button
   const langBtn =
     document.getElementById("languageButton");
   if (langBtn) {
@@ -352,55 +328,35 @@ function applyLanguage(lang) {
       lang === "en" ? "ខ្មែរ" : "English";
   }
 
-  // Retry button
   const retryBtn =
     document.getElementById("retryLocationBtn");
   if (retryBtn) {
     retryBtn.textContent = i("retryLocation");
   }
 
-  // Refresh distance display if we have
-  // a location already
   if (studentLocation) {
     showDistanceResult(studentLocation);
   }
 
-  // Update student ID field placeholder
-  // based on loading state
   updateStudentIdFieldState();
 }
 
 // ================================================
-// ✅ FIX: STUDENT ID FIELD STATE MANAGER
-// Controls whether the field is enabled
-// and what placeholder text shows
+// STUDENT ID FIELD STATE
 // ================================================
 function updateStudentIdFieldState() {
   const studentIdInput =
     document.getElementById("studentId");
-  const studentIdError =
-    document.getElementById("studentIdError");
-
   if (!studentIdInput) return;
 
   if (!studentsLoaded) {
-    // Firebase still loading
-    // Disable the field and show loading text
     studentIdInput.disabled    = true;
     studentIdInput.placeholder =
       i("loadingStudents");
     studentIdInput.style.background = "#f1f5f9";
     studentIdInput.style.cursor     = "wait";
     studentIdInput.style.color      = "#94a3b8";
-
-    console.log(
-      "⏳ Student ID field disabled" +
-      " — waiting for Firebase"
-    );
-
   } else {
-    // Firebase finished loading
-    // Enable the field
     studentIdInput.disabled    = false;
     studentIdInput.placeholder =
       i("studentIdPlaceholder");
@@ -409,76 +365,98 @@ function updateStudentIdFieldState() {
     studentIdInput.style.color      = "";
 
     console.log(
-      "✅ Student ID field enabled" +
-      " — " + allStudents.length +
-      " students loaded"
+      "✅ " + studentsMap.size +
+      " students loaded. IDs available:",
+      Array.from(studentsMap.keys())
     );
   }
 }
 
 // ================================================
-// ✅ FIX: LOAD ALL STUDENTS FROM FIREBASE
-// Must complete before student ID validation
+// ✅ KEY FIX: LOAD STUDENTS USING DOCUMENT ID
+//
+// The bug was that studentId FIELD value
+// had typos like "ITO2" instead of "IT02"
+//
+// The DOCUMENT ID is always correct because
+// it was set by the teacher when adding students
+//
+// So we use document.id as the key
+// and also fix the studentId field to match
 // ================================================
 async function loadAllStudents() {
   console.log(
-    "📥 Loading student list from Firebase..."
+    "📥 Loading students from Firebase..."
   );
 
-  // Show loading state on student ID field
   studentsLoaded = false;
+  studentsMap    = new Map();
   updateStudentIdFieldState();
 
   try {
     const snap =
       await getDocs(collection(db, "students"));
 
-    allStudents = [];
-
     snap.forEach(function (d) {
       const data = d.data();
-      allStudents.push({
-        // ✅ FIX: Store normalized ID
-        // so comparison is always consistent
-        studentId: String(
-          data.studentId || d.id
-        ).trim().toUpperCase(),
+
+      // ✅ ALWAYS use document ID as the key
+      // Document ID is what teacher typed
+      // when adding the student
+      // It is more reliable than the field
+      const docId =
+        String(d.id).trim().toUpperCase();
+
+      // ✅ Also normalize the studentId field
+      // in case it has typos like ITO2 vs IT02
+      const fieldId = String(
+        data.studentId || d.id
+      ).trim().toUpperCase();
+
+      // Log any mismatch so you can fix them
+      if (docId !== fieldId) {
+        console.warn(
+          "⚠️ MISMATCH FOUND:",
+          "Document ID =", docId,
+          "| studentId field =", fieldId,
+          "| Using document ID:", docId
+        );
+      }
+
+      // Store using document ID as the key
+      // This is the reliable identifier
+      studentsMap.set(docId, {
+        // Use document ID as the real ID
+        studentId: docId,
         fullName:  data.fullName  || "",
         age:       data.age       ?? "",
-        grade:     data.grade     || ""
+        grade:     data.grade     || "",
+        // Keep original field for reference
+        originalFieldId: fieldId
       });
     });
 
     studentsLoaded = true;
 
     console.log(
-      "✅ Students loaded successfully:",
-      allStudents.length,
-      "students"
+      "✅ Students loaded:",
+      studentsMap.size
     );
     console.log(
-      "📋 Student IDs in database:",
-      allStudents.map(function (s) {
-        return s.studentId;
-      })
+      "📋 Available student IDs:",
+      Array.from(studentsMap.keys())
     );
 
-    // Enable the student ID field
     updateStudentIdFieldState();
 
-    // ✅ FIX: If student already typed their
-    // ID while Firebase was loading,
-    // validate it now that data is ready
+    // If student already typed their ID
+    // while loading, validate it now
     const studentIdInput =
       document.getElementById("studentId");
     if (
       studentIdInput &&
       studentIdInput.value.trim() !== ""
     ) {
-      console.log(
-        "🔄 Student typed ID before load" +
-        " completed. Validating now..."
-      );
       validateStudentId();
     }
 
@@ -492,60 +470,37 @@ async function loadAllStudents() {
 }
 
 // ================================================
-// ✅ FIX: NORMALIZE STUDENT ID
-// Removes spaces and converts to uppercase
-// So IT15, it15, It15, " IT15 " all match
+// ✅ NORMALIZE STUDENT ID
+// Removes all spaces and converts to uppercase
 // ================================================
-function normalizeStudentId(rawId) {
+function normalizeId(rawId) {
   return String(rawId || "")
     .trim()
     .toUpperCase();
 }
 
 // ================================================
-// ✅ FIX: FIND STUDENT BY ID
-// Uses normalized comparison
+// ✅ FIND STUDENT
+// Searches by normalized document ID
 // ================================================
-function findStudentById(rawId) {
-  const normalizedInput =
-    normalizeStudentId(rawId);
-
+function findStudent(rawId) {
+  const normalized = normalizeId(rawId);
   console.log(
-    "🔍 Searching for student ID:",
-    normalizedInput
+    "🔍 Looking for:", normalized,
+    "| studentsMap has:",
+    Array.from(studentsMap.keys())
   );
-  console.log(
-    "📋 Available students:",
-    allStudents.map(function (s) {
-      return s.studentId;
-    })
-  );
-
-  const found = allStudents.find(
-    function (student) {
-      // Both sides are already normalized
-      // in loadAllStudents so this is safe
-      return student.studentId ===
-        normalizedInput;
-    }
-  );
-
+  const found = studentsMap.get(normalized);
   if (found) {
-    console.log("✅ Student found:", found);
+    console.log("✅ Found:", found);
   } else {
-    console.log(
-      "❌ Student not found for ID:",
-      normalizedInput
-    );
+    console.log("❌ Not found:", normalized);
   }
-
   return found || null;
 }
 
 // ================================================
-// ✅ FIX: VALIDATE STUDENT ID
-// Only runs after Firebase has loaded
-// Auto-fills name, age, grade if found
+// VALIDATE STUDENT ID AND AUTO-FILL
 // ================================================
 function validateStudentId() {
   const studentIdInput =
@@ -559,12 +514,7 @@ function validateStudentId() {
 
   const rawId = studentIdInput.value;
 
-  // ✅ FIX: Do not validate while loading
   if (!studentsLoaded) {
-    console.log(
-      "⏳ Skipping validation" +
-      " — students not loaded yet"
-    );
     if (studentIdError) {
       studentIdError.textContent =
         i("errStudentIdLoading");
@@ -572,101 +522,78 @@ function validateStudentId() {
     return false;
   }
 
-  // Empty check
   if (!rawId.trim()) {
     if (studentIdError) {
-      studentIdError.textContent =
-        i("errStudentId");
+      studentIdError.textContent = "";
     }
     if (autoFillMsgEl) {
-      autoFillMsgEl.textContent = "";
       autoFillMsgEl.style.display = "none";
     }
     return false;
   }
 
-  // Find the student
-  const student = findStudentById(rawId);
+  const student = findStudent(rawId);
 
   if (!student) {
-    // Student not found
     if (studentIdError) {
       studentIdError.textContent =
         i("errStudentIdNotFound");
     }
     if (autoFillMsgEl) {
-      autoFillMsgEl.textContent = "";
       autoFillMsgEl.style.display = "none";
     }
 
     // Clear auto-filled fields
-    const fullNameInput =
+    const fn =
       document.getElementById("fullName");
-    const ageInput =
+    const ag =
       document.getElementById("age");
-    const gradeInput =
+    const gr =
       document.getElementById("grade");
-
-    if (fullNameInput) fullNameInput.value = "";
-    if (ageInput)      ageInput.value      = "";
-    if (gradeInput)    gradeInput.value    = "";
+    if (fn) fn.value = "";
+    if (ag) ag.value = "";
+    if (gr) gr.value = "";
 
     return false;
   }
 
-  // ✅ Student found — clear error
+  // Student found — clear error
   if (studentIdError) {
     studentIdError.textContent = "";
   }
 
-  // ✅ AUTO-FILL student details
-  const fullNameInput =
+  // Auto-fill details
+  const fn =
     document.getElementById("fullName");
-  const ageInput =
+  const ag =
     document.getElementById("age");
-  const gradeInput =
+  const gr =
     document.getElementById("grade");
+  if (fn) fn.value = student.fullName;
+  if (ag) ag.value = student.age;
+  if (gr) gr.value = student.grade;
 
-  if (fullNameInput) {
-    fullNameInput.value = student.fullName;
-  }
-  if (ageInput) {
-    ageInput.value = student.age;
-  }
-  if (gradeInput) {
-    gradeInput.value = student.grade;
-  }
-
-  // Show auto-fill success message
   if (autoFillMsgEl) {
     autoFillMsgEl.textContent =
       i("autoFillMsg");
     autoFillMsgEl.style.display = "block";
   }
 
-  console.log(
-    "✅ Auto-filled details for:",
-    student.fullName
-  );
-
   return true;
 }
 
 // ================================================
-// HAVERSINE FORMULA
-// Calculates real distance in meters
+// HAVERSINE DISTANCE
 // ================================================
 function haversineDistance(
   lat1, lon1, lat2, lon2
 ) {
   const R = 6371000;
-  const toRad = function (deg) {
-    return deg * (Math.PI / 180);
+  const toRad = function (d) {
+    return d * (Math.PI / 180);
   };
-
   const dLat = toRad(lat2 - lat1);
   const dLon = toRad(lon2 - lon1);
-
   const a =
     Math.sin(dLat / 2) *
     Math.sin(dLat / 2) +
@@ -674,18 +601,15 @@ function haversineDistance(
     Math.cos(toRad(lat2)) *
     Math.sin(dLon / 2) *
     Math.sin(dLon / 2);
-
-  const c = 2 * Math.atan2(
+  return R * 2 * Math.atan2(
     Math.sqrt(a), Math.sqrt(1 - a)
   );
-
-  return R * c;
 }
 
 // ================================================
 // SHOW DISTANCE RESULT
 // ================================================
-function showDistanceResult(locationResult) {
+function showDistanceResult(loc) {
   const distanceBox =
     document.getElementById("distanceBox");
   const distanceStatus =
@@ -699,52 +623,44 @@ function showDistanceResult(locationResult) {
   const submitBtn =
     document.getElementById("submitBtn");
 
-  const distance =
-    locationResult.distance;
-  const accuracy =
-    locationResult.accuracy;
   const isNear =
-    distance <= ALLOWED_DISTANCE_METERS;
+    loc.distance <= ALLOWED_DISTANCE_METERS;
 
   distanceBox.style.display = "flex";
 
   distanceDetail.textContent =
     i("distanceFromSchool") + ": " +
-    Math.round(distance) +
+    Math.round(loc.distance) +
     " " + i("meters") +
     " | " + i("gpsAccuracy") + ": ±" +
-    Math.round(accuracy) +
+    Math.round(loc.accuracy) +
     " " + i("meters");
 
   if (isNear) {
-    distanceIcon.textContent    = "✅";
-    distanceStatus.textContent  =
+    distanceIcon.textContent     = "✅";
+    distanceStatus.textContent   =
       i("locationVerified");
-    distanceStatus.style.color  = "#16a34a";
-    distanceBox.style.background =
-      "#f0fdf4";
-    distanceBox.style.borderColor =
-      "#86efac";
-    retryBtn.style.display  = "none";
-    submitBtn.disabled       = false;
-    locationVerified         = true;
+    distanceStatus.style.color   = "#16a34a";
+    distanceBox.style.background = "#f0fdf4";
+    distanceBox.style.borderColor = "#86efac";
+    retryBtn.style.display = "none";
+    submitBtn.disabled     = false;
+    locationVerified       = true;
   } else {
-    distanceIcon.textContent    = "❌";
-    distanceStatus.textContent  =
+    distanceIcon.textContent     = "❌";
+    distanceStatus.textContent   =
       i("locationTooFar");
-    distanceStatus.style.color  = "#dc2626";
-    distanceBox.style.background =
-      "#fef2f2";
-    distanceBox.style.borderColor =
-      "#fca5a5";
-    retryBtn.style.display  = "block";
-    submitBtn.disabled       = true;
-    locationVerified         = false;
+    distanceStatus.style.color   = "#dc2626";
+    distanceBox.style.background = "#fef2f2";
+    distanceBox.style.borderColor = "#fca5a5";
+    retryBtn.style.display = "block";
+    submitBtn.disabled     = true;
+    locationVerified       = false;
   }
 }
 
 // ================================================
-// REQUEST STUDENT LOCATION
+// REQUEST LOCATION
 // ================================================
 function requestLocation() {
   const locationStatus =
@@ -756,13 +672,11 @@ function requestLocation() {
   const submitBtn =
     document.getElementById("submitBtn");
 
-  // Reset state
-  locationVerified = false;
-  studentLocation  = null;
+  locationVerified          = false;
+  studentLocation           = null;
   submitBtn.disabled        = true;
   distanceBox.style.display = "none";
   retryBtn.style.display    = "none";
-
   locationStatus.textContent = i("locating");
 
   if (!navigator.geolocation) {
@@ -772,53 +686,41 @@ function requestLocation() {
   }
 
   navigator.geolocation.getCurrentPosition(
-    // SUCCESS
     function (position) {
-      const lat      =
-        position.coords.latitude;
-      const lon      =
-        position.coords.longitude;
-      const accuracy =
-        position.coords.accuracy;
+      const lat      = position.coords.latitude;
+      const lon      = position.coords.longitude;
+      const accuracy = position.coords.accuracy;
 
       console.log(
-        "✅ GPS location received:",
-        lat, lon,
-        "accuracy:", accuracy, "m"
+        "✅ GPS:", lat, lon,
+        "±" + accuracy + "m"
       );
 
-      // Poor accuracy warning
       if (accuracy > MAX_ACCEPTABLE_ACCURACY) {
         locationStatus.textContent =
           i("locationPoorAccuracy");
 
-        const distanceBox =
-          document.getElementById(
-            "distanceBox"
-          );
-        const distanceStatus =
+        const db2 =
+          document.getElementById("distanceBox");
+        const ds =
           document.getElementById(
             "distanceStatus"
           );
-        const distanceDetail =
+        const dd =
           document.getElementById(
             "distanceDetail"
           );
-        const distanceIcon =
-          document.getElementById(
-            "distanceIcon"
-          );
+        const di =
+          document.getElementById("distanceIcon");
 
-        distanceBox.style.display   = "flex";
-        distanceBox.style.background =
-          "#fffbeb";
-        distanceBox.style.borderColor =
-          "#fcd34d";
-        distanceIcon.textContent    = "⚠️";
-        distanceStatus.textContent  =
+        db2.style.display    = "flex";
+        db2.style.background = "#fffbeb";
+        db2.style.borderColor = "#fcd34d";
+        di.textContent       = "⚠️";
+        ds.textContent       =
           i("locationPoorAccuracy");
-        distanceStatus.style.color  = "#92400e";
-        distanceDetail.textContent  =
+        ds.style.color       = "#92400e";
+        dd.textContent       =
           i("gpsAccuracy") + ": ±" +
           Math.round(accuracy) +
           " " + i("meters");
@@ -826,16 +728,13 @@ function requestLocation() {
         return;
       }
 
-      // Calculate distance using Haversine
       const distance = haversineDistance(
         lat, lon,
-        SCHOOL_LATITUDE,
-        SCHOOL_LONGITUDE
+        SCHOOL_LATITUDE, SCHOOL_LONGITUDE
       );
 
       console.log(
-        "📏 Distance from school:",
-        Math.round(distance), "m"
+        "📏 Distance:", Math.round(distance), "m"
       );
 
       studentLocation = {
@@ -847,45 +746,32 @@ function requestLocation() {
 
       locationStatus.textContent =
         i("requestingLocation");
-
       showDistanceResult(studentLocation);
     },
 
-    // ERROR
     function (error) {
-      console.error("GPS error:", error);
+      console.error("GPS error:", error.code);
+      locationStatus.textContent =
+        error.code === error.PERMISSION_DENIED
+          ? i("locationDenied")
+          : i("locationError");
 
-      if (error.code ===
-          error.PERMISSION_DENIED) {
-        locationStatus.textContent =
-          i("locationDenied");
-      } else {
-        locationStatus.textContent =
-          i("locationError");
-      }
-
-      const distanceBox =
+      const db2 =
         document.getElementById("distanceBox");
-      const distanceIcon =
+      const di =
         document.getElementById("distanceIcon");
-      const distanceStatus =
+      const ds =
         document.getElementById("distanceStatus");
-      const retryBtn =
-        document.getElementById(
-          "retryLocationBtn"
-        );
 
-      distanceBox.style.display   = "flex";
-      distanceBox.style.background = "#fef2f2";
-      distanceBox.style.borderColor = "#fca5a5";
-      distanceIcon.textContent    = "❌";
-      distanceStatus.textContent  =
-        i("locationError");
-      distanceStatus.style.color  = "#dc2626";
+      db2.style.display    = "flex";
+      db2.style.background = "#fef2f2";
+      db2.style.borderColor = "#fca5a5";
+      di.textContent       = "❌";
+      ds.textContent       = i("locationError");
+      ds.style.color       = "#dc2626";
       retryBtn.style.display = "block";
     },
 
-    // GPS OPTIONS
     {
       enableHighAccuracy: true,
       timeout:            15000,
@@ -895,13 +781,11 @@ function requestLocation() {
 }
 
 // ================================================
-// LOAD SESSION FROM FIREBASE
+// LOAD SESSION
 // ================================================
 async function loadSession() {
   const urlParams =
-    new URLSearchParams(
-      window.location.search
-    );
+    new URLSearchParams(window.location.search);
   sessionId = urlParams.get("session");
 
   const banner =
@@ -913,9 +797,7 @@ async function loadSession() {
   const formCard =
     document.getElementById("formCard");
   const closedCard =
-    document.getElementById(
-      "sessionClosedCard"
-    );
+    document.getElementById("sessionClosedCard");
 
   if (!sessionId) {
     formCard.style.display   = "none";
@@ -956,18 +838,16 @@ async function loadSession() {
       return;
     }
 
-    // Session is valid
+    // Session valid
     banner.style.display    = "flex";
     bannerIcon.textContent  = "🟢";
     bannerText.textContent  = i("sessionActive");
     banner.style.background = "#f0fdf4";
     banner.style.color      = "#16a34a";
-    banner.style.border     =
-      "1px solid #86efac";
+    banner.style.border     = "1px solid #86efac";
 
-    // ✅ Load students first, then request
-    // location at the same time
-    // Both run in parallel for speed
+    // Load students AND request location
+    // at the same time for speed
     await Promise.all([
       loadAllStudents(),
       new Promise(function (resolve) {
@@ -977,16 +857,14 @@ async function loadSession() {
     ]);
 
   } catch (error) {
-    console.error(
-      "Load session error:", error
-    );
+    console.error("Load session error:", error);
     formCard.style.display   = "none";
     closedCard.style.display = "block";
   }
 }
 
 // ================================================
-// VALIDATE FORM
+// VALIDATE FULL FORM
 // ================================================
 function validateForm() {
   let valid = true;
@@ -998,13 +876,11 @@ function validateForm() {
     document.getElementById("fullName")
       .value.trim();
   const ageVal =
-    document.getElementById("age")
-      .value.trim();
+    document.getElementById("age").value.trim();
   const gradeVal =
     document.getElementById("grade")
       .value.trim();
 
-  // Clear old errors
   document.getElementById("studentIdError")
     .textContent = "";
   document.getElementById("nameError")
@@ -1014,38 +890,28 @@ function validateForm() {
   document.getElementById("gradeError")
     .textContent = "";
 
-  // ✅ FIX: Check loading state first
   if (!studentsLoaded) {
     document.getElementById("studentIdError")
       .textContent = i("errStudentIdLoading");
     return false;
   }
 
-  // Student ID
   if (!studentIdVal) {
     document.getElementById("studentIdError")
       .textContent = i("errStudentId");
     valid = false;
-  } else {
-    // Validate student exists
-    const student =
-      findStudentById(studentIdVal);
-    if (!student) {
-      document.getElementById("studentIdError")
-        .textContent =
-          i("errStudentIdNotFound");
-      valid = false;
-    }
+  } else if (!findStudent(studentIdVal)) {
+    document.getElementById("studentIdError")
+      .textContent = i("errStudentIdNotFound");
+    valid = false;
   }
 
-  // Full name
   if (!nameVal) {
     document.getElementById("nameError")
       .textContent = i("errName");
     valid = false;
   }
 
-  // Age
   if (
     !ageVal ||
     isNaN(ageVal) ||
@@ -1057,7 +923,6 @@ function validateForm() {
     valid = false;
   }
 
-  // Grade
   if (!gradeVal) {
     document.getElementById("gradeError")
       .textContent = i("errGrade");
@@ -1073,16 +938,13 @@ function validateForm() {
 async function submitAttendance(e) {
   e.preventDefault();
 
-  // Validate form
   if (!validateForm()) return;
 
-  // Check location
   if (!locationVerified || !studentLocation) {
     alert(i("errLocation"));
     return;
   }
 
-  // Security re-check distance
   const securityDistance = haversineDistance(
     studentLocation.latitude,
     studentLocation.longitude,
@@ -1090,9 +952,7 @@ async function submitAttendance(e) {
     SCHOOL_LONGITUDE
   );
 
-  if (
-    securityDistance > ALLOWED_DISTANCE_METERS
-  ) {
+  if (securityDistance > ALLOWED_DISTANCE_METERS) {
     alert(i("errTooFar"));
     locationVerified = false;
     document.getElementById("submitBtn")
@@ -1100,27 +960,28 @@ async function submitAttendance(e) {
     return;
   }
 
+  // ✅ Use normalized document ID
+  // not the studentId field value
   const studentIdVal =
-    normalizeStudentId(
-      document.getElementById("studentId")
-        .value
+    normalizeId(
+      document.getElementById("studentId").value
     );
   const nameVal =
     document.getElementById("fullName")
       .value.trim();
   const ageVal =
-    document.getElementById("age")
-      .value.trim();
+    document.getElementById("age").value.trim();
   const gradeVal =
     document.getElementById("grade")
       .value.trim();
 
-  // Show loading
   document.getElementById("loadingOverlay")
     .style.display = "flex";
 
   try {
-    // Find record in Firebase
+    // ✅ Look up record using document ID
+    // which matches the students collection
+    // document ID exactly
     const recordRef = doc(
       db,
       "sessionAttendance",
@@ -1129,11 +990,18 @@ async function submitAttendance(e) {
       studentIdVal
     );
 
-    const recordSnap =
-      await getDoc(recordRef);
+    console.log(
+      "📝 Looking for attendance record:",
+      studentIdVal
+    );
 
-    // Student not in this session
+    const recordSnap = await getDoc(recordRef);
+
     if (!recordSnap.exists()) {
+      console.error(
+        "❌ No attendance record found for:",
+        studentIdVal
+      );
       document.getElementById("loadingOverlay")
         .style.display = "none";
       document.getElementById("studentIdError")
@@ -1144,7 +1012,6 @@ async function submitAttendance(e) {
 
     const existingRecord = recordSnap.data();
 
-    // Already checked in
     if (existingRecord.status === "present") {
       document.getElementById("loadingOverlay")
         .style.display = "none";
@@ -1152,7 +1019,6 @@ async function submitAttendance(e) {
       return;
     }
 
-    // Get current date and time
     const now       = new Date();
     const checkDate =
       now.toLocaleDateString("en-CA");
@@ -1162,27 +1028,24 @@ async function submitAttendance(e) {
         minute: "2-digit"
       });
 
-    // Update the student record
     await updateDoc(recordRef, {
-      fullName:    nameVal,
-      age:         Number(ageVal),
-      grade:       gradeVal,
-      checkInDate: checkDate,
-      checkInTime: checkTime,
-      status:      "present",
-      latitude:    studentLocation.latitude,
-      longitude:   studentLocation.longitude,
-      accuracy:    studentLocation.accuracy,
+      fullName:           nameVal,
+      age:                Number(ageVal),
+      grade:              gradeVal,
+      checkInDate:        checkDate,
+      checkInTime:        checkTime,
+      status:             "present",
+      latitude:           studentLocation.latitude,
+      longitude:          studentLocation.longitude,
+      accuracy:           studentLocation.accuracy,
       distanceFromSchool: securityDistance,
-      submittedAt: now.toISOString()
+      submittedAt:        now.toISOString()
     });
 
     console.log(
-      "✅ Attendance saved for:",
-      studentIdVal, nameVal
+      "✅ Attendance saved:", studentIdVal
     );
 
-    // Hide loading and form
     document.getElementById("loadingOverlay")
       .style.display = "none";
     document.getElementById("formCard")
@@ -1192,7 +1055,6 @@ async function submitAttendance(e) {
     document.getElementById("locationBox")
       .style.display = "none";
 
-    // Show success
     const successCard =
       document.getElementById("successCard");
     successCard.style.display = "block";
@@ -1208,33 +1070,23 @@ async function submitAttendance(e) {
           font-size:14px;
           line-height:2;">
           <div>
-            <strong>
-              ${i("studentIdLabel")}:
-            </strong>
+            <strong>${i("studentIdLabel")}:</strong>
             ${studentIdVal}
           </div>
           <div>
-            <strong>
-              ${i("fullNameLabel")}:
-            </strong>
+            <strong>${i("fullNameLabel")}:</strong>
             ${nameVal}
           </div>
           <div>
-            <strong>
-              ${i("gradeLabel")}:
-            </strong>
+            <strong>${i("gradeLabel")}:</strong>
             ${gradeVal}
           </div>
           <div>
-            <strong>
-              ${i("colDate")}:
-            </strong>
+            <strong>${i("colDate")}:</strong>
             ${checkDate}
           </div>
           <div>
-            <strong>
-              ${i("colTime")}:
-            </strong>
+            <strong>${i("colTime")}:</strong>
             ${checkTime}
           </div>
           <div>
@@ -1248,26 +1100,19 @@ async function submitAttendance(e) {
       `;
 
   } catch (error) {
-    console.error(
-      "Submit attendance error:", error
-    );
+    console.error("Submit error:", error);
     document.getElementById("loadingOverlay")
       .style.display = "none";
-
-    const errorCard =
-      document.getElementById("errorCard");
-    const errorMsg =
-      document.getElementById("errorMessage");
-    errorCard.style.display = "block";
-    errorMsg.textContent    = error.message;
+    document.getElementById("errorCard")
+      .style.display = "block";
+    document.getElementById("errorMessage")
+      .textContent = error.message;
   }
 }
 
 // ================================================
 // EVENT LISTENERS
 // ================================================
-
-// Language button
 document.getElementById("languageButton")
   .addEventListener("click", function () {
     applyLanguage(
@@ -1275,79 +1120,56 @@ document.getElementById("languageButton")
     );
   });
 
-// Retry location button
 document.getElementById("retryLocationBtn")
-  .addEventListener("click", function () {
-    requestLocation();
-  });
+  .addEventListener("click", requestLocation);
 
-// ✅ FIX: Student ID field
-// Validate when student stops typing
-// Uses debounce to avoid running on
-// every single keystroke
+// Debounced student ID validation
 let studentIdTimer = null;
 document.getElementById("studentId")
   .addEventListener("input", function () {
-
-    // Clear any pending validation
     clearTimeout(studentIdTimer);
-
-    // Wait 600ms after typing stops
-    // then validate
-    // This prevents validation running
-    // while student is still typing
     studentIdTimer = setTimeout(
-      function () {
-        validateStudentId();
-      },
-      600
+      validateStudentId, 600
     );
   });
 
-// ✅ FIX: Also validate when student
-// leaves the student ID field
 document.getElementById("studentId")
   .addEventListener("blur", function () {
     clearTimeout(studentIdTimer);
     validateStudentId();
   });
 
-// Form submit
 document.getElementById("attendanceForm")
-  .addEventListener("submit",
-    submitAttendance
-  );
+  .addEventListener("submit", submitAttendance);
 
 // ================================================
-// ADD AUTO-FILL MESSAGE ELEMENT
-// Insert it after the studentId error span
+// ADD AUTO-FILL MESSAGE ELEMENT TO PAGE
 // ================================================
-(function addAutoFillMsg() {
-  const studentIdError =
+(function () {
+  const errEl =
     document.getElementById("studentIdError");
-  if (studentIdError && !
-    document.getElementById("autoFillMsg")
+  if (errEl &&
+      !document.getElementById("autoFillMsg")
   ) {
-    const msgEl = document.createElement("p");
-    msgEl.id    = "autoFillMsg";
+    const msgEl =
+      document.createElement("p");
+    msgEl.id = "autoFillMsg";
     msgEl.style.cssText =
       "font-size:12px;" +
       "color:#16a34a;" +
       "font-weight:600;" +
       "margin-top:5px;" +
       "display:none;";
-    studentIdError.parentNode.insertBefore(
-      msgEl,
-      studentIdError.nextSibling
+    errEl.parentNode.insertBefore(
+      msgEl, errEl.nextSibling
     );
   }
 })();
 
 // ================================================
-// START THE APP
+// START
 // ================================================
 const savedLang =
-  localStorage.getItem("studentLanguage")
-  || "en";
+  localStorage.getItem("studentLanguage") || "en";
 applyLanguage(savedLang);
 await loadSession();
