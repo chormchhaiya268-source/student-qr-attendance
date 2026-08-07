@@ -1,9 +1,14 @@
 // ================================================
 // script.js
-// Student Attendance Page — Full Logic
-// Fixed: Use document ID for student lookup
-// Fixed: Race condition
-// Fixed: Case sensitivity and spaces
+// Student Attendance Page — Full Secure Logic
+// Security Layers:
+//   1. Session ID validation
+//   2. GPS + Haversine verification
+//   3. Device Fingerprinting (SHA-256)
+//   4. Rate Limiting (5 attempts / 5 min)
+//   5. Duplicate attendance check
+//   6. Session timeout check
+//   7. Full attendance log
 // ================================================
 
 import {
@@ -15,6 +20,7 @@ import {
   doc,
   getDoc,
   updateDoc,
+  setDoc,
   collection,
   getDocs
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -49,6 +55,12 @@ const ALLOWED_DISTANCE_METERS = 100;
 const MAX_ACCEPTABLE_ACCURACY = 50;
 
 // ================================================
+// RATE LIMIT SETTINGS
+// ================================================
+const MAX_ATTEMPTS     = 5;
+const LOCKOUT_DURATION = 5 * 60 * 1000; // 5 minutes in ms
+
+// ================================================
 // APP STATE
 // ================================================
 let currentLang      = "en";
@@ -56,16 +68,13 @@ let sessionId        = null;
 let sessionData      = null;
 let studentLocation  = null;
 let locationVerified = false;
+let deviceFingerprint = null;
 
-// ✅ FIX: Student list loaded from Firebase
-// Key = normalized document ID (uppercase)
-// Value = student data object
-// Using a Map for fast exact lookup
 let studentsMap    = new Map();
 let studentsLoaded = false;
 
 // ================================================
-// TRANSLATIONS
+// TRANSLATIONS — WITH NEW SECURITY MESSAGES
 // ================================================
 const i18n = {
   en: {
@@ -152,7 +161,17 @@ const i18n = {
     errTooFar:
       "You are too far from school. Move closer and try again.",
     errAlreadyCheckedIn:
-      "You have already checked in for this session.",
+      "You have already checked in.",
+
+    // ✅ NEW SECURITY MESSAGES
+    errDeviceUsed:
+      "This device has already been used to submit attendance for this session.",
+    errRateLimit:
+      "Too many attempts. Please wait 5 minutes.",
+    errSessionExpiredTimeout:
+      "This attendance session has expired.",
+    fingerprintGenerating:
+      "Verifying your device...",
 
     autoFillMsg:
       "✅ Student found. Details filled automatically.",
@@ -260,7 +279,17 @@ const i18n = {
     errTooFar:
       "អ្នកនៅឆ្ងាយពីសាលា។ សូមមកជិតជាង ហើយព្យាយាមម្តងទៀត។",
     errAlreadyCheckedIn:
-      "អ្នកបានចុះវត្តមានហើយសម្រាប់វគ្គនេះ។",
+      "អ្នកបានចុះវត្តមានរួចហើយ។",
+
+    // ✅ NEW SECURITY MESSAGES
+    errDeviceUsed:
+      "ឧបករណ៍នេះបានប្រើសម្រាប់ចុះវត្តមានរួចហើយក្នុងវគ្គនេះ។",
+    errRateLimit:
+      "អ្នកបានព្យាយាមច្រើនពេក។\nសូមរង់ចាំ ៥ នាទី។",
+    errSessionExpiredTimeout:
+      "វគ្គចុះវត្តមាននេះបានផុតកំណត់ពេលវេលាហើយ។",
+    fingerprintGenerating:
+      "កំពុងផ្ទៀងផ្ទាត់ឧបករណ៍របស់អ្នក...",
 
     autoFillMsg:
       "✅ រកឃើញសិស្ស។ ព័ត៌មានត្រូវបានបំពេញដោយស្វ័យប្រវត្តិ។",
@@ -286,7 +315,7 @@ const i18n = {
 };
 
 // ================================================
-// TRANSLATE
+// TRANSLATE HELPER
 // ================================================
 function i(key) {
   return i18n[currentLang][key] || key;
@@ -363,32 +392,13 @@ function updateStudentIdFieldState() {
     studentIdInput.style.background = "";
     studentIdInput.style.cursor     = "";
     studentIdInput.style.color      = "";
-
-    console.log(
-      "✅ " + studentsMap.size +
-      " students loaded. IDs available:",
-      Array.from(studentsMap.keys())
-    );
   }
 }
 
 // ================================================
-// ✅ KEY FIX: LOAD STUDENTS USING DOCUMENT ID
-//
-// The bug was that studentId FIELD value
-// had typos like "ITO2" instead of "IT02"
-//
-// The DOCUMENT ID is always correct because
-// it was set by the teacher when adding students
-//
-// So we use document.id as the key
-// and also fix the studentId field to match
+// LOAD STUDENTS
 // ================================================
 async function loadAllStudents() {
-  console.log(
-    "📥 Loading students from Firebase..."
-  );
-
   studentsLoaded = false;
   studentsMap    = new Map();
   updateStudentIdFieldState();
@@ -398,59 +408,21 @@ async function loadAllStudents() {
       await getDocs(collection(db, "students"));
 
     snap.forEach(function (d) {
-      const data = d.data();
-
-      // ✅ ALWAYS use document ID as the key
-      // Document ID is what teacher typed
-      // when adding the student
-      // It is more reliable than the field
+      const data  = d.data();
       const docId =
         String(d.id).trim().toUpperCase();
 
-      // ✅ Also normalize the studentId field
-      // in case it has typos like ITO2 vs IT02
-      const fieldId = String(
-        data.studentId || d.id
-      ).trim().toUpperCase();
-
-      // Log any mismatch so you can fix them
-      if (docId !== fieldId) {
-        console.warn(
-          "⚠️ MISMATCH FOUND:",
-          "Document ID =", docId,
-          "| studentId field =", fieldId,
-          "| Using document ID:", docId
-        );
-      }
-
-      // Store using document ID as the key
-      // This is the reliable identifier
       studentsMap.set(docId, {
-        // Use document ID as the real ID
         studentId: docId,
         fullName:  data.fullName  || "",
         age:       data.age       ?? "",
-        grade:     data.grade     || "",
-        // Keep original field for reference
-        originalFieldId: fieldId
+        grade:     data.grade     || ""
       });
     });
 
     studentsLoaded = true;
-
-    console.log(
-      "✅ Students loaded:",
-      studentsMap.size
-    );
-    console.log(
-      "📋 Available student IDs:",
-      Array.from(studentsMap.keys())
-    );
-
     updateStudentIdFieldState();
 
-    // If student already typed their ID
-    // while loading, validate it now
     const studentIdInput =
       document.getElementById("studentId");
     if (
@@ -461,17 +433,14 @@ async function loadAllStudents() {
     }
 
   } catch (err) {
-    console.error(
-      "❌ Failed to load students:", err
-    );
+    console.error("Failed to load students:", err);
     studentsLoaded = true;
     updateStudentIdFieldState();
   }
 }
 
 // ================================================
-// ✅ NORMALIZE STUDENT ID
-// Removes all spaces and converts to uppercase
+// NORMALIZE ID
 // ================================================
 function normalizeId(rawId) {
   return String(rawId || "")
@@ -480,23 +449,252 @@ function normalizeId(rawId) {
 }
 
 // ================================================
-// ✅ FIND STUDENT
-// Searches by normalized document ID
+// FIND STUDENT
 // ================================================
 function findStudent(rawId) {
   const normalized = normalizeId(rawId);
+  return studentsMap.get(normalized) || null;
+}
+
+// ================================================
+// ✅ SECURITY LAYER 4
+// DEVICE FINGERPRINT GENERATOR
+//
+// How it works:
+// 1. Collect browser properties:
+//    - userAgent, platform, screen size
+//    - timezone, language
+// 2. Combine into one string
+// 3. Hash with SHA-256
+// 4. Result = unique device ID
+//
+// Why it prevents cheating:
+// - Same phone = same fingerprint always
+// - If Student A uses Phone X → saved to Firebase
+// - If Student B tries Phone X → same fingerprint
+//   → Firebase already has it → REJECTED
+// ================================================
+async function generateDeviceFingerprint() {
+  const components = [
+    navigator.userAgent      || "unknown",
+    navigator.platform       || "unknown",
+    screen.width + "x" + screen.height,
+    screen.colorDepth        || "unknown",
+    Intl.DateTimeFormat()
+      .resolvedOptions().timeZone || "unknown",
+    navigator.language       || "unknown",
+    navigator.hardwareConcurrency || "unknown",
+    screen.pixelDepth        || "unknown"
+  ];
+
+  const raw = components.join("|");
+
+  // Use Web Crypto API to SHA-256 hash
+  const encoder = new TextEncoder();
+  const data     = encoder.encode(raw);
+
+  const hashBuffer =
+    await crypto.subtle.digest("SHA-256", data);
+
+  const hashArray =
+    Array.from(new Uint8Array(hashBuffer));
+
+  const hashHex = hashArray
+    .map(function (b) {
+      return b.toString(16).padStart(2, "0");
+    })
+    .join("");
+
   console.log(
-    "🔍 Looking for:", normalized,
-    "| studentsMap has:",
-    Array.from(studentsMap.keys())
+    "🔑 Device fingerprint generated:",
+    hashHex.substring(0, 16) + "..."
   );
-  const found = studentsMap.get(normalized);
-  if (found) {
-    console.log("✅ Found:", found);
-  } else {
-    console.log("❌ Not found:", normalized);
+
+  return hashHex;
+}
+
+// ================================================
+// GET BROWSER NAME
+// ================================================
+function getBrowserName() {
+  const ua = navigator.userAgent;
+  if (ua.includes("Firefox"))  return "Firefox";
+  if (ua.includes("Edg"))      return "Edge";
+  if (ua.includes("Chrome"))   return "Chrome";
+  if (ua.includes("Safari"))   return "Safari";
+  if (ua.includes("Opera"))    return "Opera";
+  return "Unknown";
+}
+
+// ================================================
+// GET OPERATING SYSTEM
+// ================================================
+function getOperatingSystem() {
+  const ua = navigator.userAgent;
+  if (ua.includes("Windows NT")) return "Windows";
+  if (ua.includes("Mac OS X"))   return "macOS";
+  if (ua.includes("Android"))    return "Android";
+  if (
+    ua.includes("iPhone") ||
+    ua.includes("iPad")
+  ) return "iOS";
+  if (ua.includes("Linux"))      return "Linux";
+  return "Unknown";
+}
+
+// ================================================
+// ✅ SECURITY LAYER 7
+// RATE LIMITING
+//
+// Stored in localStorage (per device)
+// Structure: { attempts: 3, lockedUntil: 0 }
+//
+// After 5 failed attempts:
+// → Lock for 5 minutes
+// → Show warning message
+// ================================================
+function getRateLimitData() {
+  try {
+    const raw =
+      localStorage.getItem("attendanceRateLimit");
+    if (!raw) return { attempts: 0, lockedUntil: 0 };
+    return JSON.parse(raw);
+  } catch {
+    return { attempts: 0, lockedUntil: 0 };
   }
-  return found || null;
+}
+
+function saveRateLimitData(data) {
+  localStorage.setItem(
+    "attendanceRateLimit",
+    JSON.stringify(data)
+  );
+}
+
+function isRateLimited() {
+  const data = getRateLimitData();
+  const now  = Date.now();
+
+  if (data.lockedUntil && now < data.lockedUntil) {
+    // Still locked
+    const remaining = Math.ceil(
+      (data.lockedUntil - now) / 1000 / 60
+    );
+    return { locked: true, minutesLeft: remaining };
+  }
+
+  // Lock expired — reset
+  if (
+    data.lockedUntil &&
+    now >= data.lockedUntil
+  ) {
+    saveRateLimitData({ attempts: 0, lockedUntil: 0 });
+  }
+
+  return { locked: false, minutesLeft: 0 };
+}
+
+function recordFailedAttempt() {
+  const data = getRateLimitData();
+  const now  = Date.now();
+
+  // Reset if previous lockout expired
+  if (data.lockedUntil && now >= data.lockedUntil) {
+    saveRateLimitData({ attempts: 1, lockedUntil: 0 });
+    return;
+  }
+
+  data.attempts = (data.attempts || 0) + 1;
+
+  if (data.attempts >= MAX_ATTEMPTS) {
+    data.lockedUntil = now + LOCKOUT_DURATION;
+    console.warn(
+      "🔒 Rate limit reached. Locked for 5 minutes."
+    );
+  }
+
+  saveRateLimitData(data);
+}
+
+function resetFailedAttempts() {
+  saveRateLimitData({ attempts: 0, lockedUntil: 0 });
+}
+
+// Show rate limit warning box
+function showRateLimitWarning() {
+  const formCard =
+    document.getElementById("formCard");
+  if (!formCard) return;
+
+  // Remove old warning if exists
+  const old =
+    document.getElementById("rateLimitWarning");
+  if (old) old.remove();
+
+  const box = document.createElement("div");
+  box.id = "rateLimitWarning";
+  box.className = "rate-limit-box";
+  box.innerHTML = `
+    <div style="font-size:28px;
+                margin-bottom:8px;">⛔</div>
+    <p style="font-weight:700;
+              color:#991b1b;
+              font-size:15px;
+              margin-bottom:4px;">
+      ${i("errRateLimit")
+        .split("\n")
+        .join("<br>")}
+    </p>
+    <p id="rateLimitCountdown"
+       style="font-size:13px;
+              color:#64748b;
+              margin-top:6px;"></p>
+  `;
+
+  formCard.parentNode.insertBefore(
+    box, formCard
+  );
+  formCard.style.display = "none";
+
+  // Start countdown display
+  startRateLimitCountdown();
+}
+
+function startRateLimitCountdown() {
+  const countdownEl =
+    document.getElementById("rateLimitCountdown");
+  if (!countdownEl) return;
+
+  function updateCountdown() {
+    const data = getRateLimitData();
+    const now  = Date.now();
+
+    if (!data.lockedUntil || now >= data.lockedUntil) {
+      // Unlocked — reload page
+      const box =
+        document.getElementById("rateLimitWarning");
+      if (box) box.remove();
+      const formCard =
+        document.getElementById("formCard");
+      if (formCard) {
+        formCard.style.display = "block";
+      }
+      resetFailedAttempts();
+      return;
+    }
+
+    const remaining =
+      Math.ceil((data.lockedUntil - now) / 1000);
+    const mins = Math.floor(remaining / 60);
+    const secs = remaining % 60;
+
+    countdownEl.textContent =
+      `⏱ ${mins}:${String(secs).padStart(2,"0")}`;
+
+    setTimeout(updateCountdown, 1000);
+  }
+
+  updateCountdown();
 }
 
 // ================================================
@@ -543,13 +741,9 @@ function validateStudentId() {
       autoFillMsgEl.style.display = "none";
     }
 
-    // Clear auto-filled fields
-    const fn =
-      document.getElementById("fullName");
-    const ag =
-      document.getElementById("age");
-    const gr =
-      document.getElementById("grade");
+    const fn = document.getElementById("fullName");
+    const ag = document.getElementById("age");
+    const gr = document.getElementById("grade");
     if (fn) fn.value = "";
     if (ag) ag.value = "";
     if (gr) gr.value = "";
@@ -557,25 +751,19 @@ function validateStudentId() {
     return false;
   }
 
-  // Student found — clear error
   if (studentIdError) {
     studentIdError.textContent = "";
   }
 
-  // Auto-fill details
-  const fn =
-    document.getElementById("fullName");
-  const ag =
-    document.getElementById("age");
-  const gr =
-    document.getElementById("grade");
+  const fn = document.getElementById("fullName");
+  const ag = document.getElementById("age");
+  const gr = document.getElementById("grade");
   if (fn) fn.value = student.fullName;
   if (ag) ag.value = student.age;
   if (gr) gr.value = student.grade;
 
   if (autoFillMsgEl) {
-    autoFillMsgEl.textContent =
-      i("autoFillMsg");
+    autoFillMsgEl.textContent  = i("autoFillMsg");
     autoFillMsgEl.style.display = "block";
   }
 
@@ -585,9 +773,7 @@ function validateStudentId() {
 // ================================================
 // HAVERSINE DISTANCE
 // ================================================
-function haversineDistance(
-  lat1, lon1, lat2, lon2
-) {
+function haversineDistance(lat1, lon1, lat2, lon2) {
   const R = 6371000;
   const toRad = function (d) {
     return d * (Math.PI / 180);
@@ -595,8 +781,7 @@ function haversineDistance(
   const dLat = toRad(lat2 - lat1);
   const dLon = toRad(lon2 - lon1);
   const a =
-    Math.sin(dLat / 2) *
-    Math.sin(dLat / 2) +
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
     Math.cos(toRad(lat1)) *
     Math.cos(toRad(lat2)) *
     Math.sin(dLon / 2) *
@@ -637,21 +822,19 @@ function showDistanceResult(loc) {
     " " + i("meters");
 
   if (isNear) {
-    distanceIcon.textContent     = "✅";
-    distanceStatus.textContent   =
-      i("locationVerified");
-    distanceStatus.style.color   = "#16a34a";
-    distanceBox.style.background = "#f0fdf4";
+    distanceIcon.textContent      = "✅";
+    distanceStatus.textContent    = i("locationVerified");
+    distanceStatus.style.color    = "#16a34a";
+    distanceBox.style.background  = "#f0fdf4";
     distanceBox.style.borderColor = "#86efac";
     retryBtn.style.display = "none";
     submitBtn.disabled     = false;
     locationVerified       = true;
   } else {
-    distanceIcon.textContent     = "❌";
-    distanceStatus.textContent   =
-      i("locationTooFar");
-    distanceStatus.style.color   = "#dc2626";
-    distanceBox.style.background = "#fef2f2";
+    distanceIcon.textContent      = "❌";
+    distanceStatus.textContent    = i("locationTooFar");
+    distanceStatus.style.color    = "#dc2626";
+    distanceBox.style.background  = "#fef2f2";
     distanceBox.style.borderColor = "#fca5a5";
     retryBtn.style.display = "block";
     submitBtn.disabled     = true;
@@ -680,8 +863,7 @@ function requestLocation() {
   locationStatus.textContent = i("locating");
 
   if (!navigator.geolocation) {
-    locationStatus.textContent =
-      i("locationError");
+    locationStatus.textContent = i("locationError");
     return;
   }
 
@@ -691,36 +873,26 @@ function requestLocation() {
       const lon      = position.coords.longitude;
       const accuracy = position.coords.accuracy;
 
-      console.log(
-        "✅ GPS:", lat, lon,
-        "±" + accuracy + "m"
-      );
-
       if (accuracy > MAX_ACCEPTABLE_ACCURACY) {
         locationStatus.textContent =
           i("locationPoorAccuracy");
 
         const db2 =
           document.getElementById("distanceBox");
-        const ds =
-          document.getElementById(
-            "distanceStatus"
-          );
-        const dd =
-          document.getElementById(
-            "distanceDetail"
-          );
-        const di =
+        const ds  =
+          document.getElementById("distanceStatus");
+        const dd  =
+          document.getElementById("distanceDetail");
+        const di  =
           document.getElementById("distanceIcon");
 
-        db2.style.display    = "flex";
-        db2.style.background = "#fffbeb";
+        db2.style.display     = "flex";
+        db2.style.background  = "#fffbeb";
         db2.style.borderColor = "#fcd34d";
-        di.textContent       = "⚠️";
-        ds.textContent       =
-          i("locationPoorAccuracy");
-        ds.style.color       = "#92400e";
-        dd.textContent       =
+        di.textContent        = "⚠️";
+        ds.textContent        = i("locationPoorAccuracy");
+        ds.style.color        = "#92400e";
+        dd.textContent        =
           i("gpsAccuracy") + ": ±" +
           Math.round(accuracy) +
           " " + i("meters");
@@ -729,12 +901,7 @@ function requestLocation() {
       }
 
       const distance = haversineDistance(
-        lat, lon,
-        SCHOOL_LATITUDE, SCHOOL_LONGITUDE
-      );
-
-      console.log(
-        "📏 Distance:", Math.round(distance), "m"
+        lat, lon, SCHOOL_LATITUDE, SCHOOL_LONGITUDE
       );
 
       studentLocation = {
@@ -750,7 +917,6 @@ function requestLocation() {
     },
 
     function (error) {
-      console.error("GPS error:", error.code);
       locationStatus.textContent =
         error.code === error.PERMISSION_DENIED
           ? i("locationDenied")
@@ -758,17 +924,17 @@ function requestLocation() {
 
       const db2 =
         document.getElementById("distanceBox");
-      const di =
+      const di  =
         document.getElementById("distanceIcon");
-      const ds =
+      const ds  =
         document.getElementById("distanceStatus");
 
-      db2.style.display    = "flex";
-      db2.style.background = "#fef2f2";
+      db2.style.display     = "flex";
+      db2.style.background  = "#fef2f2";
       db2.style.borderColor = "#fca5a5";
-      di.textContent       = "❌";
-      ds.textContent       = i("locationError");
-      ds.style.color       = "#dc2626";
+      di.textContent        = "❌";
+      ds.textContent        = i("locationError");
+      ds.style.color        = "#dc2626";
       retryBtn.style.display = "block";
     },
 
@@ -778,6 +944,24 @@ function requestLocation() {
       maximumAge:         0
     }
   );
+}
+
+// ================================================
+// ✅ SECURITY LAYER 6
+// SESSION TIMEOUT CHECK
+//
+// If teacher set a duration (expiresAt):
+// Check if current time > expiresAt
+// If yes → show expired message
+// ================================================
+function isSessionExpired(sessionData) {
+  if (!sessionData.expiresAt) return false;
+
+  const now       = Date.now();
+  const expiresAt =
+    new Date(sessionData.expiresAt).getTime();
+
+  return now > expiresAt;
 }
 
 // ================================================
@@ -823,6 +1007,7 @@ async function loadSession() {
     const today =
       new Date().toLocaleDateString("en-CA");
 
+    // ✅ Check session ID matches
     if (
       !sessionData.isOpen ||
       sessionData.date !== today ||
@@ -838,6 +1023,25 @@ async function loadSession() {
       return;
     }
 
+    // ✅ LAYER 6: Check timeout
+    if (isSessionExpired(sessionData)) {
+      formCard.style.display   = "none";
+      closedCard.style.display = "block";
+      document.querySelectorAll(
+        "[data-i18n='sessionClosedMsg']"
+      ).forEach(function (el) {
+        el.textContent =
+          i("errSessionExpiredTimeout");
+      });
+      return;
+    }
+
+    // ✅ Check rate limit BEFORE loading
+    const rateLimitStatus = isRateLimited();
+    if (rateLimitStatus.locked) {
+      showRateLimitWarning();
+    }
+
     // Session valid
     banner.style.display    = "flex";
     bannerIcon.textContent  = "🟢";
@@ -846,8 +1050,12 @@ async function loadSession() {
     banner.style.color      = "#16a34a";
     banner.style.border     = "1px solid #86efac";
 
-    // Load students AND request location
-    // at the same time for speed
+    // Generate fingerprint in background
+    generateDeviceFingerprint().then(function (fp) {
+      deviceFingerprint = fp;
+      console.log("✅ Fingerprint ready");
+    });
+
     await Promise.all([
       loadAllStudents(),
       new Promise(function (resolve) {
@@ -933,15 +1141,64 @@ function validateForm() {
 }
 
 // ================================================
-// SUBMIT ATTENDANCE
+// SHOW ERROR CARD WITH MESSAGE
+// ================================================
+function showErrorCard(message) {
+  const errorCard =
+    document.getElementById("errorCard");
+  const errorMessage =
+    document.getElementById("errorMessage");
+
+  if (errorCard && errorMessage) {
+    errorMessage.textContent = message;
+    errorCard.style.display  = "block";
+
+    // Scroll to error
+    errorCard.scrollIntoView({
+      behavior: "smooth", block: "center"
+    });
+
+    // Auto hide after 6 seconds
+    setTimeout(function () {
+      errorCard.style.display = "none";
+    }, 6000);
+  }
+}
+
+// ================================================
+// ✅ SUBMIT ATTENDANCE — ALL SECURITY LAYERS
 // ================================================
 async function submitAttendance(e) {
   e.preventDefault();
 
-  if (!validateForm()) return;
+  // ✅ LAYER 7: Rate limit check
+  const rateLimitStatus = isRateLimited();
+  if (rateLimitStatus.locked) {
+    showRateLimitWarning();
+    return;
+  }
 
+  if (!validateForm()) {
+    // Count failed validation as attempt
+    // only if student ID was wrong
+    const studentIdVal =
+      document.getElementById("studentId")
+        .value.trim();
+    if (studentIdVal && !findStudent(studentIdVal)) {
+      recordFailedAttempt();
+
+      // Check if now locked
+      const newStatus = isRateLimited();
+      if (newStatus.locked) {
+        showRateLimitWarning();
+      }
+    }
+    return;
+  }
+
+  // ✅ LAYER 3: GPS check
   if (!locationVerified || !studentLocation) {
-    alert(i("errLocation"));
+    showErrorCard(i("errLocation"));
     return;
   }
 
@@ -953,15 +1210,23 @@ async function submitAttendance(e) {
   );
 
   if (securityDistance > ALLOWED_DISTANCE_METERS) {
-    alert(i("errTooFar"));
+    showErrorCard(i("errTooFar"));
     locationVerified = false;
     document.getElementById("submitBtn")
       .disabled = true;
     return;
   }
 
-  // ✅ Use normalized document ID
-  // not the studentId field value
+  // ✅ LAYER 6: Session timeout check again at submit
+  if (sessionData && isSessionExpired(sessionData)) {
+    showErrorCard(i("errSessionExpiredTimeout"));
+    document.getElementById("formCard")
+      .style.display = "none";
+    document.getElementById("sessionClosedCard")
+      .style.display = "block";
+    return;
+  }
+
   const studentIdVal =
     normalizeId(
       document.getElementById("studentId").value
@@ -979,9 +1244,39 @@ async function submitAttendance(e) {
     .style.display = "flex";
 
   try {
-    // ✅ Look up record using document ID
-    // which matches the students collection
-    // document ID exactly
+    // ✅ LAYER 4: Device fingerprint check
+    // Make sure fingerprint is ready
+    if (!deviceFingerprint) {
+      deviceFingerprint =
+        await generateDeviceFingerprint();
+    }
+
+    // Check if this device already submitted
+    // for this session
+    const deviceLogRef = doc(
+      db,
+      "deviceLogs",
+      sessionId + "_" + deviceFingerprint
+    );
+    const deviceLogSnap = await getDoc(deviceLogRef);
+
+    if (deviceLogSnap.exists()) {
+      // Device already used
+      // But allow SAME student to resubmit
+      // (page refresh case)
+      const logData = deviceLogSnap.data();
+
+      if (logData.studentId !== studentIdVal) {
+        // Different student using same device
+        document.getElementById("loadingOverlay")
+          .style.display = "none";
+        showErrorCard(i("errDeviceUsed"));
+        return;
+      }
+      // Same student → allow (refresh case)
+    }
+
+    // ✅ LAYER 5: Duplicate attendance check
     const recordRef = doc(
       db,
       "sessionAttendance",
@@ -990,23 +1285,14 @@ async function submitAttendance(e) {
       studentIdVal
     );
 
-    console.log(
-      "📝 Looking for attendance record:",
-      studentIdVal
-    );
-
     const recordSnap = await getDoc(recordRef);
 
     if (!recordSnap.exists()) {
-      console.error(
-        "❌ No attendance record found for:",
-        studentIdVal
-      );
       document.getElementById("loadingOverlay")
         .style.display = "none";
       document.getElementById("studentIdError")
-        .textContent =
-          i("errStudentIdNotFound");
+        .textContent = i("errStudentIdNotFound");
+      recordFailedAttempt();
       return;
     }
 
@@ -1015,10 +1301,11 @@ async function submitAttendance(e) {
     if (existingRecord.status === "present") {
       document.getElementById("loadingOverlay")
         .style.display = "none";
-      alert(i("errAlreadyCheckedIn"));
+      showErrorCard(i("errAlreadyCheckedIn"));
       return;
     }
 
+    // ✅ Build attendance record with full log
     const now       = new Date();
     const checkDate =
       now.toLocaleDateString("en-CA");
@@ -1028,24 +1315,57 @@ async function submitAttendance(e) {
         minute: "2-digit"
       });
 
-    await updateDoc(recordRef, {
+    // ✅ LAYER 8: Full attendance log data
+    const attendanceData = {
       fullName:           nameVal,
       age:                Number(ageVal),
       grade:              gradeVal,
+      studentId:          studentIdVal,
+      sessionId:          sessionId,
       checkInDate:        checkDate,
       checkInTime:        checkTime,
       status:             "present",
+
+      // GPS data
       latitude:           studentLocation.latitude,
       longitude:          studentLocation.longitude,
-      accuracy:           studentLocation.accuracy,
+      gpsAccuracy:        studentLocation.accuracy,
       distanceFromSchool: securityDistance,
-      submittedAt:        now.toISOString()
+
+      // Device security data
+      deviceFingerprint:  deviceFingerprint,
+      browser:            getBrowserName(),
+      operatingSystem:    getOperatingSystem(),
+      userAgent:          navigator.userAgent,
+
+      // Timestamps
+      submittedAt:        now.toISOString(),
+      submittedTimestamp: now.getTime()
+    };
+
+    // Save attendance record
+    await updateDoc(recordRef, attendanceData);
+
+    // ✅ LAYER 4: Save device log to Firebase
+    // This prevents other students using same device
+    await setDoc(deviceLogRef, {
+      fingerprint:  deviceFingerprint,
+      studentId:    studentIdVal,
+      sessionId:    sessionId,
+      submittedAt:  now.toISOString(),
+      browser:      getBrowserName(),
+      os:           getOperatingSystem()
     });
 
+    // ✅ Reset rate limit on success
+    resetFailedAttempts();
+
     console.log(
-      "✅ Attendance saved:", studentIdVal
+      "✅ Attendance saved with security data:",
+      studentIdVal
     );
 
+    // Show success
     document.getElementById("loadingOverlay")
       .style.display = "none";
     document.getElementById("formCard")
@@ -1070,23 +1390,33 @@ async function submitAttendance(e) {
           font-size:14px;
           line-height:2;">
           <div>
-            <strong>${i("studentIdLabel")}:</strong>
+            <strong>
+              ${i("studentIdLabel")}:
+            </strong>
             ${studentIdVal}
           </div>
           <div>
-            <strong>${i("fullNameLabel")}:</strong>
+            <strong>
+              ${i("fullNameLabel")}:
+            </strong>
             ${nameVal}
           </div>
           <div>
-            <strong>${i("gradeLabel")}:</strong>
+            <strong>
+              ${i("gradeLabel")}:
+            </strong>
             ${gradeVal}
           </div>
           <div>
-            <strong>${i("colDate")}:</strong>
+            <strong>
+              ${i("colDate")}:
+            </strong>
             ${checkDate}
           </div>
           <div>
-            <strong>${i("colTime")}:</strong>
+            <strong>
+              ${i("colTime")}:
+            </strong>
             ${checkTime}
           </div>
           <div>
@@ -1123,7 +1453,6 @@ document.getElementById("languageButton")
 document.getElementById("retryLocationBtn")
   .addEventListener("click", requestLocation);
 
-// Debounced student ID validation
 let studentIdTimer = null;
 document.getElementById("studentId")
   .addEventListener("input", function () {
@@ -1143,16 +1472,16 @@ document.getElementById("attendanceForm")
   .addEventListener("submit", submitAttendance);
 
 // ================================================
-// ADD AUTO-FILL MESSAGE ELEMENT TO PAGE
+// ADD AUTO-FILL MESSAGE ELEMENT
 // ================================================
 (function () {
   const errEl =
     document.getElementById("studentIdError");
-  if (errEl &&
-      !document.getElementById("autoFillMsg")
+  if (
+    errEl &&
+    !document.getElementById("autoFillMsg")
   ) {
-    const msgEl =
-      document.createElement("p");
+    const msgEl = document.createElement("p");
     msgEl.id = "autoFillMsg";
     msgEl.style.cssText =
       "font-size:12px;" +
