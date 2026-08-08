@@ -56,10 +56,7 @@
     <span id="sessionBannerText"></span>
   </div>
 
-  <!-- ✅ NEW: MODE BANNER
-       Shows students whether this QR is for
-       Check-In or Check-Out.
-       Hidden until QR mode is determined. -->
+  <!-- MODE BANNER -->
   <div id="modeBanner"
     style="display:none;
            padding:10px 18px;
@@ -114,7 +111,7 @@
     </button>
   </div>
 
-  <!-- ATTENDANCE FORM — CHECK IN -->
+  <!-- ATTENDANCE FORM -->
   <main class="form-card" id="formCard">
 
     <h2 class="form-title"
@@ -155,16 +152,16 @@
                  color:#64748b;">
       </div>
 
-      <!-- Age — READ ONLY -->
+      <!-- ✅ CHANGED: Age → Sex — READ ONLY -->
       <div class="form-group">
-        <label for="age">
-          <span data-i18n="ageLabel"></span>
+        <label for="sex">
+          <span data-i18n="sexLabel"></span>
         </label>
         <input
           type="text"
-          id="age"
+          id="sex"
           readonly
-          data-i18n-placeholder="agePlaceholder"
+          data-i18n-placeholder="sexPlaceholder"
           style="background:#f1f5f9;
                  cursor:not-allowed;
                  color:#64748b;">
@@ -195,7 +192,7 @@
                margin-bottom:12px;
                display:none;"></p>
 
-      <!-- Submit button text changes based on mode -->
+      <!-- Submit button -->
       <button
         type="submit"
         class="submit-btn"
@@ -207,10 +204,7 @@
     </form>
   </main>
 
-  <!-- ✅ CHECK OUT CARD
-       Shows AFTER student successfully checks in
-       OR when student scans Check-Out QR
-       and is already checked in -->
+  <!-- CHECK OUT CARD -->
   <div class="checkout-card"
     id="checkoutCard"
     style="display:none;">
@@ -227,7 +221,6 @@
                font-weight:600;"></p>
     </div>
 
-    <!-- Check-in info -->
     <div class="checkout-info-box">
       <div class="checkout-info-row">
         <span data-i18n="checkInTimeLabel">
@@ -258,7 +251,6 @@
       </div>
     </div>
 
-    <!-- Check Out button -->
     <button
       id="checkOutBtn"
       class="checkout-btn"
@@ -266,7 +258,6 @@
       Check Out
     </button>
 
-    <!-- Already checked out message -->
     <p id="alreadyCheckedOutMsg"
       style="display:none;
              text-align:center;
@@ -279,11 +270,7 @@
 
   </div>
 
-  <!-- ✅ NEW: NOT CHECKED IN CARD
-       Shown when student scans Check-Out QR
-       but has NOT checked in yet.
-       This is a separate block — NOT an error card.
-  -->
+  <!-- NOT CHECKED IN CARD -->
   <div id="notCheckedInCard"
     style="display:none;
            background:#fef3c7;
@@ -319,7 +306,7 @@
     <p data-i18n="sessionClosedMsg"></p>
   </div>
 
-  <!-- SUCCESS CARD — CHECK IN -->
+  <!-- SUCCESS CARD -->
   <section class="success-card"
     id="successCard"
     style="display:none;">
