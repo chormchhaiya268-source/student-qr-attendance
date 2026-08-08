@@ -1,20 +1,5 @@
 // ================================================
 // script.js — Student Attendance Page
-//
-// Features:
-//   1. Session ID validation
-//   2. Auto GPS location check
-//   3. Student ID auto-fill from Firebase
-//   4. Device token (UUID) anti-cheat
-//   5. Check-in with timestamp
-//   6. Check-out with timestamp
-//   7. Rate limiting
-//   8. Real-time session close detection
-//   9. ✅ NEW: Attendance Mode (checkIn/checkOut)
-//      Read from QR URL parameter &mode=
-//      Check-In QR → records checkInTime
-//      Check-Out QR → updates checkOutTime
-//      Check-Out blocked if not checked in
 // ================================================
 
 import {
@@ -54,7 +39,7 @@ const app = initializeApp(firebaseConfig);
 const db  = getFirestore(app);
 
 // ================================================
-// SCHOOL LOCATION — FIXED 100 METERS
+// SCHOOL LOCATION
 // ================================================
 const SCHOOL_LAT   = 11.822624138074948;
 const SCHOOL_LON   = 104.7536601355822;
@@ -77,30 +62,24 @@ let studentLocation  = null;
 let locationVerified = false;
 let deviceToken      = null;
 let sessionListener  = null;
+let qrMode           = "checkIn";
 
-// ✅ NEW — QR Mode read from URL
-// "checkIn" or "checkOut"
-// Default checkIn if not specified
-let qrMode = "checkIn";
-
-// Student state
 let studentsMap    = new Map();
 let studentsLoaded = false;
 
-// Check-in / Check-out state
 let studentCheckedIn  = false;
 let studentCheckedOut = false;
 let currentStudentId  = null;
 
 // ================================================
 // TRANSLATIONS
+// ✅ Age → Sex + all placeholder keys added
 // ================================================
 const i18n = {
   en: {
     title:    "QR Attendance System",
     subtitle: "Tepranom High School",
 
-    // Session
     sessionActive:
       "Attendance session is open.",
     sessionClosed:
@@ -118,13 +97,11 @@ const i18n = {
     sessionEndedMsg:
       "Attendance session has ended.",
 
-    // ✅ NEW — Mode banner
     modeBannerCheckIn:
       "✅ This is a CHECK-IN QR Code",
     modeBannerCheckOut:
       "🚪 This is a CHECK-OUT QR Code",
 
-    // Location
     requestingLocation:
       "Requesting your location...",
     locationReason:
@@ -150,7 +127,6 @@ const i18n = {
     meters:
       "meters",
 
-    // Students
     loadingStudents:
       "Loading student data...",
     studentIdLabel:
@@ -161,16 +137,18 @@ const i18n = {
       "Full Name",
     fullNamePlaceholder:
       "Auto-filled from your ID",
-    ageLabel:
-      "Age",
-    agePlaceholder:
+
+    // ✅ CHANGED: ageLabel → sexLabel
+    sexLabel:
+      "Sex",
+    sexPlaceholder:
       "Auto-filled",
+
     gradeLabel:
       "Grade / Class",
     gradePlaceholder:
       "Auto-filled",
 
-    // ✅ Form title changes based on mode
     formTitle:
       "📋 Mark Your Attendance",
     formTitleCheckIn:
@@ -178,21 +156,18 @@ const i18n = {
     formTitleCheckOut:
       "📤 Check-Out",
 
-    // ✅ Submit button text changes based on mode
     submitButton:
       "✅ Check In",
     submitButtonCheckIn:
-      "✅ ចុះម៉ោងចូល (Check In)",
+      "✅ Check In",
     submitButtonCheckOut:
-      "🚪 ចុះម៉ោងចេញ (Check Out)",
+      "🚪 Check Out",
 
-    // Auto-fill
     autoFillMsg:
       "✅ Student found. Details filled automatically.",
     autoFillReadOnly:
-      "Name, Age and Grade are read-only.",
+      "Name, Sex and Grade are read-only.",
 
-    // Errors
     errStudentId:
       "Please enter your Student ID.",
     errStudentIdNotFound:
@@ -212,7 +187,6 @@ const i18n = {
     errSessionClosed:
       "The attendance session has ended.",
 
-    // ✅ NEW — Check-Out specific errors
     errNotCheckedInYet:
       "You have not checked in yet. You must check in before checking out.",
     errAlreadyCheckedOut:
@@ -222,7 +196,6 @@ const i18n = {
     errNotCheckedIn:
       "You must check in before checking out.",
 
-    // Check-in success
     successTitle:
       "Check-In Successful!",
     successMessage:
@@ -230,13 +203,11 @@ const i18n = {
     savingText:
       "Saving your attendance...",
 
-    // ✅ Check-out success
     checkOutSuccessTitle:
       "Check-Out Successful!",
     checkOutSuccessMessage:
       "Your check-out has been recorded.",
 
-    // Checkout card
     checkedInTitle:
       "You Are Checked In",
     checkInTimeLabel:
@@ -260,19 +231,20 @@ const i18n = {
     alreadyCheckedOutMsg:
       "✅ You have already checked out for this session.",
 
-    // ✅ NEW — Not checked in card
     notCheckedInTitle:
       "Not Checked In Yet",
     notCheckedInMsg:
       "You must check in before you can check out. Please ask your teacher for the Check-In QR code.",
 
-    // Footer
     footerSecurity:
       "🔒 Your location is only used to verify attendance.",
     footerSchool:
       "Tepranom High School Attendance System",
 
-    // Table
+    // ✅ Sex values for display
+    sexMale:   "Male",
+    sexFemale: "Female",
+
     colDate: "Date",
     colTime: "Time"
   },
@@ -281,7 +253,6 @@ const i18n = {
     title:    "ប្រព័ន្ធចុះវត្តមាន QR",
     subtitle: "វិទ្យាល័យទេពប្រណម្យ",
 
-    // Session
     sessionActive:
       "វគ្គចុះវត្តមានកំពុងបើក។",
     sessionClosed:
@@ -299,13 +270,11 @@ const i18n = {
     sessionEndedMsg:
       "វគ្គចុះវត្តមានបានបញ្ចប់។",
 
-    // ✅ NEW — Mode banner (Khmer)
     modeBannerCheckIn:
       "✅ QR Code នេះសម្រាប់ម៉ោងចូល",
     modeBannerCheckOut:
       "🚪 QR Code នេះសម្រាប់ម៉ោងចេញ",
 
-    // Location
     requestingLocation:
       "កំពុងស្នើទីតាំងរបស់អ្នក...",
     locationReason:
@@ -331,7 +300,6 @@ const i18n = {
     meters:
       "ម៉ែត្រ",
 
-    // Students
     loadingStudents:
       "កំពុងផ្ទុកទិន្នន័យសិស្ស...",
     studentIdLabel:
@@ -342,16 +310,18 @@ const i18n = {
       "ឈ្មោះពេញ",
     fullNamePlaceholder:
       "បំពេញដោយស្វ័យប្រវត្តិ",
-    ageLabel:
-      "អាយុ",
-    agePlaceholder:
+
+    // ✅ CHANGED: ageLabel → sexLabel (Khmer)
+    sexLabel:
+      "ភេទ",
+    sexPlaceholder:
       "បំពេញដោយស្វ័យប្រវត្តិ",
+
     gradeLabel:
       "ថ្នាក់រៀន",
     gradePlaceholder:
       "បំពេញដោយស្វ័យប្រវត្តិ",
 
-    // ✅ Form title changes based on mode
     formTitle:
       "📋 ចុះវត្តមានរបស់អ្នក",
     formTitleCheckIn:
@@ -359,7 +329,6 @@ const i18n = {
     formTitleCheckOut:
       "📤 ចុះម៉ោងចេញ",
 
-    // ✅ Submit button
     submitButton:
       "✅ ចុះម៉ោងចូល",
     submitButtonCheckIn:
@@ -367,13 +336,11 @@ const i18n = {
     submitButtonCheckOut:
       "🚪 ចុះម៉ោងចេញ",
 
-    // Auto-fill
     autoFillMsg:
       "✅ រកឃើញសិស្ស។ ព័ត៌មានត្រូវបានបំពេញដោយស្វ័យប្រវត្តិ។",
     autoFillReadOnly:
-      "ឈ្មោះ អាយុ និងថ្នាក់ជាព័ត៌មានអានតែប៉ុណ្ណោះ។",
+      "ឈ្មោះ ភេទ និងថ្នាក់ជាព័ត៌មានអានតែប៉ុណ្ណោះ។",
 
-    // Errors
     errStudentId:
       "សូមបញ្ចូលលេខសម្គាល់សិស្ស។",
     errStudentIdNotFound:
@@ -387,15 +354,14 @@ const i18n = {
     errAlreadyCheckedIn:
       "អ្នកបានចុះម៉ោងចូលរួចហើយ។",
     errDeviceUsed:
-      "ឧបករណ៍នេះបានចុះវត្តមានរួចហើយសម្រាប់វគ្គចុះវត្តមាននេះ។",
+      "ឧបករណ៍នេះបានចុះវត្តមានរួចហើយ។",
     errRateLimit:
       "អ្នកបានព្យាយាមច្រើនពេក។\nសូមរង់ចាំ ៥ នាទី។",
     errSessionClosed:
       "វគ្គចុះវត្តមានបានបញ្ចប់។",
 
-    // ✅ NEW — Check-Out specific errors (Khmer)
     errNotCheckedInYet:
-      "មិនទាន់ចុះវត្តមាន — អ្នកត្រូវចុះម៉ោងចូលជាមុនសិន មុននឹងចុះម៉ោងចេញ។",
+      "មិនទាន់ចុះវត្តមាន — អ្នកត្រូវចុះម៉ោងចូលជាមុនសិន។",
     errAlreadyCheckedOut:
       "អ្នកបានចុះម៉ោងចេញរួចហើយសម្រាប់វគ្គនេះ។",
     errCheckOutLocation:
@@ -403,7 +369,6 @@ const i18n = {
     errNotCheckedIn:
       "អ្នកត្រូវចុះម៉ោងចូលជាមុនសិន។",
 
-    // Check-in success
     successTitle:
       "ចុះម៉ោងចូលបានជោគជ័យ!",
     successMessage:
@@ -411,13 +376,11 @@ const i18n = {
     savingText:
       "កំពុងរក្សាទុកវត្តមាន...",
 
-    // ✅ Check-out success (Khmer)
     checkOutSuccessTitle:
       "ចុះម៉ោងចេញបានជោគជ័យ!",
     checkOutSuccessMessage:
       "ការចុះម៉ោងចេញរបស់អ្នកត្រូវបានកត់ត្រា។",
 
-    // Checkout card
     checkedInTitle:
       "អ្នកបានចុះម៉ោងចូលហើយ",
     checkInTimeLabel:
@@ -441,19 +404,20 @@ const i18n = {
     alreadyCheckedOutMsg:
       "✅ អ្នកបានចុះម៉ោងចេញរួចហើយ។",
 
-    // ✅ NEW — Not checked in card (Khmer)
     notCheckedInTitle:
       "មិនទាន់ចុះវត្តមាន",
     notCheckedInMsg:
       "អ្នកត្រូវចុះម៉ោងចូលជាមុនសិន មុននឹងអាចចុះម៉ោងចេញបាន។ សូមស្នើ QR Code ម៉ោងចូលពីគ្រូ។",
 
-    // Footer
     footerSecurity:
       "🔒 ទីតាំងរបស់អ្នកត្រូវបានប្រើតែ​សម្រាប់​ផ្ទៀង​ផ្ទាត់​វត្តមាន​ប៉ុណ្ណោះ។",
     footerSchool:
       "ប្រព័ន្ធវត្តមានវិទ្យាល័យទេពប្រណម្យ",
 
-    // Table
+    // ✅ Sex values for display (Khmer)
+    sexMale:   "ប្រុស",
+    sexFemale: "ស្រី",
+
     colDate: "កាលបរិច្ឆេទ",
     colTime: "ម៉ោង"
   }
@@ -467,7 +431,21 @@ function i(key) {
 }
 
 // ================================================
+// TRANSLATE SEX VALUE
+// Firebase stores "Male" or "Female" in English.
+// This converts to the current language.
+// ================================================
+function translateSex(sexValue) {
+  if (!sexValue) return "—";
+  if (sexValue === "Male") return i("sexMale");
+  if (sexValue === "Female") return i("sexFemale");
+  return sexValue;
+}
+
+// ================================================
 // APPLY LANGUAGE
+// ✅ Fixed: now updates ALL placeholders and
+//    dynamic text using the translation system
 // ================================================
 function applyLanguage(lang) {
   currentLang = lang;
@@ -479,6 +457,7 @@ function applyLanguage(lang) {
     "khmer", lang === "km"
   );
 
+  // Update all data-i18n text content
   document.querySelectorAll("[data-i18n]")
     .forEach(function (el) {
       const key = el.getAttribute("data-i18n");
@@ -486,6 +465,7 @@ function applyLanguage(lang) {
       if (val !== key) el.textContent = val;
     });
 
+  // ✅ Update all data-i18n-placeholder inputs
   document.querySelectorAll(
     "[data-i18n-placeholder]"
   ).forEach(function (el) {
@@ -508,7 +488,16 @@ function applyLanguage(lang) {
     retryBtn.textContent = i("retryLocation");
   }
 
-  // ✅ Update form title based on current mode
+  // ✅ Update sex field if already filled
+  // (re-translate displayed sex value)
+  const sexField =
+    document.getElementById("sex");
+  if (sexField && sexField.dataset.rawValue) {
+    sexField.value =
+      translateSex(sexField.dataset.rawValue);
+  }
+
+  // ✅ Update form title and button for mode
   updateFormForMode();
 
   // ✅ Update mode banner text
@@ -522,11 +511,7 @@ function applyLanguage(lang) {
 }
 
 // ================================================
-// ✅ UPDATE FORM FOR CURRENT QR MODE
-//
-// Changes the form title and submit button text
-// based on whether this is a check-in or
-// check-out QR code.
+// UPDATE FORM FOR CURRENT QR MODE
 // ================================================
 function updateFormForMode() {
   const titleEl =
@@ -536,7 +521,6 @@ function updateFormForMode() {
     document.getElementById("submitBtn");
 
   if (qrMode === "checkOut") {
-    // Check-Out mode
     if (titleEl) {
       titleEl.textContent = i("formTitleCheckOut");
     }
@@ -545,7 +529,6 @@ function updateFormForMode() {
         i("submitButtonCheckOut");
     }
   } else {
-    // Check-In mode (default)
     if (titleEl) {
       titleEl.textContent = i("formTitleCheckIn");
     }
@@ -557,12 +540,7 @@ function updateFormForMode() {
 }
 
 // ================================================
-// ✅ UPDATE MODE BANNER
-//
-// Shows students a clear message:
-// "This is a CHECK-IN QR Code"
-// or
-// "This is a CHECK-OUT QR Code"
+// UPDATE MODE BANNER
 // ================================================
 function updateModeBanner() {
   const banner =
@@ -597,18 +575,10 @@ function updateModeBanner() {
 function getOrCreateDeviceToken() {
   const KEY = "attendanceDeviceToken";
   let token = localStorage.getItem(KEY);
-
   if (!token) {
     token = crypto.randomUUID();
     localStorage.setItem(KEY, token);
-    console.log("🆕 New device token:", token);
-  } else {
-    console.log(
-      "♻️ Existing token:",
-      token.substring(0, 8) + "..."
-    );
   }
-
   return token;
 }
 
@@ -638,6 +608,7 @@ function updateStudentIdFieldState() {
 
 // ================================================
 // LOAD STUDENTS FROM FIREBASE
+// ✅ Now reads sex field instead of age
 // ================================================
 async function loadAllStudents() {
   studentsLoaded = false;
@@ -656,8 +627,11 @@ async function loadAllStudents() {
       studentsMap.set(docId, {
         studentId: docId,
         fullName:  data.fullName || "",
-        age:       data.age      ?? "",
-        grade:     data.grade    || ""
+        // ✅ Read sex field. Also check age
+        // for backward compatibility if some
+        // records still have age but not sex.
+        sex:       data.sex   || "",
+        grade:     data.grade || ""
       });
     });
 
@@ -691,6 +665,7 @@ function findStudent(rawId) {
 
 // ================================================
 // VALIDATE STUDENT ID — AUTO-FILL
+// ✅ Now fills sex field instead of age
 // ================================================
 function validateStudentId() {
   const idInput =
@@ -736,8 +711,18 @@ function validateStudentId() {
   if (idError) idError.textContent = "";
 
   setField("fullName", student.fullName);
-  setField("age",      String(student.age));
-  setField("grade",    student.grade);
+
+  // ✅ Fill sex field with translated value
+  // Store raw English value in data attribute
+  // so re-translation works when lang switches
+  const sexField =
+    document.getElementById("sex");
+  if (sexField) {
+    sexField.dataset.rawValue = student.sex;
+    sexField.value = translateSex(student.sex);
+  }
+
+  setField("grade", student.grade);
 
   if (msgEl) {
     msgEl.textContent   = i("autoFillMsg");
@@ -758,8 +743,16 @@ function setField(id, value) {
 
 function clearAutoFill() {
   setField("fullName", "");
-  setField("age",      "");
-  setField("grade",    "");
+
+  // ✅ Clear sex field and raw value
+  const sexField =
+    document.getElementById("sex");
+  if (sexField) {
+    sexField.value = "";
+    sexField.dataset.rawValue = "";
+  }
+
+  setField("grade", "");
 
   const submitBtn =
     document.getElementById("submitBtn");
@@ -1048,7 +1041,9 @@ function showRateLimitBox() {
       document.getElementById("rlCountdown");
     if (el) {
       el.textContent =
-        `⏱ ${mins}:${String(secs).padStart(2,"0")}`;
+        `⏱ ${mins}:${
+          String(secs).padStart(2, "0")
+        }`;
     }
     setTimeout(tick, 1000);
   }
@@ -1056,7 +1051,7 @@ function showRateLimitBox() {
 }
 
 // ================================================
-// HANDLE SESSION CLOSED (real-time)
+// HANDLE SESSION CLOSED
 // ================================================
 function handleSessionClosed() {
   if (sessionListener) {
@@ -1134,20 +1129,13 @@ function startSessionListener() {
 }
 
 // ================================================
-// ✅ LOAD SESSION
-//
-// Now also reads the "mode" URL parameter.
-// ?session=SESSION_ID&mode=checkIn
-// ?session=SESSION_ID&mode=checkOut
-//
-// If mode is not in URL, defaults to "checkIn".
+// LOAD SESSION
 // ================================================
 async function loadSession() {
   const params  =
     new URLSearchParams(window.location.search);
   sessionId = params.get("session");
 
-  // ✅ Read mode from URL
   const modeParam = params.get("mode");
   if (
     modeParam === "checkOut" ||
@@ -1155,11 +1143,8 @@ async function loadSession() {
   ) {
     qrMode = modeParam;
   } else {
-    // Default to checkIn if not specified
     qrMode = "checkIn";
   }
-
-  console.log("📱 QR Mode:", qrMode);
 
   const formCard =
     document.getElementById("formCard");
@@ -1212,12 +1197,10 @@ async function loadSession() {
       return;
     }
 
-    // Rate limit check
     if (isRateLimited()) {
       showRateLimitBox();
     }
 
-    // Show open banner
     banner.style.display    = "flex";
     bannerIcon.textContent  = "🟢";
     bannerText.textContent  = i("sessionActive");
@@ -1225,19 +1208,12 @@ async function loadSession() {
     banner.style.color      = "#16a34a";
     banner.style.border     = "1px solid #86efac";
 
-    // ✅ Show mode banner to student
     updateModeBanner();
-
-    // ✅ Update form title and button for mode
     updateFormForMode();
 
-    // Get or create device token
     deviceToken = getOrCreateDeviceToken();
-
-    // Start real-time session watcher
     startSessionListener();
 
-    // Load students AND request location
     await Promise.all([
       loadAllStudents(),
       new Promise(resolve => {
@@ -1245,11 +1221,6 @@ async function loadSession() {
         resolve();
       })
     ]);
-
-    // ✅ If this is a CHECK-OUT QR,
-    // check if student already has a record
-    // We handle this in submitAttendance below
-    // when student enters their ID and submits.
 
   } catch (err) {
     console.error("Load session error:", err);
@@ -1280,7 +1251,7 @@ function showError(message) {
 }
 
 // ================================================
-// VALIDATE FORM BEFORE SUBMIT
+// VALIDATE FORM
 // ================================================
 function validateForm() {
   const idVal =
@@ -1312,7 +1283,7 @@ function validateForm() {
 }
 
 // ================================================
-// FORMAT TIME FOR DISPLAY
+// FORMAT TIME
 // ================================================
 function formatTime(date) {
   return date.toLocaleTimeString([], {
@@ -1391,13 +1362,9 @@ function showCheckoutCard(
 }
 
 // ================================================
-// ✅ SHOW NOT CHECKED IN CARD
-//
-// Shown when student scans a Check-Out QR
-// but has not checked in yet.
+// SHOW NOT CHECKED IN CARD
 // ================================================
 function showNotCheckedInCard() {
-  // Hide other cards
   const hideIds = [
     "formCard",
     "distanceBox",
@@ -1414,7 +1381,6 @@ function showNotCheckedInCard() {
   const card =
     document.getElementById("notCheckedInCard");
   if (card) {
-    // Update text for current language
     const title =
       card.querySelector(
         "[data-i18n='notCheckedInTitle']"
@@ -1434,33 +1400,16 @@ function showNotCheckedInCard() {
 }
 
 // ================================================
-// ✅ SUBMIT ATTENDANCE
-//
-// This now handles BOTH check-in and check-out
-// depending on the qrMode variable.
-//
-// CHECK-IN MODE (qrMode === "checkIn"):
-//   Same as before.
-//   Records checkInTime.
-//
-// CHECK-OUT MODE (qrMode === "checkOut"):
-//   1. Find existing attendance record
-//   2. Check if student has checkInTime
-//   3. If NOT checked in → show notCheckedInCard
-//   4. If already checked out → show error
-//   5. If checked in and not checked out →
-//      record checkOutTime
+// SUBMIT ATTENDANCE
 // ================================================
 async function submitAttendance(e) {
   e.preventDefault();
 
-  // 1. Rate limit
   if (isRateLimited()) {
     showRateLimitBox();
     return;
   }
 
-  // 2. Form validation
   if (!validateForm()) {
     const idVal =
       document.getElementById("studentId")
@@ -1472,7 +1421,6 @@ async function submitAttendance(e) {
     return;
   }
 
-  // 3. GPS
   if (!locationVerified || !studentLocation) {
     showError(i("errLocation"));
     return;
@@ -1496,41 +1444,29 @@ async function submitAttendance(e) {
   const studentIdVal = normalizeId(
     document.getElementById("studentId").value
   );
-  const student      = findStudent(studentIdVal);
-  const nameVal      = student?.fullName || "";
-  const ageVal       = student?.age      || "";
-  const gradeVal     = student?.grade    || "";
+  const student  = findStudent(studentIdVal);
+  const nameVal  = student?.fullName || "";
+  const sexVal   = student?.sex      || "";
+  const gradeVal = student?.grade    || "";
 
   const overlay =
     document.getElementById("loadingOverlay");
   if (overlay) overlay.style.display = "flex";
 
-  // ✅ BRANCH: Check-In or Check-Out?
   if (qrMode === "checkOut") {
-    // =============================================
-    // CHECK-OUT FLOW
-    // The form is being submitted with a
-    // Check-Out QR Code.
-    //
-    // We do NOT create a new attendance record.
-    // We find the existing one and update it.
-    // =============================================
     await handleCheckOutSubmit(
       studentIdVal,
       nameVal,
-      ageVal,
+      sexVal,
       gradeVal,
       dist,
       overlay
     );
   } else {
-    // =============================================
-    // CHECK-IN FLOW (original behavior)
-    // =============================================
     await handleCheckInSubmit(
       studentIdVal,
       nameVal,
-      ageVal,
+      sexVal,
       gradeVal,
       dist,
       overlay
@@ -1539,21 +1475,18 @@ async function submitAttendance(e) {
 }
 
 // ================================================
-// ✅ HANDLE CHECK-IN SUBMIT
-//
-// Original check-in logic extracted to its own
-// function. Behavior is identical to before.
+// HANDLE CHECK-IN SUBMIT
+// ✅ Now uses sex instead of age
 // ================================================
 async function handleCheckInSubmit(
   studentIdVal,
   nameVal,
-  ageVal,
+  sexVal,
   gradeVal,
   dist,
   overlay
 ) {
   try {
-    // Re-verify session is still open
     const freshSnap = await getDoc(
       doc(db, "session", "current")
     );
@@ -1572,7 +1505,6 @@ async function handleCheckInSubmit(
       }
     }
 
-    // Device token check — atomic transaction
     const deviceKey    =
       sessionId + "_" + deviceToken;
     const deviceLogRef =
@@ -1590,10 +1522,11 @@ async function handleCheckInSubmit(
     let alreadyCheckedIn   = false;
 
     await runTransaction(db, async (tx) => {
-      const deviceSnap = await tx.get(deviceLogRef);
-      const recordSnap = await tx.get(recordRef);
+      const deviceSnap =
+        await tx.get(deviceLogRef);
+      const recordSnap =
+        await tx.get(recordRef);
 
-      // Check device token
       if (deviceSnap.exists()) {
         const dl = deviceSnap.data();
         if (dl.studentId !== studentIdVal) {
@@ -1602,7 +1535,6 @@ async function handleCheckInSubmit(
         }
       }
 
-      // Check attendance record
       if (!recordSnap.exists()) {
         return;
       }
@@ -1613,16 +1545,17 @@ async function handleCheckInSubmit(
         return;
       }
 
-      // All checks passed — save check-in
       const now         = new Date();
       const checkInTime = now.toISOString();
       const display     = formatTime(now);
       const checkDate   =
         now.toLocaleDateString("en-CA");
 
+      // ✅ Store sex instead of age
       const data = {
         fullName:           nameVal,
-        age:                Number(ageVal),
+        // Store English sex value in Firebase
+        sex:                sexVal,
         grade:              gradeVal,
         studentId:          studentIdVal,
         sessionId:          sessionId,
@@ -1643,7 +1576,6 @@ async function handleCheckInSubmit(
 
       tx.update(recordRef, data);
 
-      // Save device log
       tx.set(deviceLogRef, {
         deviceToken: deviceToken,
         studentId:   studentIdVal,
@@ -1668,7 +1600,6 @@ async function handleCheckInSubmit(
       return;
     }
 
-    // ✅ SUCCESS — Show checkout card
     resetRateLimit();
     currentStudentId = studentIdVal;
     studentCheckedIn = true;
@@ -1681,8 +1612,6 @@ async function handleCheckInSubmit(
       false
     );
 
-    console.log("✅ Check-in saved:", studentIdVal);
-
   } catch (err) {
     console.error("Check-in error:", err);
     if (overlay) overlay.style.display = "none";
@@ -1691,28 +1620,17 @@ async function handleCheckInSubmit(
 }
 
 // ================================================
-// ✅ HANDLE CHECK-OUT SUBMIT
-//
-// When student submits the form while QR mode
-// is "checkOut".
-//
-// Steps:
-// 1. Re-verify session is open
-// 2. Find student's existing attendance record
-// 3. If no checkInTime → show notCheckedInCard
-// 4. If already checked out → show error
-// 5. If checked in but not out → save checkOutTime
+// HANDLE CHECK-OUT SUBMIT
 // ================================================
 async function handleCheckOutSubmit(
   studentIdVal,
   nameVal,
-  ageVal,
+  sexVal,
   gradeVal,
   dist,
   overlay
 ) {
   try {
-    // 1. Re-verify session is still open
     const freshSnap = await getDoc(
       doc(db, "session", "current")
     );
@@ -1731,7 +1649,6 @@ async function handleCheckOutSubmit(
       }
     }
 
-    // 2. Find existing attendance record
     const recordRef = doc(
       db,
       "sessionAttendance",
@@ -1744,7 +1661,6 @@ async function handleCheckOutSubmit(
 
     if (overlay) overlay.style.display = "none";
 
-    // If no record exists at all
     if (!recordSnap.exists()) {
       showNotCheckedInCard();
       return;
@@ -1752,8 +1668,6 @@ async function handleCheckOutSubmit(
 
     const rd = recordSnap.data();
 
-    // 3. If student has NOT checked in
-    //    (checkInTime is null or status is not present)
     if (
       !rd.checkInTime ||
       rd.status !== "present"
@@ -1762,32 +1676,25 @@ async function handleCheckOutSubmit(
       return;
     }
 
-    // 4. If student already checked out
     if (rd.checkOutTime) {
-      // Show checkout card with both times
       showCheckoutCard(
         rd.fullName || nameVal,
         rd.checkInDisplay || "--",
         rd.checkOutDisplay || "--",
-        true  // isCheckedOut = true
+        true
       );
       return;
     }
 
-    // 5. Student has checked in but not out.
-    //    Now do the check-out.
-    //    Re-verify location (already done above
-    //    in submitAttendance — dist is passed in).
-
     if (overlay) overlay.style.display = "flex";
 
-    // Re-get fresh location for checkout
     navigator.geolocation.getCurrentPosition(
       async function (pos) {
         const freshLat  = pos.coords.latitude;
         const freshLon  = pos.coords.longitude;
         const freshDist = haversineDistance(
-          freshLat, freshLon, SCHOOL_LAT, SCHOOL_LON
+          freshLat, freshLon,
+          SCHOOL_LAT, SCHOOL_LON
         );
 
         if (freshDist > MAX_DISTANCE) {
@@ -1819,25 +1726,11 @@ async function handleCheckOutSubmit(
           studentCheckedIn  = true;
           studentCheckedOut = true;
 
-          // Show checkout card with both times
           showCheckoutCard(
             rd.fullName || nameVal,
             rd.checkInDisplay || "--",
             checkOutDisplay,
-            true  // isCheckedOut = true
-          );
-
-          // Update the checkout time display
-          const coEl = document.getElementById(
-            "displayCheckOutTime"
-          );
-          if (coEl) {
-            coEl.textContent = checkOutDisplay;
-          }
-
-          console.log(
-            "✅ Check-out saved:",
-            studentIdVal
+            true
           );
 
         } catch (err) {
@@ -1873,18 +1766,7 @@ async function handleCheckOutSubmit(
 }
 
 // ================================================
-// ✅ CHECK OUT BUTTON HANDLER
-//
-// This is for the checkOutBtn inside the
-// checkoutCard — for students who already
-// checked in via check-in QR and want to
-// check out using the same page.
-//
-// Security checks:
-// 1. Student checked in
-// 2. Not already checked out
-// 3. Session still open
-// 4. Within 100 meters
+// CHECK OUT BUTTON HANDLER
 // ================================================
 async function handleCheckOut() {
   if (!studentCheckedIn) {
@@ -1920,14 +1802,14 @@ async function handleCheckOut() {
           overlay.style.display = "none";
         }
         if (loadingText) {
-          loadingText.textContent = i("savingText");
+          loadingText.textContent =
+            i("savingText");
         }
         showError(i("errCheckOutLocation"));
         return;
       }
 
       try {
-        // Verify session still open
         const freshSnap = await getDoc(
           doc(db, "session", "current")
         );
@@ -1956,7 +1838,8 @@ async function handleCheckOut() {
           currentStudentId
         );
 
-        const recordSnap = await getDoc(recordRef);
+        const recordSnap =
+          await getDoc(recordRef);
         if (!recordSnap.exists()) {
           if (overlay) {
             overlay.style.display = "none";
@@ -1992,12 +1875,13 @@ async function handleCheckOut() {
 
         studentCheckedOut = true;
 
-        if (overlay) overlay.style.display = "none";
+        if (overlay) {
+          overlay.style.display = "none";
+        }
         if (loadingText) {
           loadingText.textContent = i("savingText");
         }
 
-        // Update checkout card display
         const coEl = document.getElementById(
           "displayCheckOutTime"
         );
@@ -2018,14 +1902,11 @@ async function handleCheckOut() {
           doneMsg.style.color   = "#16a34a";
         }
 
-        console.log(
-          "✅ Check-out saved:",
-          currentStudentId
-        );
-
       } catch (err) {
         console.error("Check-out error:", err);
-        if (overlay) overlay.style.display = "none";
+        if (overlay) {
+          overlay.style.display = "none";
+        }
         if (loadingText) {
           loadingText.textContent = i("savingText");
         }
@@ -2068,7 +1949,6 @@ document.getElementById("attendanceForm")
 document.getElementById("checkOutBtn")
   ?.addEventListener("click", handleCheckOut);
 
-// Student ID input — debounced validation
 let idTimer = null;
 document.getElementById("studentId")
   ?.addEventListener("input", function () {
