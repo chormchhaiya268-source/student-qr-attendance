@@ -16,6 +16,107 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Battambang:wght@400;700&family=Kantumruy+Pro:ital,wght@0,100..700;1,100..700&display=swap"
     rel="stylesheet">
+
+  <!-- ============================================
+       ATTENDANCE MODE SWITCH STYLES
+       Only new styles added here.
+       All existing styles remain in style.css
+  ============================================ -->
+  <style>
+    /* Attendance Mode Switch Container */
+    .att-mode-switch-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+
+    .att-mode-label {
+      font-size: 14px;
+      font-weight: 600;
+      color: #374151;
+    }
+
+    /* The toggle track */
+    .att-mode-track {
+      display: flex;
+      background: #e2e8f0;
+      border-radius: 50px;
+      padding: 3px;
+      gap: 2px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    /* Each option inside the track */
+    .att-mode-option {
+      padding: 6px 18px;
+      border-radius: 50px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #64748b;
+      transition: all 0.25s ease;
+      white-space: nowrap;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      font-family: inherit;
+    }
+
+    /* Active option — green for check-in */
+    .att-mode-option.active-checkin {
+      background: #16a34a;
+      color: #ffffff;
+      box-shadow: 0 2px 8px rgba(22,163,74,0.3);
+    }
+
+    /* Active option — orange for check-out */
+    .att-mode-option.active-checkout {
+      background: #f59e0b;
+      color: #ffffff;
+      box-shadow: 0 2px 8px rgba(245,158,11,0.3);
+    }
+
+    /* Mode indicator badge under QR */
+    .qr-mode-badge {
+      display: inline-block;
+      padding: 5px 16px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 700;
+      margin: 8px auto;
+      text-align: center;
+    }
+
+    .qr-mode-badge.checkin {
+      background: #dcfce7;
+      color: #16a34a;
+      border: 1px solid #86efac;
+    }
+
+    .qr-mode-badge.checkout {
+      background: #fef3c7;
+      color: #92400e;
+      border: 1px solid #fcd34d;
+    }
+
+    /* Time setting row */
+    .mode-time-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+
+    .mode-time-row label {
+      font-size: 13px;
+      font-weight: 600;
+      color: #374151;
+      min-width: 110px;
+    }
+  </style>
 </head>
 
 <body class="teacher-body">
@@ -203,7 +304,13 @@
              min-height:20px;"></p>
   </div>
 
-  <!-- SESSION CONTROL -->
+  <!-- =============================================
+       SESSION CONTROL PANEL
+       Now includes:
+       1. Attendance Mode Switch (NEW)
+       2. Separate time inputs for check-in/out
+       3. Existing session open/close buttons
+  ============================================= -->
   <div class="session-panel">
     <div class="session-panel-title">
       🎛️
@@ -220,21 +327,116 @@
       </span>
     </div>
 
-    <div class="session-controls">
-      <div class="session-field">
-        <label data-t="openTimeLabel">
-          Open Time
-        </label>
-        <input type="time"
-          id="openTime" value="07:00">
+    <!-- ==========================================
+         ATTENDANCE MODE SWITCH
+         This is the NEW toggle.
+         It switches between ម៉ោងចូល and ម៉ោងចេញ.
+         It looks like the language button but
+         controls which QR mode is active.
+    ========================================== -->
+    <div class="att-mode-switch-wrap">
+
+      <!-- Label -->
+      <span class="att-mode-label"
+        data-t="attModeLabel">
+        Attendance Mode:
+      </span>
+
+      <!-- Toggle track with two buttons inside -->
+      <div class="att-mode-track"
+        id="attModeTrack">
+
+        <!-- CHECK-IN option -->
+        <button
+          class="att-mode-option active-checkin"
+          id="modeCheckInBtn"
+          type="button"
+          data-t="modeCheckIn">
+          ម៉ោងចូល
+        </button>
+
+        <!-- CHECK-OUT option -->
+        <button
+          class="att-mode-option"
+          id="modeCheckOutBtn"
+          type="button"
+          data-t="modeCheckOut">
+          ម៉ោងចេញ
+        </button>
+
       </div>
-      <div class="session-field">
-        <label data-t="closeTimeLabel">
-          Close Time
-        </label>
-        <input type="time"
-          id="closeTime" value="08:30">
-      </div>
+
+      <!-- Current mode indicator text -->
+      <span id="attModeIndicator"
+        style="font-size:13px;
+               color:#16a34a;
+               font-weight:600;">
+      </span>
+
+    </div>
+
+    <!-- ==========================================
+         TIME INPUTS
+         Check-In time and Check-Out time are
+         separate. Only one is shown at a time
+         based on the current mode.
+    ========================================== -->
+
+    <!-- CHECK-IN TIME ROW (shown when mode=checkIn) -->
+    <div class="mode-time-row"
+      id="checkInTimeRow">
+      <label
+        for="checkInTime"
+        data-t="checkInTimeLabel">
+        ម៉ោងចូល:
+      </label>
+      <input
+        type="time"
+        id="checkInTime"
+        value="07:00"
+        style="padding:8px 12px;
+               border:1px solid #e2e8f0;
+               border-radius:8px;
+               font-size:14px;">
+    </div>
+
+    <!-- CHECK-OUT TIME ROW (shown when mode=checkOut) -->
+    <div class="mode-time-row"
+      id="checkOutTimeRow"
+      style="display:none;">
+      <label
+        for="checkOutTime"
+        data-t="checkOutTimeLabel">
+        ម៉ោងចេញ:
+      </label>
+      <input
+        type="time"
+        id="checkOutTime"
+        value="11:30"
+        style="padding:8px 12px;
+               border:1px solid #e2e8f0;
+               border-radius:8px;
+               font-size:14px;">
+    </div>
+
+    <!-- ==========================================
+         EXISTING SESSION OPEN/CLOSE CONTROLS
+         These remain exactly as before.
+         They control the session, NOT the mode.
+    ========================================== -->
+    <div class="session-controls"
+      style="margin-top:14px;">
+
+      <!-- NOTE: openTime and closeTime inputs
+           are kept for session open/close logic.
+           They are hidden because the teacher
+           now uses checkInTime and checkOutTime
+           above instead. -->
+      <input type="hidden"
+        id="openTime" value="07:00">
+      <input type="hidden"
+        id="closeTime" value="11:30">
+
       <button id="startSessionBtn"
         class="btn btn-blue">
         <span data-t="startSession">
@@ -309,6 +511,21 @@
                       session-id-value"
             id="statusSessionId">—</div>
         </div>
+
+        <!-- ✅ NEW: Current mode card -->
+        <div class="status-card">
+          <div class="status-card-icon">🔄</div>
+          <div class="status-card-label"
+            data-t="currentModeLabel">
+            Current Mode
+          </div>
+          <div class="status-card-value"
+            id="statusCurrentMode"
+            style="font-size:13px;">
+            —
+          </div>
+        </div>
+
         <div class="status-card status-qr">
           <div class="status-card-icon">📱</div>
           <div class="status-card-label"
@@ -336,6 +553,13 @@
       data-t="qrTitle">
       📱 Today's QR Code
     </div>
+
+    <!-- ✅ NEW: Mode badge shown above QR -->
+    <div id="qrModeBadge"
+      class="qr-mode-badge checkin"
+      style="margin-bottom:8px;">
+    </div>
+
     <div class="qr-session-info"
       id="qrSessionInfo"></div>
     <div class="qr-code-box">
@@ -437,8 +661,7 @@
       id="searchResultText"></p>
   </section>
 
-  <!-- ✅ ATTENDANCE TABLE
-       Includes ម៉ោងចូល ម៉ោងចេញ ស្ថានភាព -->
+  <!-- ATTENDANCE TABLE -->
   <section class="table-container">
     <div class="table-header">
       <h2 data-t="tableTitle">
@@ -464,8 +687,6 @@
             <th data-t="colGrade">
               Grade / Class
             </th>
-
-            <!-- ✅ NEW COLUMNS -->
             <th data-t="colCheckIn">
               ម៉ោងចូល
             </th>
@@ -475,7 +696,6 @@
             <th data-t="colStatus">
               ស្ថានភាព
             </th>
-
             <th data-t="colProfile">
               Profile
             </th>
@@ -525,8 +745,6 @@
         <span class="profile-row-value"
           id="profileGrade"></span>
       </div>
-
-      <!-- ✅ Check-in time -->
       <div class="profile-row">
         <span class="profile-row-label"
           data-t="colCheckIn">
@@ -535,8 +753,6 @@
         <span class="profile-row-value"
           id="profileCheckIn"></span>
       </div>
-
-      <!-- ✅ Check-out time -->
       <div class="profile-row">
         <span class="profile-row-label"
           data-t="colCheckOut">
@@ -545,7 +761,6 @@
         <span class="profile-row-value"
           id="profileCheckOut"></span>
       </div>
-
       <div class="profile-row">
         <span class="profile-row-label"
           data-t="colStatus">Status</span>
@@ -692,6 +907,8 @@ onAuthStateChanged(auth, function (user) {
 
 // ============================================
 // TRANSLATIONS
+// All new keys for the mode switch are added.
+// Existing keys are kept unchanged.
 // ============================================
 const tt = {
   en: {
@@ -730,8 +947,6 @@ const tt = {
     sessionControlTitle: "Session Control",
     sessionOpen:         "OPEN",
     sessionClosed:       "Closed",
-    openTimeLabel:       "Open Time",
-    closeTimeLabel:      "Close Time",
     startSession:        "▶ Start Attendance",
     endSession:          "⏹ End Attendance",
     sessionActive:
@@ -750,6 +965,28 @@ const tt = {
       "Session error. Please try again.",
     noStudentsError:
       "Please add students before starting.",
+
+    // ✅ NEW — Attendance Mode Switch
+    attModeLabel:
+      "Attendance Mode:",
+    modeCheckIn:
+      "ម៉ោងចូល",
+    modeCheckOut:
+      "ម៉ោងចេញ",
+    checkInTimeLabel:
+      "ម៉ោងចូល:",
+    checkOutTimeLabel:
+      "ម៉ោងចេញ:",
+    currentModeLabel:
+      "Current Mode",
+    modeIndicatorCheckIn:
+      "📥 Check-In Mode",
+    modeIndicatorCheckOut:
+      "📤 Check-Out Mode",
+    qrBadgeCheckIn:
+      "✅ QR សម្រាប់ម៉ោងចូល (Check-In QR)",
+    qrBadgeCheckOut:
+      "🚪 QR សម្រាប់ម៉ោងចេញ (Check-Out QR)",
 
     // Status panel
     attendanceStatusTitle: "Attendance Status",
@@ -786,8 +1023,6 @@ const tt = {
     colName:     "Student Name",
     colAge:      "Age",
     colGrade:    "Grade / Class",
-
-    // ✅ NEW columns
     colCheckIn:  "ម៉ោងចូល",
     colCheckOut: "ម៉ោងចេញ",
     colStatus:   "ស្ថានភាព",
@@ -801,7 +1036,6 @@ const tt = {
     profileDistance: "Distance from School",
     closeProfile:    "Close",
 
-    // ✅ Status values
     notCheckedInYet: "មិនទាន់ចុះវត្តមាន",
     present:         "✅ មានវត្តមាន",
     notCheckedOut:   "មិនទាន់ចេញ",
@@ -850,8 +1084,6 @@ const tt = {
     sessionControlTitle: "គ្រប់គ្រងវគ្គ",
     sessionOpen:         "បើក",
     sessionClosed:       "បិទ",
-    openTimeLabel:       "ម៉ោងបើក",
-    closeTimeLabel:      "ម៉ោងបិទ",
     startSession:        "▶ ចាប់ផ្ដើមវត្តមាន",
     endSession:          "⏹ បញ្ចប់វត្តមាន",
     sessionActive:
@@ -870,6 +1102,28 @@ const tt = {
       "មានបញ្ហា។ សូមព្យាយាមម្តងទៀត។",
     noStudentsError:
       "សូមបន្ថែមសិស្សមុន។",
+
+    // ✅ NEW — Attendance Mode Switch (Khmer)
+    attModeLabel:
+      "របៀបវត្តមាន:",
+    modeCheckIn:
+      "ម៉ោងចូល",
+    modeCheckOut:
+      "ម៉ោងចេញ",
+    checkInTimeLabel:
+      "ម៉ោងចូល:",
+    checkOutTimeLabel:
+      "ម៉ោងចេញ:",
+    currentModeLabel:
+      "របៀបបច្ចុប្បន្ន",
+    modeIndicatorCheckIn:
+      "📥 របៀបម៉ោងចូល",
+    modeIndicatorCheckOut:
+      "📤 របៀបម៉ោងចេញ",
+    qrBadgeCheckIn:
+      "✅ QR សម្រាប់ម៉ោងចូល",
+    qrBadgeCheckOut:
+      "🚪 QR សម្រាប់ម៉ោងចេញ",
 
     attendanceStatusTitle: "ស្ថានភាពវត្តមាន",
     statusLabel:           "ស្ថានភាព",
@@ -952,6 +1206,11 @@ let sessionStartedAt    = null;
 let unsubscribeListener = null;
 let elapsedInterval     = null;
 
+// ✅ NEW — Attendance Mode State
+// "checkIn" or "checkOut"
+// Default is checkIn when page loads
+let attendanceMode = "checkIn";
+
 // ============================================
 // SAFE HTML
 // ============================================
@@ -982,6 +1241,7 @@ function applyTeacherLang(lang) {
       ? "ផ្ទាំងគ្រប់គ្រងគ្រូ - វិទ្យាល័យទេពប្រណម្យ"
       : "Teacher Dashboard - Tepranom";
 
+  // Update all data-t elements
   document.querySelectorAll("[data-t]")
     .forEach(el => {
       const key = el.getAttribute("data-t");
@@ -998,6 +1258,10 @@ function applyTeacherLang(lang) {
   if (search) {
     search.placeholder = t("searchPlaceholder");
   }
+
+  // ✅ Update mode switch text and indicator
+  // when language changes
+  updateModeUI();
 
   renderStudentList();
   displayRecords(allRecords);
@@ -1042,20 +1306,39 @@ function generateSessionId() {
 }
 
 // ============================================
-// GENERATE QR CODE
+// ✅ GENERATE QR CODE — NOW INCLUDES MODE
+//
+// The QR URL now contains both:
+//   ?session=SESSION_ID&mode=checkIn
+// or
+//   ?session=SESSION_ID&mode=checkOut
+//
+// When teacher switches mode,
+// the QR is regenerated with the new mode.
 // ============================================
 function generateQRCode(sid) {
+  // Build base URL
   const base = getStudentUrl();
-  const url  = base + "?session=" + sid;
-  const qr   =
+
+  // ✅ Include mode in the URL
+  const url =
+    base +
+    "?session=" + sid +
+    "&mode=" + attendanceMode;
+
+  // Generate QR image
+  const qr =
     "https://api.qrserver.com/v1/" +
     "create-qr-code/?size=200x200&data=" +
     encodeURIComponent(url);
 
   document.getElementById("qrCodeImage").src = qr;
+
+  // Session info text
   document.getElementById("qrSessionInfo")
     .textContent = t("qrSession") + ": " + sid;
 
+  // Update QR URL display
   const urlEl =
     document.getElementById("qrUrlDisplay");
   if (urlEl) {
@@ -1063,17 +1346,137 @@ function generateQRCode(sid) {
     urlEl.href        = url;
   }
 
+  // ✅ Update the mode badge above the QR
+  const badge =
+    document.getElementById("qrModeBadge");
+  if (badge) {
+    if (attendanceMode === "checkIn") {
+      badge.textContent  = t("qrBadgeCheckIn");
+      badge.className    = "qr-mode-badge checkin";
+    } else {
+      badge.textContent  = t("qrBadgeCheckOut");
+      badge.className    = "qr-mode-badge checkout";
+    }
+  }
+
   document.getElementById("qrPanel")
     .style.display = "block";
 
+  // Download button
   document.getElementById("downloadQrBtn")
     .onclick = function () {
       const a = document.createElement("a");
       a.href     = qr;
-      a.download = "qr-" + sid + ".png";
+      a.download =
+        "qr-" + sid + "-" +
+        attendanceMode + ".png";
       a.target   = "_blank";
       a.click();
     };
+}
+
+// ============================================
+// ✅ UPDATE MODE UI
+//
+// This function:
+// 1. Updates the toggle button styles
+// 2. Shows/hides the correct time input
+// 3. Updates the mode indicator text
+// 4. Updates the status panel mode card
+// 5. Regenerates QR if session is open
+//
+// Called when:
+// - Teacher clicks a mode button
+// - Language changes
+// - Page loads
+// ============================================
+function updateModeUI() {
+  const ciBtn =
+    document.getElementById("modeCheckInBtn");
+  const coBtn =
+    document.getElementById("modeCheckOutBtn");
+  const ciRow =
+    document.getElementById("checkInTimeRow");
+  const coRow =
+    document.getElementById("checkOutTimeRow");
+  const indicator =
+    document.getElementById("attModeIndicator");
+  const modeCard =
+    document.getElementById("statusCurrentMode");
+
+  if (attendanceMode === "checkIn") {
+    // Check-In button is active (green)
+    if (ciBtn) {
+      ciBtn.className =
+        "att-mode-option active-checkin";
+    }
+    // Check-Out button is inactive
+    if (coBtn) {
+      coBtn.className = "att-mode-option";
+    }
+    // Show check-in time row
+    if (ciRow) ciRow.style.display = "flex";
+    if (coRow) coRow.style.display = "none";
+    // Update indicator text
+    if (indicator) {
+      indicator.textContent =
+        t("modeIndicatorCheckIn");
+      indicator.style.color = "#16a34a";
+    }
+    // Update status panel
+    if (modeCard) {
+      modeCard.textContent =
+        t("modeIndicatorCheckIn");
+      modeCard.style.color = "#16a34a";
+    }
+  } else {
+    // Check-Out button is active (orange)
+    if (coBtn) {
+      coBtn.className =
+        "att-mode-option active-checkout";
+    }
+    // Check-In button is inactive
+    if (ciBtn) {
+      ciBtn.className = "att-mode-option";
+    }
+    // Show check-out time row
+    if (ciRow) ciRow.style.display = "none";
+    if (coRow) coRow.style.display = "flex";
+    // Update indicator text
+    if (indicator) {
+      indicator.textContent =
+        t("modeIndicatorCheckOut");
+      indicator.style.color = "#f59e0b";
+    }
+    // Update status panel
+    if (modeCard) {
+      modeCard.textContent =
+        t("modeIndicatorCheckOut");
+      modeCard.style.color = "#f59e0b";
+    }
+  }
+
+  // ✅ If a session is already open,
+  // regenerate the QR with the new mode.
+  // The session stays the same.
+  // Only the mode in the URL changes.
+  if (sessionIsOpen && currentSessionId) {
+    generateQRCode(currentSessionId);
+  }
+}
+
+// ============================================
+// ✅ SWITCH MODE
+//
+// Called when teacher clicks either
+// ម៉ោងចូល or ម៉ោងចេញ button
+// ============================================
+function switchMode(newMode) {
+  // Only do something if mode actually changes
+  if (attendanceMode === newMode) return;
+
+  attendanceMode = newMode;
+  updateModeUI();
 }
 
 // ============================================
@@ -1084,7 +1487,8 @@ function startElapsedTimer(startedAtISO) {
     clearInterval(elapsedInterval);
   }
 
-  const startMs = new Date(startedAtISO).getTime();
+  const startMs =
+    new Date(startedAtISO).getTime();
 
   const startedEl =
     document.getElementById("startedAtValue");
@@ -1101,14 +1505,17 @@ function startElapsedTimer(startedAtISO) {
   function tick() {
     const elapsed = Date.now() - startMs;
     if (elapsed < 0) return;
-    const h = Math.floor(elapsed / 3600000);
-    const m = Math.floor((elapsed % 3600000) / 60000);
-    const s = Math.floor((elapsed % 60000) / 1000);
+    const h =
+      Math.floor(elapsed / 3600000);
+    const m =
+      Math.floor((elapsed % 3600000) / 60000);
+    const s =
+      Math.floor((elapsed % 60000) / 1000);
     if (elapsedEl) {
       elapsedEl.textContent =
-        String(h).padStart(2,"0") + ":" +
-        String(m).padStart(2,"0") + ":" +
-        String(s).padStart(2,"0");
+        String(h).padStart(2, "0") + ":" +
+        String(m).padStart(2, "0") + ":" +
+        String(s).padStart(2, "0");
     }
   }
 
@@ -1121,7 +1528,8 @@ function stopElapsedTimer() {
     clearInterval(elapsedInterval);
     elapsedInterval = null;
   }
-  const el = document.getElementById("elapsedValue");
+  const el =
+    document.getElementById("elapsedValue");
   if (el) el.textContent = "00:00:00";
 }
 
@@ -1144,6 +1552,21 @@ function showStatusPanel(sid, startedAt) {
     qrEl.textContent = t("qrActive");
     qrEl.className   =
       "status-card-value status-qr-active";
+  }
+
+  // ✅ Update mode card in status panel
+  const modeCard =
+    document.getElementById("statusCurrentMode");
+  if (modeCard) {
+    if (attendanceMode === "checkIn") {
+      modeCard.textContent =
+        t("modeIndicatorCheckIn");
+      modeCard.style.color = "#16a34a";
+    } else {
+      modeCard.textContent =
+        t("modeIndicatorCheckOut");
+      modeCard.style.color = "#f59e0b";
+    }
   }
 
   startElapsedTimer(startedAt);
@@ -1317,17 +1740,30 @@ window._removeStudent = removeStudent;
 
 // ============================================
 // START SESSION
+//
+// Uses checkInTime input for open time
+// Uses checkOutTime input for close time
+// The session is one single session.
+// Both check-in and check-out use same session.
 // ============================================
 async function startSession() {
-  const openTime =
-    document.getElementById("openTime").value;
-  const closeTime =
-    document.getElementById("closeTime").value;
+  // ✅ Read from the new separate time inputs
+  const checkInTime =
+    document.getElementById("checkInTime").value;
+  const checkOutTime =
+    document.getElementById("checkOutTime").value;
 
-  if (!openTime || !closeTime) {
+  // Also sync the hidden openTime/closeTime
+  // so existing session logic still works
+  document.getElementById("openTime").value =
+    checkInTime;
+  document.getElementById("closeTime").value =
+    checkOutTime;
+
+  if (!checkInTime || !checkOutTime) {
     alert(t("setTimesAlert")); return;
   }
-  if (openTime >= closeTime) {
+  if (checkInTime >= checkOutTime) {
     alert(t("timeOrderAlert")); return;
   }
   if (allStudents.length === 0) {
@@ -1340,20 +1776,27 @@ async function startSession() {
   const now   = new Date();
 
   try {
+    // ✅ Save session to Firebase
+    // checkInTime = teacher-set check-in open time
+    // checkOutTime = teacher-set check-out time
+    // These are the SCHEDULE times set by teacher,
+    // NOT the actual student check-in/out times.
     await setDoc(
       doc(db, "session", "current"),
       {
-        isOpen:    true,
-        sessionId: sid,
-        date:      today,
-        openTime:  openTime,
-        closeTime: closeTime,
-        startedAt: now.toISOString()
+        isOpen:           true,
+        sessionId:        sid,
+        date:             today,
+        openTime:         checkInTime,
+        closeTime:        checkOutTime,
+        scheduledCheckIn: checkInTime,
+        scheduledCheckOut:checkOutTime,
+        startedAt:        now.toISOString(),
+        attendanceMode:   attendanceMode
       }
     );
 
-    // Create records for all students
-    // with check-in/out = null initially
+    // Create attendance records for all students
     const batch = writeBatch(db);
     allStudents.forEach(student => {
       const ref = doc(
@@ -1382,19 +1825,21 @@ async function startSession() {
 
     sessionIsOpen    = true;
     currentSessionId = sid;
-    currentOpenTime  = openTime;
-    currentCloseTime = closeTime;
+    currentOpenTime  = checkInTime;
+    currentCloseTime = checkOutTime;
     sessionStartedAt = now.toISOString();
 
     updateSessionBadge(true);
+
+    // ✅ Generate QR with current mode
     generateQRCode(sid);
     showStatusPanel(sid, now.toISOString());
 
     document.getElementById("sessionInfoText")
       .textContent =
         t("sessionActive")
-          .replace("{open}",  openTime)
-          .replace("{close}", closeTime);
+          .replace("{open}",  checkInTime)
+          .replace("{close}", checkOutTime);
 
     startRealtimeListener(sid);
     alert(t("sessionStarted"));
@@ -1474,12 +1919,30 @@ async function loadSessionStatus() {
       currentCloseTime = data.closeTime;
       sessionStartedAt = data.startedAt || null;
 
-      document.getElementById("openTime").value =
-        data.openTime  || "07:00";
-      document.getElementById("closeTime").value =
-        data.closeTime || "08:30";
+      // ✅ Restore the time inputs
+      const ciInput =
+        document.getElementById("checkInTime");
+      const coInput =
+        document.getElementById("checkOutTime");
+
+      if (ciInput) {
+        ciInput.value =
+          data.scheduledCheckIn ||
+          data.openTime || "07:00";
+      }
+      if (coInput) {
+        coInput.value =
+          data.scheduledCheckOut ||
+          data.closeTime || "11:30";
+      }
+
+      // ✅ Restore attendance mode if saved
+      if (data.attendanceMode) {
+        attendanceMode = data.attendanceMode;
+      }
 
       updateSessionBadge(true);
+      updateModeUI();
       generateQRCode(data.sessionId);
 
       document.getElementById("sessionInfoText")
@@ -1578,7 +2041,7 @@ function startRealtimeListener(sid) {
 }
 
 // ============================================
-// ✅ DISPLAY RECORDS — WITH CHECK-IN/OUT COLUMNS
+// DISPLAY RECORDS — WITH CHECK-IN/OUT COLUMNS
 // ============================================
 function displayRecords(records) {
   const tbody =
@@ -1610,10 +2073,10 @@ function displayRecords(records) {
   }
 
   tbody.innerHTML = records.map((r, idx) => {
-    const isPresent  = r.status === "present";
+    const isPresent    = r.status === "present";
     const isCheckedOut = !!r.checkOutTime;
 
-    // ✅ Status badge
+    // Status badge
     let statusBadge;
     if (isPresent) {
       statusBadge = `
@@ -1633,7 +2096,7 @@ function displayRecords(records) {
         </span>`;
     }
 
-    // ✅ Check-in time display
+    // Check-in time display
     const checkInDisplay = isPresent
       ? `<span style="color:#16a34a;
                       font-weight:600;">
@@ -1645,7 +2108,7 @@ function displayRecords(records) {
            ${esc(t("notCheckedInYet"))}
          </span>`;
 
-    // ✅ Check-out time display
+    // Check-out time display
     let checkOutDisplay;
     if (!isPresent) {
       checkOutDisplay = `
@@ -1687,20 +2150,13 @@ function displayRecords(records) {
         </td>
         <td>${esc(r.age)}</td>
         <td>${esc(r.grade)}</td>
-
-        <!-- ✅ Check-in -->
         <td style="white-space:nowrap;">
           ${checkInDisplay}
         </td>
-
-        <!-- ✅ Check-out -->
         <td style="white-space:nowrap;">
           ${checkOutDisplay}
         </td>
-
-        <!-- ✅ Status -->
         <td>${statusBadge}</td>
-
         <td>
           <button class="profile-btn"
             data-id="${esc(r.id)}">
@@ -1714,8 +2170,10 @@ function displayRecords(records) {
   document.querySelectorAll(".profile-btn")
     .forEach(btn => {
       btn.addEventListener("click", function () {
-        const id = btn.getAttribute("data-id");
-        const r  = allRecords.find(x => x.id === id);
+        const id =
+          btn.getAttribute("data-id");
+        const r  =
+          allRecords.find(x => x.id === id);
         if (r) openProfile(r);
       });
     });
@@ -1766,10 +2224,10 @@ function searchRecords() {
 }
 
 // ============================================
-// PROFILE MODAL — WITH CHECK-IN/OUT
+// PROFILE MODAL
 // ============================================
 function openProfile(r) {
-  const isPresent   = r.status === "present";
+  const isPresent    = r.status === "present";
   const isCheckedOut = !!r.checkOutTime;
 
   document.getElementById("profileName")
@@ -1783,7 +2241,6 @@ function openProfile(r) {
   document.getElementById("profileGrade")
     .textContent = r.grade || "—";
 
-  // ✅ Check-in time
   const ciEl =
     document.getElementById("profileCheckIn");
   if (ciEl) {
@@ -1792,7 +2249,6 @@ function openProfile(r) {
       : t("notCheckedInYet");
   }
 
-  // ✅ Check-out time
   const coEl =
     document.getElementById("profileCheckOut");
   if (coEl) {
@@ -1844,7 +2300,7 @@ document.getElementById("profileModal")
   });
 
 // ============================================
-// EXPORT CSV — WITH CHECK-IN/OUT
+// EXPORT CSV
 // ============================================
 function exportToCSV() {
   if (allRecords.length === 0) {
@@ -1872,7 +2328,7 @@ function exportToCSV() {
   let csv = headers.map(csv_val).join(",") + "\n";
 
   allRecords.forEach((r, i) => {
-    const isPresent   = r.status === "present";
+    const isPresent    = r.status === "present";
     const isCheckedOut = !!r.checkOutTime;
 
     csv += [
@@ -1889,7 +2345,9 @@ function exportToCSV() {
         : isCheckedOut
           ? (r.checkOutDisplay || "--")
           : t("notCheckedOut"),
-      isPresent ? t("present") : t("notCheckedInYet"),
+      isPresent
+        ? t("present")
+        : t("notCheckedInYet"),
       r.latitude,
       r.longitude,
       r.distanceFromSchool !== ""
@@ -1933,32 +2391,59 @@ async function handleLogout() {
 // ============================================
 document.getElementById("addStudentBtn")
   ?.addEventListener("click", addStudent);
+
 document.getElementById("startSessionBtn")
   ?.addEventListener("click", startSession);
+
 document.getElementById("endSessionBtn")
   ?.addEventListener("click", endSession);
+
 document.getElementById("refreshBtn")
   ?.addEventListener("click", function () {
     if (currentSessionId) {
       startRealtimeListener(currentSessionId);
     }
   });
+
 document.getElementById("exportBtn")
   ?.addEventListener("click", exportToCSV);
+
 document.getElementById("searchInput")
   ?.addEventListener("input", searchRecords);
+
 document.getElementById("teacherLangBtn")
   ?.addEventListener("click", function () {
     applyTeacherLang(
       tLang === "en" ? "km" : "en"
     );
   });
+
 document.getElementById("logoutBtn")
   ?.addEventListener("click", handleLogout);
+
 document.getElementById("newStudentName")
   ?.addEventListener("keydown", function (e) {
     if (e.key === "Enter") addStudent();
   });
+
+// ✅ NEW — Mode Switch Button Events
+// When teacher clicks ម៉ោងចូល button
+document.getElementById("modeCheckInBtn")
+  ?.addEventListener("click", function () {
+    switchMode("checkIn");
+  });
+
+// When teacher clicks ម៉ោងចេញ button
+document.getElementById("modeCheckOutBtn")
+  ?.addEventListener("click", function () {
+    switchMode("checkOut");
+  });
+
+// ============================================
+// INIT — Run updateModeUI on page load
+// so the UI starts in the correct state
+// ============================================
+updateModeUI();
 
 </script>
 </body>
