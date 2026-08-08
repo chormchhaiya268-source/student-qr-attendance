@@ -126,7 +126,7 @@ body.khmer {
   border-radius: 12px;
   flex-shrink: 0;
   filter: drop-shadow(
-    0 4px 10px rgba(15, 23, 42, 0.15)
+    0 4px 10px rgba(15,23,42,0.15)
   );
 }
 
@@ -149,14 +149,10 @@ body.khmer {
   line-height: 1.6;
 }
 
-.header-icon {
-  display: none;
-}
+.header-icon { display: none; }
 
 .header > h1,
-.header > p {
-  display: none;
-}
+.header > p  { display: none; }
 
 /* =========================================
    SESSION BANNER
@@ -293,6 +289,8 @@ body.khmer {
   flex-shrink: 0;
 }
 
+.distance-text { flex: 1; }
+
 /* =========================================
    FORM CARD
 ========================================= */
@@ -332,7 +330,9 @@ body.khmer {
 .required { color: var(--danger); }
 
 .form-group input[type="text"],
-.form-group input[type="number"] {
+.form-group input[type="number"],
+.form-group input[type="email"],
+.form-group input[type="password"] {
   width: 100%;
   min-height: 50px;
   padding: 12px 15px;
@@ -363,77 +363,18 @@ body.khmer {
   background: #fff8f8;
 }
 
+.form-group input[readonly] {
+  background: #f1f5f9;
+  cursor: not-allowed;
+  color: #64748b;
+}
+
 .field-error {
   display: block;
   min-height: 18px;
   margin-top: 5px;
   font-size: 12px;
   color: var(--danger);
-  font-weight: 600;
-}
-
-/* =========================================
-   CHECKBOX
-========================================= */
-
-.checkbox-group {
-  padding: 14px;
-  border: 1.5px solid #bfdbfe;
-  border-radius: var(--radius-sm);
-  background: #f0f7ff;
-  transition: all 0.3s;
-}
-
-.checkbox-group.error-border {
-  border-color: var(--danger);
-  background: #fff5f5;
-}
-
-.checkbox-label {
-  display: flex !important;
-  align-items: flex-start !important;
-  gap: 11px;
-  cursor: pointer;
-}
-
-.checkbox-label input[type="checkbox"] {
-  position: absolute;
-  opacity: 0;
-  pointer-events: none;
-}
-
-.checkbox-custom {
-  width: 26px;
-  height: 26px;
-  flex-shrink: 0;
-  margin-top: 1px;
-  border: 2.5px solid #93c5fd;
-  border-radius: 7px;
-  background: var(--white);
-  display: grid;
-  place-items: center;
-  transition: all 0.2s;
-  color: transparent;
-  font-size: 15px;
-  font-weight: 700;
-}
-
-.checkbox-label
-input:checked + .checkbox-custom {
-  background: var(--primary);
-  border-color: var(--primary);
-  color: var(--white);
-}
-
-.checkbox-label
-input:checked + .checkbox-custom::after {
-  content: "✓";
-}
-
-.checkbox-text {
-  font-size: 13px;
-  color: #475569;
-  line-height: 1.6;
   font-weight: 600;
 }
 
@@ -472,6 +413,104 @@ input:checked + .checkbox-custom::after {
 }
 
 .submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* =========================================
+   ✅ CHECKOUT CARD
+========================================= */
+
+.checkout-card {
+  padding: 28px 22px;
+  border: 1.5px solid #bbf7d0;
+  border-radius: var(--radius-lg);
+  background: var(--success-light);
+  box-shadow: var(--shadow-md);
+  margin-bottom: 14px;
+  animation: fadeUp 0.4s ease;
+}
+
+.checkout-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.checkout-header h2 {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--success);
+  margin-top: 8px;
+  line-height: 1.4;
+}
+
+.checkout-info-box {
+  background: var(--white);
+  border-radius: var(--radius-sm);
+  border: 1px solid #bbf7d0;
+  padding: 4px 0;
+  margin-bottom: 18px;
+}
+
+.checkout-info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid #f0fdf4;
+  font-size: 14px;
+  gap: 12px;
+}
+
+.checkout-info-row:last-child {
+  border-bottom: none;
+}
+
+.checkout-info-row span {
+  color: var(--muted);
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.checkout-info-row strong {
+  color: var(--text);
+  font-weight: 700;
+  text-align: right;
+  font-family: "Battambang",
+    "Kantumruy Pro", Arial, sans-serif;
+}
+
+.checkout-btn {
+  width: 100%;
+  min-height: 52px;
+  padding: 13px 18px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(
+    135deg, #ea580c, #dc2626
+  );
+  color: var(--white);
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 8px 20px
+    rgba(220,38,38,0.25);
+  transition: all 0.2s;
+  display: block;
+}
+
+.checkout-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 26px
+    rgba(220,38,38,0.35);
+}
+
+.checkout-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.checkout-btn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
@@ -602,9 +641,7 @@ input:checked + .checkbox-custom::after {
   backdrop-filter: blur(4px);
 }
 
-.loading-overlay.active {
-  display: flex;
-}
+.loading-overlay.active { display: flex; }
 
 .loading-spinner {
   width: 50px;
@@ -638,7 +675,22 @@ input:checked + .checkbox-custom::after {
 }
 
 /* =========================================
-   SHAKE ANIMATION
+   RATE LIMIT BOX
+========================================= */
+
+.rate-limit-box {
+  padding: 28px 20px;
+  border: 2px solid #fca5a5;
+  border-radius: var(--radius-lg);
+  background: var(--danger-light);
+  text-align: center;
+  box-shadow: var(--shadow-md);
+  margin-bottom: 14px;
+  animation: fadeUp 0.4s ease;
+}
+
+/* =========================================
+   ANIMATIONS
 ========================================= */
 
 @keyframes shake {
@@ -652,10 +704,8 @@ input:checked + .checkbox-custom::after {
   100% { transform: translateX(0); }
 }
 
-.checkbox-group.shake {
+.shake {
   animation: shake 0.5s ease;
-  border-color: var(--danger);
-  background: #fff5f5;
 }
 
 /* =========================================
@@ -726,8 +776,7 @@ input:checked + .checkbox-custom::after {
 
 .teacher-lang-btn {
   padding: 8px 16px;
-  border: 1.5px solid
-    rgba(255,255,255,0.35);
+  border: 1.5px solid rgba(255,255,255,0.35);
   border-radius: 999px;
   background: transparent;
   color: var(--white);
@@ -767,30 +816,11 @@ input:checked + .checkbox-custom::after {
   box-shadow: var(--shadow-sm);
 }
 
-.btn-white {
-  background: var(--white);
-  color: var(--primary-dark);
-}
-
-.btn-green {
-  background: #16a34a;
-  color: var(--white);
-}
-
-.btn-red {
-  background: var(--danger);
-  color: var(--white);
-}
-
-.btn-blue {
-  background: var(--primary);
-  color: var(--white);
-}
-
-.btn-orange {
-  background: #ea580c;
-  color: var(--white);
-}
+.btn-white  { background: var(--white); color: var(--primary-dark); }
+.btn-green  { background: #16a34a;      color: var(--white); }
+.btn-red    { background: var(--danger); color: var(--white); }
+.btn-blue   { background: var(--primary); color: var(--white); }
+.btn-orange { background: #ea580c;      color: var(--white); }
 
 /* =========================================
    SESSION CONTROL PANEL
@@ -849,8 +879,7 @@ input:checked + .checkbox-custom::after {
 
 .session-field input[type="time"]:focus {
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px
-    rgba(29,78,216,0.10);
+  box-shadow: 0 0 0 3px rgba(29,78,216,0.10);
 }
 
 .session-status-badge {
@@ -871,6 +900,123 @@ input:checked + .checkbox-custom::after {
 .session-status-badge.closed {
   background: #fee2e2;
   color: var(--danger);
+}
+
+/* =========================================
+   ATTENDANCE STATUS PANEL
+========================================= */
+
+.attendance-status-panel {
+  padding: 18px;
+  border-radius: var(--radius-md);
+  background: #f8fafc;
+  border: 1.5px solid var(--border);
+  margin-top: 16px;
+}
+
+.status-panel-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.status-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+}
+
+.status-card {
+  padding: 14px;
+  border-radius: var(--radius-sm);
+  background: var(--white);
+  border: 1.5px solid var(--border);
+  text-align: center;
+  transition: all 0.2s;
+}
+
+.status-card:hover {
+  border-color: #93c5fd;
+  background: #eff6ff;
+}
+
+.status-card-icon {
+  font-size: 20px;
+  margin-bottom: 5px;
+}
+
+.status-card-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 5px;
+}
+
+.status-card-value {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1.3;
+}
+
+.status-open {
+  border-color: #bbf7d0;
+  background: #f0fdf4;
+}
+
+.status-open .status-card-value {
+  color: #16a34a;
+}
+
+.status-present {
+  border-color: #bbf7d0;
+  background: #f0fdf4;
+}
+
+.status-present-num {
+  color: #16a34a;
+  font-size: 26px;
+}
+
+.status-absent {
+  border-color: #fecaca;
+  background: #fef2f2;
+}
+
+.status-absent-num {
+  color: #dc2626;
+  font-size: 26px;
+}
+
+.status-qr {
+  border-color: #bfdbfe;
+  background: #eff6ff;
+}
+
+.status-qr-active  { color: #16a34a; font-size: 13px; }
+.status-qr-inactive { color: #dc2626; font-size: 13px; }
+
+.elapsed-timer {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--primary);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 1px;
+}
+
+.session-id-value {
+  font-size: 10px;
+  font-family: monospace;
+  color: #7c3aed;
+  word-break: break-all;
+  font-weight: 700;
 }
 
 /* =========================================
@@ -924,70 +1070,6 @@ input:checked + .checkbox-custom::after {
   font-size: 12px;
   font-weight: 700;
   margin-bottom: 12px;
-}
-
-/* =========================================
-   ABSENT LIST PANEL
-========================================= */
-
-.absent-panel {
-  padding: 22px;
-  border-radius: var(--radius-md);
-  background: var(--white);
-  box-shadow: var(--shadow-sm);
-  margin-bottom: 20px;
-}
-
-.absent-panel-title {
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--text);
-  margin-bottom: 14px;
-}
-
-.class-list-input {
-  width: 100%;
-  min-height: 100px;
-  padding: 12px;
-  border: 1.5px solid var(--border);
-  border-radius: var(--radius-sm);
-  font-family: inherit;
-  font-size: 14px;
-  color: var(--text);
-  resize: vertical;
-  outline: none;
-  background: #f8fafc;
-}
-
-.class-list-input:focus {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px
-    rgba(29,78,216,0.10);
-}
-
-.absent-list { margin-top: 14px; }
-
-.absent-student-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 14px;
-  border-radius: var(--radius-sm);
-  margin-bottom: 6px;
-  font-size: 14px;
-  font-weight: 600;
-}
-
-.absent-student-row.present-row {
-  background: #f0fdf4;
-  color: var(--success);
-  border: 1px solid #bbf7d0;
-}
-
-.absent-student-row.absent-row {
-  background: var(--danger-light);
-  color: var(--danger);
-  border: 1px solid #fecaca;
 }
 
 /* =========================================
@@ -1067,8 +1149,7 @@ input:checked + .checkbox-custom::after {
 
 .search-input:focus {
   border-color: var(--primary);
-  box-shadow: 0 0 0 4px
-    rgba(29,78,216,0.10);
+  box-shadow: 0 0 0 4px rgba(29,78,216,0.10);
   background: var(--white);
 }
 
@@ -1109,7 +1190,7 @@ input:checked + .checkbox-custom::after {
 
 .attendance-table {
   width: 100%;
-  min-width: 700px;
+  min-width: 800px;
   border-collapse: collapse;
 }
 
@@ -1151,8 +1232,8 @@ tbody tr:last-child td {
   line-height: 1.8;
   color: var(--text);
   white-space: normal;
-  min-width: 160px;
-  max-width: 240px;
+  min-width: 140px;
+  max-width: 200px;
   overflow-wrap: anywhere;
 }
 
@@ -1315,91 +1396,24 @@ tbody tr:last-child td {
 }
 
 /* =========================================
-   RESPONSIVE
+   TEACHER EMAIL BADGE
 ========================================= */
 
-@media (max-width: 900px) {
-  .stats-row {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 700px) {
-  .teacher-header {
-    padding: 12px 16px;
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .teacher-logo {
-    width: 46px;
-    height: 46px;
-  }
-
-  .teacher-header-left h1 {
-    font-size: 17px;
-  }
-
-  .teacher-header-right {
-    width: 100%;
-  }
-
-  .teacher-content {
-    padding: 16px 0 40px;
-  }
-
-  .stats-row {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
-  }
-
-  .session-controls {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .table-header {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .school-logo {
-    width: 52px;
-    height: 52px;
-  }
-
-  .header-top {
-    flex-direction: row;
-    justify-content: center;
-  }
-}
-
-@media (max-width: 420px) {
-  .page-wrapper {
-    width: calc(100% - 16px);
-  }
-
-  .form-card {
-    padding: 20px 14px;
-  }
-
-  .header-title-group h1 {
-    font-size: 18px;
-  }
-
-  .stats-row {
-    grid-template-columns: 1fr;
-  }
-
-  .header-top {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-  }
-
-  .header-title-group {
-    text-align: center;
-  }
+.teacher-email-badge {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 14px;
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: 999px;
+  color: var(--white);
+  font-size: 13px;
+  font-weight: 600;
+  max-width: 220px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 /* =========================================
@@ -1418,8 +1432,6 @@ tbody tr:last-child td {
   align-items: center;
   justify-content: center;
   padding: 20px;
-  font-family: "Kantumruy Pro",
-    "Poppins", sans-serif;
 }
 
 .login-wrapper {
@@ -1488,8 +1500,7 @@ tbody tr:last-child td {
   color: var(--white);
   margin: 0;
   padding-top: 12px;
-  border-top: 1px solid
-    rgba(255,255,255,0.15);
+  border-top: 1px solid rgba(255,255,255,0.15);
 }
 
 .login-form {
@@ -1547,8 +1558,7 @@ tbody tr:last-child td {
 .login-input:focus {
   border-color: var(--primary);
   background: var(--white);
-  box-shadow: 0 0 0 4px
-    rgba(29,78,216,0.10);
+  box-shadow: 0 0 0 4px rgba(29,78,216,0.10);
 }
 
 .toggle-password-btn {
@@ -1564,9 +1574,7 @@ tbody tr:last-child td {
   transition: opacity 0.2s;
 }
 
-.toggle-password-btn:hover {
-  opacity: 0.7;
-}
+.toggle-password-btn:hover { opacity: 0.7; }
 
 .login-field-error {
   display: block;
@@ -1628,8 +1636,7 @@ tbody tr:last-child td {
   font-size: 16px;
   font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 8px 20px
-    rgba(29,78,216,0.28);
+  box-shadow: 0 8px 20px rgba(29,78,216,0.28);
   transition: all 0.2s;
   display: flex;
   align-items: center;
@@ -1639,8 +1646,7 @@ tbody tr:last-child td {
 
 .login-btn:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 12px 28px
-    rgba(29,78,216,0.36);
+  box-shadow: 0 12px 28px rgba(29,78,216,0.36);
 }
 
 .login-btn:disabled {
@@ -1651,17 +1657,14 @@ tbody tr:last-child td {
 .login-btn-spinner {
   width: 20px;
   height: 20px;
-  border: 3px solid
-    rgba(255,255,255,0.35);
+  border: 3px solid rgba(255,255,255,0.35);
   border-top-color: white;
   border-radius: 50%;
   animation: spin 0.7s linear infinite;
   display: inline-block;
 }
 
-.forgot-password-area {
-  text-align: center;
-}
+.forgot-password-area { text-align: center; }
 
 .forgot-password-btn {
   background: none;
@@ -1676,9 +1679,7 @@ tbody tr:last-child td {
   padding: 4px;
 }
 
-.forgot-password-btn:hover {
-  opacity: 0.75;
-}
+.forgot-password-btn:hover { opacity: 0.75; }
 
 .login-footer {
   font-size: 12px;
@@ -1686,54 +1687,84 @@ tbody tr:last-child td {
   text-align: center;
 }
 
-.teacher-email-badge {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  padding: 7px 14px;
-  background: rgba(255,255,255,0.12);
-  border: 1px solid
-    rgba(255,255,255,0.25);
-  border-radius: 999px;
-  color: var(--white);
-  font-size: 13px;
-  font-weight: 600;
-  max-width: 220px;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
+/* =========================================
+   CHECKBOX (kept for compatibility)
+========================================= */
+
+.checkbox-group {
+  padding: 14px;
+  border: 1.5px solid #bfdbfe;
+  border-radius: var(--radius-sm);
+  background: #f0f7ff;
+  transition: all 0.3s;
 }
 
-.login-error-box.shake {
+.checkbox-group.error-border {
+  border-color: var(--danger);
+  background: #fff5f5;
+}
+
+.checkbox-group.shake {
   animation: shake 0.5s ease;
+  border-color: var(--danger);
+  background: #fff5f5;
 }
 
 /* =========================================
-   LOGIN RESPONSIVE
+   RESPONSIVE
 ========================================= */
 
-@media (max-width: 480px) {
-  .login-body {
-    padding: 12px;
+@media (max-width: 900px) {
+  .stats-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 700px) {
+  .teacher-header {
+    padding: 12px 16px;
+    flex-direction: column;
     align-items: flex-start;
-    padding-top: 20px;
   }
 
-  .login-header {
-    padding: 24px 20px 20px;
+  .teacher-logo {
+    width: 46px;
+    height: 46px;
   }
 
-  .login-logo {
-    width: 64px;
-    height: 64px;
+  .teacher-header-left h1 { font-size: 17px; }
+
+  .teacher-header-right { width: 100%; }
+
+  .teacher-content { padding: 16px 0 40px; }
+
+  .stats-row {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
   }
 
-  .login-form {
-    padding: 22px 20px 26px;
+  .session-controls {
+    flex-direction: column;
+    align-items: stretch;
   }
 
-  .login-title {
-    font-size: 19px;
+  .table-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .school-logo {
+    width: 52px;
+    height: 52px;
+  }
+
+  .header-top {
+    flex-direction: row;
+    justify-content: center;
+  }
+
+  .status-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 
   .teacher-email-badge {
@@ -1742,162 +1773,59 @@ tbody tr:last-child td {
   }
 }
 
-/* =========================================
-   RATE LIMIT WARNING BOX
-========================================= */
-
-.rate-limit-box {
-  padding: 28px 20px;
-  border: 2px solid #fca5a5;
-  border-radius: var(--radius-lg);
-  background: var(--danger-light);
-  text-align: center;
-  box-shadow: var(--shadow-md);
-  margin-bottom: 14px;
-  animation: fadeUp 0.4s ease;
-}
-
-/* =========================================
-   ATTENDANCE STATUS PANEL
-========================================= */
-
-.attendance-status-panel {
-  padding: 22px;
-  border-radius: var(--radius-md);
-  background: var(--white);
-  box-shadow: var(--shadow-sm);
-  margin-bottom: 20px;
-  border-top: 4px solid #16a34a;
-}
-
-.status-panel-title {
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--text);
-  margin-bottom: 18px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.status-grid {
-  display: grid;
-  grid-template-columns:
-    repeat(auto-fit, minmax(160px, 1fr));
-  gap: 14px;
-}
-
-.status-card {
-  padding: 16px;
-  border-radius: var(--radius-sm);
-  background: #f8fafc;
-  border: 1.5px solid var(--border);
-  text-align: center;
-  transition: all 0.2s;
-}
-
-.status-card:hover {
-  border-color: #93c5fd;
-  background: #eff6ff;
-}
-
-.status-card-icon {
-  font-size: 22px;
-  margin-bottom: 6px;
-}
-
-.status-card-label {
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-bottom: 6px;
-}
-
-.status-card-value {
-  font-size: 18px;
-  font-weight: 800;
-  color: var(--text);
-  line-height: 1.3;
-}
-
-.status-open {
-  border-color: #bbf7d0;
-  background: #f0fdf4;
-}
-
-.status-open .status-card-value {
-  color: #16a34a;
-}
-
-.status-present {
-  border-color: #bbf7d0;
-  background: #f0fdf4;
-}
-
-.status-present-num {
-  color: #16a34a;
-  font-size: 28px;
-}
-
-.status-absent {
-  border-color: #fecaca;
-  background: #fef2f2;
-}
-
-.status-absent-num {
-  color: #dc2626;
-  font-size: 28px;
-}
-
-.status-qr {
-  border-color: #bfdbfe;
-  background: #eff6ff;
-}
-
-.status-qr-active {
-  color: #16a34a;
-  font-size: 15px;
-}
-
-.status-qr-inactive {
-  color: #dc2626;
-  font-size: 15px;
-}
-
-.elapsed-timer {
-  font-size: 20px;
-  font-weight: 800;
-  color: var(--primary);
-  font-variant-numeric: tabular-nums;
-  letter-spacing: 1px;
-}
-
-.session-id-value {
-  font-size: 11px;
-  font-family: monospace;
-  color: #7c3aed;
-  word-break: break-all;
-  font-weight: 700;
-}
-
-/* =========================================
-   RESPONSIVE — STATUS PANEL
-========================================= */
-
-@media (max-width: 700px) {
-  .status-grid {
-    grid-template-columns: repeat(2, 1fr);
+@media (max-width: 480px) {
+  .login-body {
+    padding: 12px;
+    align-items: flex-start;
+    padding-top: 20px;
   }
+
+  .login-header { padding: 24px 20px 20px; }
+
+  .login-logo {
+    width: 64px;
+    height: 64px;
+  }
+
+  .login-form { padding: 22px 20px 26px; }
+
+  .login-title { font-size: 19px; }
 }
 
 @media (max-width: 420px) {
+  .page-wrapper {
+    width: calc(100% - 16px);
+  }
+
+  .form-card { padding: 20px 14px; }
+
+  .header-title-group h1 { font-size: 18px; }
+
+  .stats-row {
+    grid-template-columns: 1fr;
+  }
+
+  .header-top {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .header-title-group { text-align: center; }
+
   .status-grid {
     grid-template-columns: 1fr;
   }
 
-  .status-card-value {
-    font-size: 16px;
+  .status-card-value { font-size: 14px; }
+
+  .checkout-info-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .checkout-info-row strong {
+    text-align: left;
   }
 }
