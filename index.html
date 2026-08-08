@@ -56,6 +56,25 @@
     <span id="sessionBannerText"></span>
   </div>
 
+  <!-- ✅ NEW: MODE BANNER
+       Shows students whether this QR is for
+       Check-In or Check-Out.
+       Hidden until QR mode is determined. -->
+  <div id="modeBanner"
+    style="display:none;
+           padding:10px 18px;
+           border-radius:10px;
+           margin:10px auto;
+           max-width:480px;
+           text-align:center;
+           font-size:14px;
+           font-weight:700;">
+    <span id="modeBannerIcon"></span>
+    <span id="modeBannerText"
+      data-i18n="modeBannerCheckIn">
+    </span>
+  </div>
+
   <!-- LOCATION STATUS BOX -->
   <div class="location-box" id="locationBox">
     <div class="location-icon">📍</div>
@@ -176,7 +195,7 @@
                margin-bottom:12px;
                display:none;"></p>
 
-      <!-- Submit Check In button -->
+      <!-- Submit button text changes based on mode -->
       <button
         type="submit"
         class="submit-btn"
@@ -190,7 +209,8 @@
 
   <!-- ✅ CHECK OUT CARD
        Shows AFTER student successfully checks in
-       Hidden by default -->
+       OR when student scans Check-Out QR
+       and is already checked in -->
   <div class="checkout-card"
     id="checkoutCard"
     style="display:none;">
@@ -257,6 +277,37 @@
       data-i18n="alreadyCheckedOutMsg">
     </p>
 
+  </div>
+
+  <!-- ✅ NEW: NOT CHECKED IN CARD
+       Shown when student scans Check-Out QR
+       but has NOT checked in yet.
+       This is a separate block — NOT an error card.
+  -->
+  <div id="notCheckedInCard"
+    style="display:none;
+           background:#fef3c7;
+           border:2px solid #fcd34d;
+           border-radius:16px;
+           padding:32px 24px;
+           text-align:center;
+           max-width:480px;
+           margin:20px auto;">
+    <div style="font-size:48px;
+                margin-bottom:12px;">
+      ⚠️
+    </div>
+    <h2 style="color:#92400e;
+               font-size:20px;
+               margin-bottom:8px;"
+      data-i18n="notCheckedInTitle">
+      Not Checked In Yet
+    </h2>
+    <p style="color:#78350f;
+              font-size:14px;"
+      data-i18n="notCheckedInMsg">
+      You must check in before you can check out.
+    </p>
   </div>
 
   <!-- SESSION CLOSED CARD -->
