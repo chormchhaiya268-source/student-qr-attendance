@@ -17,13 +17,7 @@
     href="https://fonts.googleapis.com/css2?family=Battambang:wght@400;700&family=Kantumruy+Pro:ital,wght@0,100..700;1,100..700&display=swap"
     rel="stylesheet">
 
-  <!-- ============================================
-       ATTENDANCE MODE SWITCH STYLES
-       Only new styles added here.
-       All existing styles remain in style.css
-  ============================================ -->
   <style>
-    /* Attendance Mode Switch Container */
     .att-mode-switch-wrap {
       display: flex;
       align-items: center;
@@ -31,14 +25,11 @@
       margin-bottom: 18px;
       flex-wrap: wrap;
     }
-
     .att-mode-label {
       font-size: 14px;
       font-weight: 600;
       color: #374151;
     }
-
-    /* The toggle track */
     .att-mode-track {
       display: flex;
       background: #e2e8f0;
@@ -48,8 +39,6 @@
       cursor: pointer;
       user-select: none;
     }
-
-    /* Each option inside the track */
     .att-mode-option {
       padding: 6px 18px;
       border-radius: 50px;
@@ -63,22 +52,16 @@
       background: transparent;
       font-family: inherit;
     }
-
-    /* Active option — green for check-in */
     .att-mode-option.active-checkin {
       background: #16a34a;
       color: #ffffff;
       box-shadow: 0 2px 8px rgba(22,163,74,0.3);
     }
-
-    /* Active option — orange for check-out */
     .att-mode-option.active-checkout {
       background: #f59e0b;
       color: #ffffff;
       box-shadow: 0 2px 8px rgba(245,158,11,0.3);
     }
-
-    /* Mode indicator badge under QR */
     .qr-mode-badge {
       display: inline-block;
       padding: 5px 16px;
@@ -88,20 +71,16 @@
       margin: 8px auto;
       text-align: center;
     }
-
     .qr-mode-badge.checkin {
       background: #dcfce7;
       color: #16a34a;
       border: 1px solid #86efac;
     }
-
     .qr-mode-badge.checkout {
       background: #fef3c7;
       color: #92400e;
       border: 1px solid #fcd34d;
     }
-
-    /* Time setting row */
     .mode-time-row {
       display: flex;
       align-items: center;
@@ -109,7 +88,6 @@
       flex-wrap: wrap;
       margin-top: 10px;
     }
-
     .mode-time-row label {
       font-size: 13px;
       font-weight: 600;
@@ -208,12 +186,12 @@
         </label>
         <input type="text"
           id="newStudentName"
+          data-t-placeholder="phStudentName"
           style="padding:8px 12px;
                  border:1px solid #e2e8f0;
                  border-radius:8px;
                  font-size:14px;
-                 width:180px;"
-          placeholder="Student full name">
+                 width:180px;">
       </div>
 
       <div class="session-field">
@@ -222,27 +200,40 @@
         </label>
         <input type="text"
           id="newStudentId"
+          data-t-placeholder="phStudentId"
           style="padding:8px 12px;
                  border:1px solid #e2e8f0;
                  border-radius:8px;
                  font-size:14px;
-                 width:120px;"
-          placeholder="e.g. IT01">
+                 width:120px;">
       </div>
 
+      <!-- ✅ CHANGED: Age → Sex -->
       <div class="session-field">
-        <label data-t="labelStudentAge">
-          Age
+        <label data-t="labelStudentSex">
+          Sex
         </label>
-        <input type="number"
-          id="newStudentAge"
-          min="5" max="30"
+        <select
+          id="newStudentSex"
           style="padding:8px 12px;
                  border:1px solid #e2e8f0;
                  border-radius:8px;
                  font-size:14px;
-                 width:80px;"
-          placeholder="Age">
+                 width:120px;
+                 background:white;">
+          <option value=""
+            data-t-opt="optSelectSex">
+            Select Sex
+          </option>
+          <option value="Male"
+            data-t-opt="optMale">
+            Male
+          </option>
+          <option value="Female"
+            data-t-opt="optFemale">
+            Female
+          </option>
+        </select>
       </div>
 
       <div class="session-field">
@@ -251,12 +242,12 @@
         </label>
         <input type="text"
           id="newStudentGrade"
+          data-t-placeholder="phStudentGrade"
           style="padding:8px 12px;
                  border:1px solid #e2e8f0;
                  border-radius:8px;
                  font-size:14px;
-                 width:140px;"
-          placeholder="e.g. Grade 10A">
+                 width:140px;">
       </div>
 
       <button id="addStudentBtn"
@@ -281,7 +272,8 @@
             <th data-t="labelStudentId">
               Student ID
             </th>
-            <th data-t="colAge">Age</th>
+            <!-- ✅ CHANGED: colAge → colSex -->
+            <th data-t="colSex">Sex</th>
             <th data-t="colGrade">Grade</th>
             <th data-t="colAction">Action</th>
           </tr>
@@ -304,13 +296,7 @@
              min-height:20px;"></p>
   </div>
 
-  <!-- =============================================
-       SESSION CONTROL PANEL
-       Now includes:
-       1. Attendance Mode Switch (NEW)
-       2. Separate time inputs for check-in/out
-       3. Existing session open/close buttons
-  ============================================= -->
+  <!-- SESSION CONTROL -->
   <div class="session-panel">
     <div class="session-panel-title">
       🎛️
@@ -327,26 +313,14 @@
       </span>
     </div>
 
-    <!-- ==========================================
-         ATTENDANCE MODE SWITCH
-         This is the NEW toggle.
-         It switches between ម៉ោងចូល and ម៉ោងចេញ.
-         It looks like the language button but
-         controls which QR mode is active.
-    ========================================== -->
+    <!-- ATTENDANCE MODE SWITCH -->
     <div class="att-mode-switch-wrap">
-
-      <!-- Label -->
       <span class="att-mode-label"
         data-t="attModeLabel">
         Attendance Mode:
       </span>
-
-      <!-- Toggle track with two buttons inside -->
       <div class="att-mode-track"
         id="attModeTrack">
-
-        <!-- CHECK-IN option -->
         <button
           class="att-mode-option active-checkin"
           id="modeCheckInBtn"
@@ -354,8 +328,6 @@
           data-t="modeCheckIn">
           ម៉ោងចូល
         </button>
-
-        <!-- CHECK-OUT option -->
         <button
           class="att-mode-option"
           id="modeCheckOutBtn"
@@ -363,35 +335,22 @@
           data-t="modeCheckOut">
           ម៉ោងចេញ
         </button>
-
       </div>
-
-      <!-- Current mode indicator text -->
       <span id="attModeIndicator"
         style="font-size:13px;
                color:#16a34a;
                font-weight:600;">
       </span>
-
     </div>
 
-    <!-- ==========================================
-         TIME INPUTS
-         Check-In time and Check-Out time are
-         separate. Only one is shown at a time
-         based on the current mode.
-    ========================================== -->
-
-    <!-- CHECK-IN TIME ROW (shown when mode=checkIn) -->
+    <!-- CHECK-IN TIME ROW -->
     <div class="mode-time-row"
       id="checkInTimeRow">
-      <label
-        for="checkInTime"
+      <label for="checkInTime"
         data-t="checkInTimeLabel">
         ម៉ោងចូល:
       </label>
-      <input
-        type="time"
+      <input type="time"
         id="checkInTime"
         value="07:00"
         style="padding:8px 12px;
@@ -400,17 +359,15 @@
                font-size:14px;">
     </div>
 
-    <!-- CHECK-OUT TIME ROW (shown when mode=checkOut) -->
+    <!-- CHECK-OUT TIME ROW -->
     <div class="mode-time-row"
       id="checkOutTimeRow"
       style="display:none;">
-      <label
-        for="checkOutTime"
+      <label for="checkOutTime"
         data-t="checkOutTimeLabel">
         ម៉ោងចេញ:
       </label>
-      <input
-        type="time"
+      <input type="time"
         id="checkOutTime"
         value="11:30"
         style="padding:8px 12px;
@@ -419,24 +376,13 @@
                font-size:14px;">
     </div>
 
-    <!-- ==========================================
-         EXISTING SESSION OPEN/CLOSE CONTROLS
-         These remain exactly as before.
-         They control the session, NOT the mode.
-    ========================================== -->
+    <!-- SESSION OPEN/CLOSE CONTROLS -->
     <div class="session-controls"
       style="margin-top:14px;">
-
-      <!-- NOTE: openTime and closeTime inputs
-           are kept for session open/close logic.
-           They are hidden because the teacher
-           now uses checkInTime and checkOutTime
-           above instead. -->
       <input type="hidden"
         id="openTime" value="07:00">
       <input type="hidden"
         id="closeTime" value="11:30">
-
       <button id="startSessionBtn"
         class="btn btn-blue">
         <span data-t="startSession">
@@ -479,8 +425,7 @@
             data-t="elapsedLabel">
             Elapsed Time
           </div>
-          <div class="status-card-value
-                      elapsed-timer"
+          <div class="status-card-value elapsed-timer"
             id="elapsedValue">
             00:00:00
           </div>
@@ -489,16 +434,14 @@
           <div class="status-card-icon">✅</div>
           <div class="status-card-label"
             data-t="presentLabel">Present</div>
-          <div class="status-card-value
-                      status-present-num"
+          <div class="status-card-value status-present-num"
             id="statusPresentCount">0</div>
         </div>
         <div class="status-card status-absent">
           <div class="status-card-icon">❌</div>
           <div class="status-card-label"
             data-t="absentLabel2">Absent</div>
-          <div class="status-card-value
-                      status-absent-num"
+          <div class="status-card-value status-absent-num"
             id="statusAbsentCount">0</div>
         </div>
         <div class="status-card">
@@ -507,12 +450,9 @@
             data-t="sessionIdLabel">
             Session ID
           </div>
-          <div class="status-card-value
-                      session-id-value"
+          <div class="status-card-value session-id-value"
             id="statusSessionId">—</div>
         </div>
-
-        <!-- ✅ NEW: Current mode card -->
         <div class="status-card">
           <div class="status-card-icon">🔄</div>
           <div class="status-card-label"
@@ -521,19 +461,15 @@
           </div>
           <div class="status-card-value"
             id="statusCurrentMode"
-            style="font-size:13px;">
-            —
-          </div>
+            style="font-size:13px;">—</div>
         </div>
-
         <div class="status-card status-qr">
           <div class="status-card-icon">📱</div>
           <div class="status-card-label"
             data-t="qrStatusLabel">
             QR Status
           </div>
-          <div class="status-card-value
-                      status-qr-active"
+          <div class="status-card-value status-qr-active"
             id="qrStatusValue"
             data-t="qrActive">Active</div>
         </div>
@@ -553,13 +489,10 @@
       data-t="qrTitle">
       📱 Today's QR Code
     </div>
-
-    <!-- ✅ NEW: Mode badge shown above QR -->
     <div id="qrModeBadge"
       class="qr-mode-badge checkin"
       style="margin-bottom:8px;">
     </div>
-
     <div class="qr-session-info"
       id="qrSessionInfo"></div>
     <div class="qr-code-box">
@@ -655,7 +588,7 @@
         type="search"
         id="searchInput"
         class="search-input"
-        placeholder="Search by name or ID...">
+        data-t-placeholder="searchPlaceholder">
     </div>
     <p class="search-result-text"
       id="searchResultText"></p>
@@ -683,7 +616,8 @@
             <th data-t="labelStudentId">
               Student ID
             </th>
-            <th data-t="colAge">Age</th>
+            <!-- ✅ CHANGED: colAge → colSex -->
+            <th data-t="colSex">Sex</th>
             <th data-t="colGrade">
               Grade / Class
             </th>
@@ -733,11 +667,12 @@
         <span class="profile-row-value"
           id="profileStudentId"></span>
       </div>
+      <!-- ✅ CHANGED: profileAge → profileSex -->
       <div class="profile-row">
         <span class="profile-row-label"
-          data-t="profileAge">Age</span>
+          data-t="colSex">Sex</span>
         <span class="profile-row-value"
-          id="profileAge"></span>
+          id="profileSex"></span>
       </div>
       <div class="profile-row">
         <span class="profile-row-label"
@@ -894,8 +829,8 @@ onAuthStateChanged(auth, function (user) {
     document.getElementById("teacherEmailText");
 
   if (badge && emailEl) {
-    emailEl.textContent  = user.email;
-    badge.style.display  = "flex";
+    emailEl.textContent = user.email;
+    badge.style.display = "flex";
   }
 
   if (overlay) overlay.style.display = "none";
@@ -907,8 +842,7 @@ onAuthStateChanged(auth, function (user) {
 
 // ============================================
 // TRANSLATIONS
-// All new keys for the mode switch are added.
-// Existing keys are kept unchanged.
+// ✅ Age → Sex changes + placeholder keys added
 // ============================================
 const tt = {
   en: {
@@ -929,7 +863,8 @@ const tt = {
       "Add students here. They are saved permanently.",
     labelStudentName:  "Full Name",
     labelStudentId:    "Student ID",
-    labelStudentAge:   "Age",
+    // ✅ CHANGED: labelStudentAge → labelStudentSex
+    labelStudentSex:   "Sex",
     labelStudentGrade: "Grade / Class",
     colAction:         "Action",
     addStudent:        "➕ Add Student",
@@ -943,6 +878,18 @@ const tt = {
     noStudentsYet:     "No students yet.",
     confirmRemove:
       "Remove this student?",
+
+    // ✅ Placeholder keys for teacher inputs
+    phStudentName:  "Student full name",
+    phStudentId:    "e.g. IT01",
+    phStudentGrade: "e.g. Grade 10A",
+    searchPlaceholder:
+      "Search by name or ID...",
+
+    // ✅ Sex dropdown options
+    optSelectSex: "Select Sex",
+    optMale:      "Male",
+    optFemale:    "Female",
 
     sessionControlTitle: "Session Control",
     sessionOpen:         "OPEN",
@@ -966,7 +913,6 @@ const tt = {
     noStudentsError:
       "Please add students before starting.",
 
-    // ✅ NEW — Attendance Mode Switch
     attModeLabel:
       "Attendance Mode:",
     modeCheckIn:
@@ -988,7 +934,6 @@ const tt = {
     qrBadgeCheckOut:
       "🚪 QR សម្រាប់ម៉ោងចេញ (Check-Out QR)",
 
-    // Status panel
     attendanceStatusTitle: "Attendance Status",
     statusLabel:           "Status",
     startedAtLabel:        "Started At",
@@ -1014,14 +959,13 @@ const tt = {
 
     searchTitle:
       "🔍 Find a Student",
-    searchPlaceholder:
-      "Search by name or ID...",
     results: "result(s)",
 
     tableTitle:  "📋 Attendance List",
     colNo:       "No.",
     colName:     "Student Name",
-    colAge:      "Age",
+    // ✅ CHANGED: colAge → colSex
+    colSex:      "Sex",
     colGrade:    "Grade / Class",
     colCheckIn:  "ម៉ោងចូល",
     colCheckOut: "ម៉ោងចេញ",
@@ -1029,7 +973,8 @@ const tt = {
     colProfile:  "Profile",
     viewBtn:     "👁 View",
 
-    profileAge:      "Age",
+    // ✅ CHANGED: profileAge → profileSex
+    profileSex:      "Sex",
     profileGrade:    "Grade / Class",
     profileLat:      "Latitude",
     profileLon:      "Longitude",
@@ -1066,7 +1011,8 @@ const tt = {
       "បន្ថែមសិស្សនៅទីនេះ។",
     labelStudentName:  "ឈ្មោះពេញ",
     labelStudentId:    "លេខសម្គាល់សិស្ស",
-    labelStudentAge:   "អាយុ",
+    // ✅ CHANGED
+    labelStudentSex:   "ភេទ",
     labelStudentGrade: "ថ្នាក់រៀន",
     colAction:         "សកម្មភាព",
     addStudent:        "➕ បន្ថែមសិស្ស",
@@ -1080,6 +1026,18 @@ const tt = {
     noStudentsYet:  "មិនទាន់មានសិស្សទេ។",
     confirmRemove:
       "លុបសិស្សនេះ?",
+
+    // ✅ Khmer placeholders
+    phStudentName:  "ឈ្មោះពេញរបស់សិស្ស",
+    phStudentId:    "ឧ. IT01",
+    phStudentGrade: "ឧ. ថ្នាក់ទី ១០A",
+    searchPlaceholder:
+      "ស្វែងរកតាមឈ្មោះ ឬលេខ...",
+
+    // ✅ Sex dropdown options (Khmer)
+    optSelectSex: "ជ្រើសរើសភេទ",
+    optMale:      "ប្រុស",
+    optFemale:    "ស្រី",
 
     sessionControlTitle: "គ្រប់គ្រងវគ្គ",
     sessionOpen:         "បើក",
@@ -1103,7 +1061,6 @@ const tt = {
     noStudentsError:
       "សូមបន្ថែមសិស្សមុន។",
 
-    // ✅ NEW — Attendance Mode Switch (Khmer)
     attModeLabel:
       "របៀបវត្តមាន:",
     modeCheckIn:
@@ -1148,14 +1105,13 @@ const tt = {
 
     searchTitle:
       "🔍 ស្វែងរកសិស្ស",
-    searchPlaceholder:
-      "ស្វែងរកតាមឈ្មោះ ឬលេខ...",
     results: "លទ្ធផល",
 
     tableTitle:  "📋 បញ្ជីវត្តមាន",
     colNo:       "លរ",
     colName:     "ឈ្មោះសិស្ស",
-    colAge:      "អាយុ",
+    // ✅ CHANGED: colAge → colSex
+    colSex:      "ភេទ",
     colGrade:    "ថ្នាក់រៀន",
     colCheckIn:  "ម៉ោងចូល",
     colCheckOut: "ម៉ោងចេញ",
@@ -1163,7 +1119,8 @@ const tt = {
     colProfile:  "ព័ត៌មាន",
     viewBtn:     "👁 មើល",
 
-    profileAge:      "អាយុ",
+    // ✅ CHANGED
+    profileSex:      "ភេទ",
     profileGrade:    "ថ្នាក់រៀន",
     profileLat:      "រយៈទទឹង",
     profileLon:      "រយៈបណ្តោយ",
@@ -1184,7 +1141,7 @@ const tt = {
 };
 
 // ============================================
-// LANGUAGE
+// LANGUAGE STATE
 // ============================================
 let tLang =
   localStorage.getItem("teacherLanguage") || "en";
@@ -1205,11 +1162,7 @@ let currentCloseTime    = null;
 let sessionStartedAt    = null;
 let unsubscribeListener = null;
 let elapsedInterval     = null;
-
-// ✅ NEW — Attendance Mode State
-// "checkIn" or "checkOut"
-// Default is checkIn when page loads
-let attendanceMode = "checkIn";
+let attendanceMode      = "checkIn";
 
 // ============================================
 // SAFE HTML
@@ -1225,6 +1178,8 @@ function esc(v) {
 
 // ============================================
 // APPLY LANGUAGE
+// ✅ Now handles data-t-placeholder and
+//    select option translation too
 // ============================================
 function applyTeacherLang(lang) {
   tLang = lang;
@@ -1241,13 +1196,32 @@ function applyTeacherLang(lang) {
       ? "ផ្ទាំងគ្រប់គ្រងគ្រូ - វិទ្យាល័យទេពប្រណម្យ"
       : "Teacher Dashboard - Tepranom";
 
-  // Update all data-t elements
+  // Update all data-t text content
   document.querySelectorAll("[data-t]")
     .forEach(el => {
       const key = el.getAttribute("data-t");
       const val = t(key);
       if (val !== key) el.textContent = val;
     });
+
+  // ✅ Update all data-t-placeholder inputs
+  document.querySelectorAll(
+    "[data-t-placeholder]"
+  ).forEach(el => {
+    const key =
+      el.getAttribute("data-t-placeholder");
+    const val = t(key);
+    if (val !== key) el.placeholder = val;
+  });
+
+  // ✅ Update select option text
+  document.querySelectorAll(
+    "[data-t-opt]"
+  ).forEach(el => {
+    const key = el.getAttribute("data-t-opt");
+    const val = t(key);
+    if (val !== key) el.textContent = val;
+  });
 
   const langBtn =
     document.getElementById("teacherLangBtn");
@@ -1259,10 +1233,7 @@ function applyTeacherLang(lang) {
     search.placeholder = t("searchPlaceholder");
   }
 
-  // ✅ Update mode switch text and indicator
-  // when language changes
   updateModeUI();
-
   renderStudentList();
   displayRecords(allRecords);
   updateSessionBadge(sessionIsOpen);
@@ -1287,7 +1258,8 @@ function updateSessionBadge(isOpen) {
   } else {
     badge.className =
       "session-status-badge closed";
-    badge.innerHTML = "🔴 " + t("sessionClosed");
+    badge.innerHTML =
+      "🔴 " + t("sessionClosed");
     start.style.display = "flex";
     end.style.display   = "none";
   }
@@ -1306,39 +1278,24 @@ function generateSessionId() {
 }
 
 // ============================================
-// ✅ GENERATE QR CODE — NOW INCLUDES MODE
-//
-// The QR URL now contains both:
-//   ?session=SESSION_ID&mode=checkIn
-// or
-//   ?session=SESSION_ID&mode=checkOut
-//
-// When teacher switches mode,
-// the QR is regenerated with the new mode.
+// GENERATE QR CODE
 // ============================================
 function generateQRCode(sid) {
-  // Build base URL
   const base = getStudentUrl();
-
-  // ✅ Include mode in the URL
-  const url =
+  const url  =
     base +
     "?session=" + sid +
     "&mode=" + attendanceMode;
 
-  // Generate QR image
   const qr =
     "https://api.qrserver.com/v1/" +
     "create-qr-code/?size=200x200&data=" +
     encodeURIComponent(url);
 
   document.getElementById("qrCodeImage").src = qr;
-
-  // Session info text
   document.getElementById("qrSessionInfo")
     .textContent = t("qrSession") + ": " + sid;
 
-  // Update QR URL display
   const urlEl =
     document.getElementById("qrUrlDisplay");
   if (urlEl) {
@@ -1346,23 +1303,21 @@ function generateQRCode(sid) {
     urlEl.href        = url;
   }
 
-  // ✅ Update the mode badge above the QR
   const badge =
     document.getElementById("qrModeBadge");
   if (badge) {
     if (attendanceMode === "checkIn") {
-      badge.textContent  = t("qrBadgeCheckIn");
-      badge.className    = "qr-mode-badge checkin";
+      badge.textContent = t("qrBadgeCheckIn");
+      badge.className   = "qr-mode-badge checkin";
     } else {
-      badge.textContent  = t("qrBadgeCheckOut");
-      badge.className    = "qr-mode-badge checkout";
+      badge.textContent = t("qrBadgeCheckOut");
+      badge.className   = "qr-mode-badge checkout";
     }
   }
 
   document.getElementById("qrPanel")
     .style.display = "block";
 
-  // Download button
   document.getElementById("downloadQrBtn")
     .onclick = function () {
       const a = document.createElement("a");
@@ -1376,19 +1331,7 @@ function generateQRCode(sid) {
 }
 
 // ============================================
-// ✅ UPDATE MODE UI
-//
-// This function:
-// 1. Updates the toggle button styles
-// 2. Shows/hides the correct time input
-// 3. Updates the mode indicator text
-// 4. Updates the status panel mode card
-// 5. Regenerates QR if session is open
-//
-// Called when:
-// - Teacher clicks a mode button
-// - Language changes
-// - Page loads
+// UPDATE MODE UI
 // ============================================
 function updateModeUI() {
   const ciBtn =
@@ -1405,50 +1348,40 @@ function updateModeUI() {
     document.getElementById("statusCurrentMode");
 
   if (attendanceMode === "checkIn") {
-    // Check-In button is active (green)
     if (ciBtn) {
       ciBtn.className =
         "att-mode-option active-checkin";
     }
-    // Check-Out button is inactive
     if (coBtn) {
       coBtn.className = "att-mode-option";
     }
-    // Show check-in time row
     if (ciRow) ciRow.style.display = "flex";
     if (coRow) coRow.style.display = "none";
-    // Update indicator text
     if (indicator) {
       indicator.textContent =
         t("modeIndicatorCheckIn");
       indicator.style.color = "#16a34a";
     }
-    // Update status panel
     if (modeCard) {
       modeCard.textContent =
         t("modeIndicatorCheckIn");
       modeCard.style.color = "#16a34a";
     }
   } else {
-    // Check-Out button is active (orange)
     if (coBtn) {
       coBtn.className =
         "att-mode-option active-checkout";
     }
-    // Check-In button is inactive
     if (ciBtn) {
       ciBtn.className = "att-mode-option";
     }
-    // Show check-out time row
     if (ciRow) ciRow.style.display = "none";
     if (coRow) coRow.style.display = "flex";
-    // Update indicator text
     if (indicator) {
       indicator.textContent =
         t("modeIndicatorCheckOut");
       indicator.style.color = "#f59e0b";
     }
-    // Update status panel
     if (modeCard) {
       modeCard.textContent =
         t("modeIndicatorCheckOut");
@@ -1456,25 +1389,16 @@ function updateModeUI() {
     }
   }
 
-  // ✅ If a session is already open,
-  // regenerate the QR with the new mode.
-  // The session stays the same.
-  // Only the mode in the URL changes.
   if (sessionIsOpen && currentSessionId) {
     generateQRCode(currentSessionId);
   }
 }
 
 // ============================================
-// ✅ SWITCH MODE
-//
-// Called when teacher clicks either
-// ម៉ោងចូល or ម៉ោងចេញ button
+// SWITCH MODE
 // ============================================
 function switchMode(newMode) {
-  // Only do something if mode actually changes
   if (attendanceMode === newMode) return;
-
   attendanceMode = newMode;
   updateModeUI();
 }
@@ -1486,10 +1410,8 @@ function startElapsedTimer(startedAtISO) {
   if (elapsedInterval) {
     clearInterval(elapsedInterval);
   }
-
   const startMs =
     new Date(startedAtISO).getTime();
-
   const startedEl =
     document.getElementById("startedAtValue");
   if (startedEl) {
@@ -1498,15 +1420,12 @@ function startElapsedTimer(startedAtISO) {
         [], { hour: "2-digit", minute: "2-digit" }
       );
   }
-
   const elapsedEl =
     document.getElementById("elapsedValue");
-
   function tick() {
     const elapsed = Date.now() - startMs;
     if (elapsed < 0) return;
-    const h =
-      Math.floor(elapsed / 3600000);
+    const h = Math.floor(elapsed / 3600000);
     const m =
       Math.floor((elapsed % 3600000) / 60000);
     const s =
@@ -1518,7 +1437,6 @@ function startElapsedTimer(startedAtISO) {
         String(s).padStart(2, "0");
     }
   }
-
   tick();
   elapsedInterval = setInterval(tick, 1000);
 }
@@ -1550,11 +1468,10 @@ function showStatusPanel(sid, startedAt) {
     document.getElementById("qrStatusValue");
   if (qrEl) {
     qrEl.textContent = t("qrActive");
-    qrEl.className   =
+    qrEl.className =
       "status-card-value status-qr-active";
   }
 
-  // ✅ Update mode card in status panel
   const modeCard =
     document.getElementById("statusCurrentMode");
   if (modeCard) {
@@ -1611,6 +1528,7 @@ async function loadStudents() {
 
 // ============================================
 // RENDER STUDENT LIST
+// ✅ Now shows sex instead of age
 // ============================================
 function renderStudentList() {
   const tbody =
@@ -1628,38 +1546,53 @@ function renderStudentList() {
     return;
   }
 
-  tbody.innerHTML = allStudents.map((s, i) => `
-    <tr>
-      <td style="color:#94a3b8;">${i + 1}</td>
-      <td><strong>${esc(s.fullName)}</strong></td>
-      <td style="color:#7c3aed;font-weight:600;">
-        ${esc(s.studentId)}
-      </td>
-      <td>${esc(s.age)}</td>
-      <td>${esc(s.grade)}</td>
-      <td>
-        <button class="btn btn-red"
-          style="padding:4px 10px;font-size:12px;"
-          onclick="window._removeStudent(
-            '${esc(s.studentId)}'
-          )">
-          ${t("removeStudent")}
-        </button>
-      </td>
-    </tr>
-  `).join("");
+  tbody.innerHTML = allStudents.map((s, i) => {
+    // ✅ Translate sex value for display
+    let sexDisplay = s.sex || "—";
+    if (s.sex === "Male") {
+      sexDisplay = t("optMale");
+    } else if (s.sex === "Female") {
+      sexDisplay = t("optFemale");
+    }
+
+    return `
+      <tr>
+        <td style="color:#94a3b8;">${i + 1}</td>
+        <td>
+          <strong>${esc(s.fullName)}</strong>
+        </td>
+        <td style="color:#7c3aed;
+                   font-weight:600;">
+          ${esc(s.studentId)}
+        </td>
+        <td>${esc(sexDisplay)}</td>
+        <td>${esc(s.grade)}</td>
+        <td>
+          <button class="btn btn-red"
+            style="padding:4px 10px;
+                   font-size:12px;"
+            onclick="window._removeStudent(
+              '${esc(s.studentId)}'
+            )">
+            ${t("removeStudent")}
+          </button>
+        </td>
+      </tr>
+    `;
+  }).join("");
 }
 
 // ============================================
 // ADD STUDENT
+// ✅ Now uses sex instead of age
 // ============================================
 async function addStudent() {
   const nameEl  =
     document.getElementById("newStudentName");
   const idEl    =
     document.getElementById("newStudentId");
-  const ageEl   =
-    document.getElementById("newStudentAge");
+  const sexEl   =
+    document.getElementById("newStudentSex");
   const gradeEl =
     document.getElementById("newStudentGrade");
   const msgEl   =
@@ -1668,10 +1601,12 @@ async function addStudent() {
   const fullName  = nameEl.value.trim();
   const studentId =
     idEl.value.trim().toUpperCase();
-  const age   = ageEl.value.trim();
+  // ✅ sex is from dropdown — always English
+  // value (Male/Female) stored in Firebase
+  const sex   = sexEl.value;
   const grade = gradeEl.value.trim();
 
-  if (!fullName || !studentId || !age || !grade) {
+  if (!fullName || !studentId || !sex || !grade) {
     msgEl.style.color = "#dc2626";
     msgEl.textContent = t("fillAllFields");
     return;
@@ -1691,7 +1626,8 @@ async function addStudent() {
       {
         fullName:  fullName,
         studentId: studentId,
-        age:       Number(age),
+        // ✅ Store "sex" field, not "age"
+        sex:       sex,
         grade:     grade,
         addedAt:   new Date().toISOString()
       }
@@ -1699,7 +1635,7 @@ async function addStudent() {
 
     nameEl.value  = "";
     idEl.value    = "";
-    ageEl.value   = "";
+    sexEl.value   = "";
     gradeEl.value = "";
 
     msgEl.style.color = "#16a34a";
@@ -1740,21 +1676,14 @@ window._removeStudent = removeStudent;
 
 // ============================================
 // START SESSION
-//
-// Uses checkInTime input for open time
-// Uses checkOutTime input for close time
-// The session is one single session.
-// Both check-in and check-out use same session.
+// ✅ Now uses sex instead of age in records
 // ============================================
 async function startSession() {
-  // ✅ Read from the new separate time inputs
   const checkInTime =
     document.getElementById("checkInTime").value;
   const checkOutTime =
     document.getElementById("checkOutTime").value;
 
-  // Also sync the hidden openTime/closeTime
-  // so existing session logic still works
   document.getElementById("openTime").value =
     checkInTime;
   document.getElementById("closeTime").value =
@@ -1776,37 +1705,32 @@ async function startSession() {
   const now   = new Date();
 
   try {
-    // ✅ Save session to Firebase
-    // checkInTime = teacher-set check-in open time
-    // checkOutTime = teacher-set check-out time
-    // These are the SCHEDULE times set by teacher,
-    // NOT the actual student check-in/out times.
     await setDoc(
       doc(db, "session", "current"),
       {
-        isOpen:           true,
-        sessionId:        sid,
-        date:             today,
-        openTime:         checkInTime,
-        closeTime:        checkOutTime,
-        scheduledCheckIn: checkInTime,
-        scheduledCheckOut:checkOutTime,
-        startedAt:        now.toISOString(),
-        attendanceMode:   attendanceMode
+        isOpen:            true,
+        sessionId:         sid,
+        date:              today,
+        openTime:          checkInTime,
+        closeTime:         checkOutTime,
+        scheduledCheckIn:  checkInTime,
+        scheduledCheckOut: checkOutTime,
+        startedAt:         now.toISOString(),
+        attendanceMode:    attendanceMode
       }
     );
 
-    // Create attendance records for all students
     const batch = writeBatch(db);
     allStudents.forEach(student => {
       const ref = doc(
         db, "sessionAttendance",
         sid, "records", student.studentId
       );
+      // ✅ Store sex not age
       batch.set(ref, {
         fullName:           student.fullName,
         studentId:          student.studentId,
-        age:                student.age,
+        sex:                student.sex || "",
         grade:              student.grade,
         sessionId:          sid,
         date:               today,
@@ -1830,8 +1754,6 @@ async function startSession() {
     sessionStartedAt = now.toISOString();
 
     updateSessionBadge(true);
-
-    // ✅ Generate QR with current mode
     generateQRCode(sid);
     showStatusPanel(sid, now.toISOString());
 
@@ -1919,12 +1841,10 @@ async function loadSessionStatus() {
       currentCloseTime = data.closeTime;
       sessionStartedAt = data.startedAt || null;
 
-      // ✅ Restore the time inputs
       const ciInput =
         document.getElementById("checkInTime");
       const coInput =
         document.getElementById("checkOutTime");
-
       if (ciInput) {
         ciInput.value =
           data.scheduledCheckIn ||
@@ -1936,7 +1856,6 @@ async function loadSessionStatus() {
           data.closeTime || "11:30";
       }
 
-      // ✅ Restore attendance mode if saved
       if (data.attendanceMode) {
         attendanceMode = data.attendanceMode;
       }
@@ -1968,6 +1887,7 @@ async function loadSessionStatus() {
 
 // ============================================
 // REAL-TIME LISTENER
+// ✅ Now reads sex instead of age
 // ============================================
 function startRealtimeListener(sid) {
   if (unsubscribeListener) {
@@ -1984,11 +1904,12 @@ function startRealtimeListener(sid) {
       snap.forEach(d => {
         const data = d.data();
         allRecords.push({
-          id:               d.id,
-          fullName:         data.fullName      || "",
-          studentId:        data.studentId     || "",
-          age:              data.age           ?? "",
-          grade:            data.grade         || "",
+          id:        d.id,
+          fullName:  data.fullName  || "",
+          studentId: data.studentId || "",
+          // ✅ sex instead of age
+          sex:       data.sex       || "",
+          grade:     data.grade     || "",
           status:
             data.status || "notCheckedInYet",
           checkInDisplay:
@@ -2008,7 +1929,6 @@ function startRealtimeListener(sid) {
         });
       });
 
-      // Sort: present first, then alphabetical
       allRecords.sort((a, b) => {
         if (
           a.status === "present" &&
@@ -2024,7 +1944,7 @@ function startRealtimeListener(sid) {
       const present = allRecords.filter(
         r => r.status === "present"
       ).length;
-      const absent  = allRecords.length - present;
+      const absent = allRecords.length - present;
 
       updateStatusCounts(present, absent);
       updateStats();
@@ -2033,7 +1953,8 @@ function startRealtimeListener(sid) {
       document.getElementById("lastUpdated")
         .textContent =
           new Date().toLocaleTimeString([], {
-            hour: "2-digit", minute: "2-digit"
+            hour:   "2-digit",
+            minute: "2-digit"
           });
     },
     err => console.error("Snapshot:", err)
@@ -2041,7 +1962,8 @@ function startRealtimeListener(sid) {
 }
 
 // ============================================
-// DISPLAY RECORDS — WITH CHECK-IN/OUT COLUMNS
+// DISPLAY RECORDS
+// ✅ Now shows sex instead of age
 // ============================================
 function displayRecords(records) {
   const tbody =
@@ -2062,8 +1984,11 @@ function displayRecords(records) {
                       margin-bottom:12px;">
             📭
           </div>
-          <strong>${esc(t("noRecords"))}</strong>
-          <p style="margin-top:6px;font-size:13px;">
+          <strong>
+            ${esc(t("noRecords"))}
+          </strong>
+          <p style="margin-top:6px;
+                    font-size:13px;">
             ${esc(t("noRecordsSub"))}
           </p>
         </td>
@@ -2076,7 +2001,14 @@ function displayRecords(records) {
     const isPresent    = r.status === "present";
     const isCheckedOut = !!r.checkOutTime;
 
-    // Status badge
+    // ✅ Translate sex for display
+    let sexDisplay = r.sex || "—";
+    if (r.sex === "Male") {
+      sexDisplay = t("optMale");
+    } else if (r.sex === "Female") {
+      sexDisplay = t("optFemale");
+    }
+
     let statusBadge;
     if (isPresent) {
       statusBadge = `
@@ -2096,7 +2028,6 @@ function displayRecords(records) {
         </span>`;
     }
 
-    // Check-in time display
     const checkInDisplay = isPresent
       ? `<span style="color:#16a34a;
                       font-weight:600;">
@@ -2108,7 +2039,6 @@ function displayRecords(records) {
            ${esc(t("notCheckedInYet"))}
          </span>`;
 
-    // Check-out time display
     let checkOutDisplay;
     if (!isPresent) {
       checkOutDisplay = `
@@ -2148,7 +2078,8 @@ function displayRecords(records) {
                    font-size:12px;">
           ${esc(r.studentId)}
         </td>
-        <td>${esc(r.age)}</td>
+        <!-- ✅ sex instead of age -->
+        <td>${esc(sexDisplay)}</td>
         <td>${esc(r.grade)}</td>
         <td style="white-space:nowrap;">
           ${checkInDisplay}
@@ -2170,8 +2101,7 @@ function displayRecords(records) {
   document.querySelectorAll(".profile-btn")
     .forEach(btn => {
       btn.addEventListener("click", function () {
-        const id =
-          btn.getAttribute("data-id");
+        const id = btn.getAttribute("data-id");
         const r  =
           allRecords.find(x => x.id === id);
         if (r) openProfile(r);
@@ -2225,6 +2155,7 @@ function searchRecords() {
 
 // ============================================
 // PROFILE MODAL
+// ✅ Now shows sex instead of age
 // ============================================
 function openProfile(r) {
   const isPresent    = r.status === "present";
@@ -2236,8 +2167,20 @@ function openProfile(r) {
     .textContent = r.grade || "—";
   document.getElementById("profileStudentId")
     .textContent = r.studentId || "—";
-  document.getElementById("profileAge")
-    .textContent = r.age || "—";
+
+  // ✅ Show sex (translated) instead of age
+  const sexEl =
+    document.getElementById("profileSex");
+  if (sexEl) {
+    let sexDisplay = r.sex || "—";
+    if (r.sex === "Male") {
+      sexDisplay = t("optMale");
+    } else if (r.sex === "Female") {
+      sexDisplay = t("optFemale");
+    }
+    sexEl.textContent = sexDisplay;
+  }
+
   document.getElementById("profileGrade")
     .textContent = r.grade || "—";
 
@@ -2301,6 +2244,7 @@ document.getElementById("profileModal")
 
 // ============================================
 // EXPORT CSV
+// ✅ Now exports sex instead of age
 // ============================================
 function exportToCSV() {
   if (allRecords.length === 0) {
@@ -2315,7 +2259,7 @@ function exportToCSV() {
     t("colNo"),
     t("colName"),
     t("labelStudentId"),
-    t("colAge"),
+    t("colSex"),
     t("colGrade"),
     t("colCheckIn"),
     t("colCheckOut"),
@@ -2325,17 +2269,25 @@ function exportToCSV() {
     t("profileDistance")
   ];
 
-  let csv = headers.map(csv_val).join(",") + "\n";
+  let csv =
+    headers.map(csv_val).join(",") + "\n";
 
   allRecords.forEach((r, i) => {
     const isPresent    = r.status === "present";
     const isCheckedOut = !!r.checkOutTime;
 
+    let sexDisplay = r.sex || "";
+    if (r.sex === "Male") {
+      sexDisplay = t("optMale");
+    } else if (r.sex === "Female") {
+      sexDisplay = t("optFemale");
+    }
+
     csv += [
       i + 1,
       r.fullName,
       r.studentId,
-      r.age,
+      sexDisplay,
       r.grade,
       isPresent
         ? (r.checkInDisplay || "--")
@@ -2391,57 +2343,43 @@ async function handleLogout() {
 // ============================================
 document.getElementById("addStudentBtn")
   ?.addEventListener("click", addStudent);
-
 document.getElementById("startSessionBtn")
   ?.addEventListener("click", startSession);
-
 document.getElementById("endSessionBtn")
   ?.addEventListener("click", endSession);
-
 document.getElementById("refreshBtn")
   ?.addEventListener("click", function () {
     if (currentSessionId) {
       startRealtimeListener(currentSessionId);
     }
   });
-
 document.getElementById("exportBtn")
   ?.addEventListener("click", exportToCSV);
-
 document.getElementById("searchInput")
   ?.addEventListener("input", searchRecords);
-
 document.getElementById("teacherLangBtn")
   ?.addEventListener("click", function () {
     applyTeacherLang(
       tLang === "en" ? "km" : "en"
     );
   });
-
 document.getElementById("logoutBtn")
   ?.addEventListener("click", handleLogout);
-
 document.getElementById("newStudentName")
   ?.addEventListener("keydown", function (e) {
     if (e.key === "Enter") addStudent();
   });
-
-// ✅ NEW — Mode Switch Button Events
-// When teacher clicks ម៉ោងចូល button
 document.getElementById("modeCheckInBtn")
   ?.addEventListener("click", function () {
     switchMode("checkIn");
   });
-
-// When teacher clicks ម៉ោងចេញ button
 document.getElementById("modeCheckOutBtn")
   ?.addEventListener("click", function () {
     switchMode("checkOut");
   });
 
 // ============================================
-// INIT — Run updateModeUI on page load
-// so the UI starts in the correct state
+// INIT
 // ============================================
 updateModeUI();
 
