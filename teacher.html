@@ -20,12 +20,8 @@
 
 <body class="teacher-body">
 
-<!-- ==========================================
-     TEACHER HEADER
-     ========================================== -->
+<!-- TEACHER HEADER -->
 <header class="teacher-header">
-
-  <!-- Left: logo + title -->
   <div class="teacher-header-left">
     <img
       src="school-logo.png"
@@ -43,10 +39,8 @@
     </div>
   </div>
 
-  <!-- Right: buttons -->
   <div class="teacher-header-right">
 
-    <!-- Teacher email display -->
     <div class="teacher-email-badge"
       id="teacherEmailBadge"
       style="display:none;">
@@ -58,31 +52,27 @@
       class="teacher-lang-btn">
       ខ្មែរ
     </button>
+
     <a href="index.html"
       class="btn btn-white">
       <span data-t="studentPage">
         Student Page
       </span>
     </a>
+
     <button id="refreshBtn"
       class="btn btn-white">
-      <span data-t="refresh">
-        Refresh
-      </span>
-    </button>
-    <button id="exportBtn"
-      class="btn btn-green">
-      <span data-t="export">
-        Export CSV
-      </span>
+      <span data-t="refresh">Refresh</span>
     </button>
 
-    <!-- ✅ LOGOUT BUTTON -->
+    <button id="exportBtn"
+      class="btn btn-green">
+      <span data-t="export">Export CSV</span>
+    </button>
+
     <button id="logoutBtn"
       class="btn btn-red">
-      <span data-t="logoutBtn">
-        Logout
-      </span>
+      <span data-t="logoutBtn">Logout</span>
     </button>
 
   </div>
@@ -122,7 +112,6 @@
                  border-radius:8px;
                  font-size:14px;
                  width:180px;"
-          data-t-placeholder="phStudentName"
           placeholder="Student full name">
       </div>
 
@@ -137,8 +126,7 @@
                  border-radius:8px;
                  font-size:14px;
                  width:120px;"
-          data-t-placeholder="phStudentId"
-          placeholder="e.g. STU001">
+          placeholder="e.g. IT01">
       </div>
 
       <div class="session-field">
@@ -167,7 +155,6 @@
                  border-radius:8px;
                  font-size:14px;
                  width:140px;"
-          data-t-placeholder="phStudentGrade"
           placeholder="e.g. Grade 10A">
       </div>
 
@@ -195,16 +182,14 @@
             </th>
             <th data-t="colAge">Age</th>
             <th data-t="colGrade">Grade</th>
-            <th data-t="colAction">
-              Action
-            </th>
+            <th data-t="colAction">Action</th>
           </tr>
         </thead>
         <tbody id="studentListBody">
           <tr>
             <td colspan="6"
               class="table-loading">
-              Loading students...
+              Loading...
             </td>
           </tr>
         </tbody>
@@ -253,16 +238,89 @@
       <button id="startSessionBtn"
         class="btn btn-blue">
         <span data-t="startSession">
-          ▶ Start Session
+          ▶ Start Attendance
         </span>
       </button>
       <button id="endSessionBtn"
         class="btn btn-red"
         style="display:none;">
         <span data-t="endSession">
-          ⏹ End Session
+          ⏹ End Attendance
         </span>
       </button>
+    </div>
+
+    <!-- LIVE ELAPSED TIMER -->
+    <div id="attendanceStatusPanel"
+      class="attendance-status-panel"
+      style="display:none;margin-top:16px;">
+      <div class="status-grid">
+        <div class="status-card status-open">
+          <div class="status-card-icon">🟢</div>
+          <div class="status-card-label"
+            data-t="statusLabel">Status</div>
+          <div class="status-card-value"
+            data-t="sessionOpen">OPEN</div>
+        </div>
+        <div class="status-card">
+          <div class="status-card-icon">🕐</div>
+          <div class="status-card-label"
+            data-t="startedAtLabel">
+            Started At
+          </div>
+          <div class="status-card-value"
+            id="startedAtValue">--:--</div>
+        </div>
+        <div class="status-card">
+          <div class="status-card-icon">⏱</div>
+          <div class="status-card-label"
+            data-t="elapsedLabel">
+            Elapsed Time
+          </div>
+          <div class="status-card-value
+                      elapsed-timer"
+            id="elapsedValue">
+            00:00:00
+          </div>
+        </div>
+        <div class="status-card status-present">
+          <div class="status-card-icon">✅</div>
+          <div class="status-card-label"
+            data-t="presentLabel">Present</div>
+          <div class="status-card-value
+                      status-present-num"
+            id="statusPresentCount">0</div>
+        </div>
+        <div class="status-card status-absent">
+          <div class="status-card-icon">❌</div>
+          <div class="status-card-label"
+            data-t="absentLabel2">Absent</div>
+          <div class="status-card-value
+                      status-absent-num"
+            id="statusAbsentCount">0</div>
+        </div>
+        <div class="status-card">
+          <div class="status-card-icon">🔑</div>
+          <div class="status-card-label"
+            data-t="sessionIdLabel">
+            Session ID
+          </div>
+          <div class="status-card-value
+                      session-id-value"
+            id="statusSessionId">—</div>
+        </div>
+        <div class="status-card status-qr">
+          <div class="status-card-icon">📱</div>
+          <div class="status-card-label"
+            data-t="qrStatusLabel">
+            QR Status
+          </div>
+          <div class="status-card-value
+                      status-qr-active"
+            id="qrStatusValue"
+            data-t="qrActive">Active</div>
+        </div>
+      </div>
     </div>
 
     <p id="sessionInfoText"
@@ -293,11 +351,10 @@
       <p style="font-size:11px;
                 color:#64748b;
                 margin:0 0 4px 0;">
-        QR Code URL (verify GitHub Pages):
+        QR Code URL:
       </p>
       <a id="qrUrlDisplay"
-         href="#"
-         target="_blank"
+         href="#" target="_blank"
          style="font-size:11px;
                 color:#1a73e8;
                 word-break:break-all;
@@ -321,7 +378,7 @@
     </div>
   </div>
 
-  <!-- STATS -->
+  <!-- STATS ROW -->
   <section class="stats-row">
     <div class="stat-card">
       <div class="stat-number"
@@ -374,22 +431,21 @@
         type="search"
         id="searchInput"
         class="search-input"
-        data-t-placeholder="searchPlaceholder"
         placeholder="Search by name or ID...">
     </div>
     <p class="search-result-text"
       id="searchResultText"></p>
   </section>
 
-  <!-- ATTENDANCE TABLE -->
+  <!-- ✅ ATTENDANCE TABLE
+       Includes ម៉ោងចូល ម៉ោងចេញ ស្ថានភាព -->
   <section class="table-container">
     <div class="table-header">
       <h2 data-t="tableTitle">
         📋 Attendance List
       </h2>
       <span id="recordCount"
-        style="color:#64748b;
-               font-size:13px;">
+        style="color:#64748b;font-size:13px;">
         Loading...
       </span>
     </div>
@@ -408,11 +464,18 @@
             <th data-t="colGrade">
               Grade / Class
             </th>
-            <th data-t="colDate">Date</th>
-            <th data-t="colTime">Time</th>
-            <th data-t="colStatus">
-              Status
+
+            <!-- ✅ NEW COLUMNS -->
+            <th data-t="colCheckIn">
+              ម៉ោងចូល
             </th>
+            <th data-t="colCheckOut">
+              ម៉ោងចេញ
+            </th>
+            <th data-t="colStatus">
+              ស្ថានភាព
+            </th>
+
             <th data-t="colProfile">
               Profile
             </th>
@@ -462,39 +525,42 @@
         <span class="profile-row-value"
           id="profileGrade"></span>
       </div>
+
+      <!-- ✅ Check-in time -->
       <div class="profile-row">
         <span class="profile-row-label"
-          data-t="profileDate">Date</span>
-        <span class="profile-row-value"
-          id="profileDate"></span>
-      </div>
-      <div class="profile-row">
-        <span class="profile-row-label"
-          data-t="profileTime">Time</span>
-        <span class="profile-row-value"
-          id="profileTime"></span>
-      </div>
-      <div class="profile-row">
-        <span class="profile-row-label"
-          data-t="profileStatus">
-          Status
+          data-t="colCheckIn">
+          ម៉ោងចូល
         </span>
+        <span class="profile-row-value"
+          id="profileCheckIn"></span>
+      </div>
+
+      <!-- ✅ Check-out time -->
+      <div class="profile-row">
+        <span class="profile-row-label"
+          data-t="colCheckOut">
+          ម៉ោងចេញ
+        </span>
+        <span class="profile-row-value"
+          id="profileCheckOut"></span>
+      </div>
+
+      <div class="profile-row">
+        <span class="profile-row-label"
+          data-t="colStatus">Status</span>
         <span class="profile-row-value"
           id="profileStatus"></span>
       </div>
       <div class="profile-row">
         <span class="profile-row-label"
-          data-t="profileLat">
-          Latitude
-        </span>
+          data-t="profileLat">Latitude</span>
         <span class="profile-row-value"
           id="profileLat"></span>
       </div>
       <div class="profile-row">
         <span class="profile-row-label"
-          data-t="profileLon">
-          Longitude
-        </span>
+          data-t="profileLon">Longitude</span>
         <span class="profile-row-value"
           id="profileLon"></span>
       </div>
@@ -517,8 +583,7 @@
   </div>
 </div>
 
-<!-- AUTH LOADING OVERLAY
-     Shows while checking login status -->
+<!-- AUTH LOADING OVERLAY -->
 <div id="authOverlay"
   class="loading-overlay"
   style="display:flex;">
@@ -549,7 +614,6 @@ import {
   writeBatch
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-// ✅ ADD Firebase Auth import
 import {
   getAuth,
   onAuthStateChanged,
@@ -579,73 +643,55 @@ const db   = getFirestore(app);
 const auth = getAuth(app);
 
 // ============================================
-// GET LOGIN PAGE URL
+// URL HELPERS
 // ============================================
-function getLoginPageUrl() {
-  const origin   = window.location.origin;
-  const pathname = window.location.pathname;
-  const basePath = pathname.replace(
-    /\/[^\/]*\.html$/, "/"
-  );
-  return origin + basePath + "login.html";
+function getLoginUrl() {
+  const base =
+    window.location.pathname
+      .replace(/\/[^\/]*\.html$/, "/");
+  return window.location.origin + base +
+    "login.html";
+}
+
+function getStudentUrl() {
+  const base =
+    window.location.pathname
+      .replace(/\/[^\/]*\.html$/, "/");
+  return window.location.origin + base +
+    "index.html";
 }
 
 // ============================================
-// GET STUDENT PAGE URL
-// ============================================
-function getStudentPageUrl() {
-  const origin   = window.location.origin;
-  const pathname = window.location.pathname;
-  const basePath = pathname.replace(
-    /\/[^\/]*\.html$/, "/"
-  );
-  return origin + basePath + "index.html";
-}
-
-// ============================================
-// ✅ AUTH GUARD
-// Check if teacher is logged in
-// If not logged in redirect to login page
+// AUTH GUARD
 // ============================================
 onAuthStateChanged(auth, function (user) {
-  // Hide the auth loading overlay
-  const authOverlay =
+  const overlay =
     document.getElementById("authOverlay");
 
   if (!user) {
-    // Not logged in
-    // Redirect to login page immediately
-    window.location.href = getLoginPageUrl();
+    window.location.href = getLoginUrl();
     return;
   }
 
-  // ✅ Teacher is logged in
-  // Show their email in the header
-  const emailBadge =
-    document.getElementById(
-      "teacherEmailBadge"
-    );
-  const emailText =
+  const badge =
+    document.getElementById("teacherEmailBadge");
+  const emailEl =
     document.getElementById("teacherEmailText");
 
-  if (emailBadge && emailText) {
-    emailText.textContent = user.email;
-    emailBadge.style.display = "flex";
+  if (badge && emailEl) {
+    emailEl.textContent  = user.email;
+    badge.style.display  = "flex";
   }
 
-  // Hide auth overlay and show dashboard
-  if (authOverlay) {
-    authOverlay.style.display = "none";
-  }
+  if (overlay) overlay.style.display = "none";
 
-  // Load all dashboard data
   applyTeacherLang(tLang);
   loadStudents();
   loadSessionStatus();
 });
 
 // ============================================
-// TRANSLATIONS — ENGLISH AND KHMER
+// TRANSLATIONS
 // ============================================
 const tt = {
   en: {
@@ -660,15 +706,10 @@ const tt = {
     logoutBtn:    "Logout",
     logoutConfirm:
       "Are you sure you want to logout?",
-    logoutSuccess:
-      "Logged out successfully.",
-    loggedInAs:   "Logged in as",
 
-    // Student list
-    studentListTitle:
-      "Student List Manager",
+    studentListTitle: "Student List Manager",
     studentListHint:
-      "Add students here. They are saved permanently and used for every session.",
+      "Add students here. They are saved permanently.",
     labelStudentName:  "Full Name",
     labelStudentId:    "Student ID",
     labelStudentAge:   "Age",
@@ -676,48 +717,52 @@ const tt = {
     colAction:         "Action",
     addStudent:        "➕ Add Student",
     removeStudent:     "🗑 Remove",
-    phStudentName:     "Student full name",
-    phStudentId:       "e.g. STU001",
-    phStudentGrade:    "e.g. Grade 10A",
-    studentAdded:
-      "Student added successfully.",
-    studentRemoved:
-      "Student removed.",
+    studentAdded:      "Student added.",
+    studentRemoved:    "Student removed.",
     fillAllFields:
-      "Please fill in all student fields.",
+      "Please fill in all fields.",
     studentIdExists:
       "A student with this ID already exists.",
-    noStudentsYet:
-      "No students added yet.",
+    noStudentsYet:     "No students yet.",
     confirmRemove:
-      "Remove this student from the list?",
+      "Remove this student?",
 
-    // Session
     sessionControlTitle: "Session Control",
-    sessionOpen:         "Open",
+    sessionOpen:         "OPEN",
     sessionClosed:       "Closed",
     openTimeLabel:       "Open Time",
     closeTimeLabel:      "Close Time",
-    startSession:        "▶ Start Session",
-    endSession:          "⏹ End Session",
+    startSession:        "▶ Start Attendance",
+    endSession:          "⏹ End Attendance",
     sessionActive:
-      "Session is active from {open} to {close}.",
+      "Attendance open from {open} to {close}.",
     sessionStarted:
-      "Session started. Records created for all students.",
+      "Attendance started. QR Code is ready.",
     sessionEnded:
-      "Session ended.",
+      "Attendance session has ended.",
     confirmEnd:
-      "Are you sure you want to end the session?",
+      "End attendance? Students cannot check in after this.",
     setTimesAlert:
-      "Please set both open and close time.",
+      "Please set both open and close times.",
     timeOrderAlert:
       "Close time must be after open time.",
     sessionError:
-      "Error with session. Please try again.",
+      "Session error. Please try again.",
     noStudentsError:
-      "Please add students before starting a session.",
+      "Please add students before starting.",
 
-    // QR
+    // Status panel
+    attendanceStatusTitle: "Attendance Status",
+    statusLabel:           "Status",
+    startedAtLabel:        "Started At",
+    elapsedLabel:          "Elapsed Time",
+    presentLabel:          "Present",
+    absentLabel2:          "Absent",
+    sessionIdLabel:        "Session ID",
+    qrStatusLabel:         "QR Status",
+    qrActive:              "✅ Active",
+    qrInactive:            "🔴 Inactive",
+
     qrTitle:
       "📱 Today's QR Code",
     qrInstructions:
@@ -725,58 +770,48 @@ const tt = {
     downloadQr:  "⬇ Download QR Code",
     qrSession:   "Session",
 
-    // Stats
     totalLabel:   "Total Students",
     todayLabel:   "Present Today",
     absentLabel:  "Not Checked In",
     updatedLabel: "Last Updated",
 
-    // Search
     searchTitle:
       "🔍 Find a Student",
     searchPlaceholder:
       "Search by name or ID...",
     results: "result(s)",
 
-    // Table
-    tableTitle: "📋 Attendance List",
-    colNo:      "No.",
-    colName:    "Student Name",
-    colAge:     "Age",
-    colGrade:   "Grade / Class",
-    colDate:    "Date",
-    colTime:    "Time",
-    colStatus:  "Status",
-    colProfile: "Profile",
-    viewBtn:    "👁 View",
+    tableTitle:  "📋 Attendance List",
+    colNo:       "No.",
+    colName:     "Student Name",
+    colAge:      "Age",
+    colGrade:    "Grade / Class",
 
-    // Profile
+    // ✅ NEW columns
+    colCheckIn:  "ម៉ោងចូល",
+    colCheckOut: "ម៉ោងចេញ",
+    colStatus:   "ស្ថានភាព",
+    colProfile:  "Profile",
+    viewBtn:     "👁 View",
+
     profileAge:      "Age",
     profileGrade:    "Grade / Class",
-    profileDate:     "Date",
-    profileTime:     "Time",
-    profileStatus:   "Status",
     profileLat:      "Latitude",
     profileLon:      "Longitude",
     profileDistance: "Distance from School",
     closeProfile:    "Close",
 
-    // Status
-    notCheckedInYet: "Not Checked In Yet",
-    present:         "✅ Present",
-    absent:          "❌ Absent",
+    // ✅ Status values
+    notCheckedInYet: "មិនទាន់ចុះវត្តមាន",
+    present:         "✅ មានវត្តមាន",
+    notCheckedOut:   "មិនទាន់ចេញ",
 
-    // Table states
     noRecords:
       "No attendance records found.",
     noRecordsSub:
-      "Start a session to create attendance records.",
-    loadError:
-      "Could not load attendance records.",
-    loading: "Loading...",
-
-    exportEmpty:
-      "There are no records to export."
+      "Start attendance to create records.",
+    loading:     "Loading...",
+    exportEmpty: "No records to export."
   },
 
   km: {
@@ -791,15 +826,10 @@ const tt = {
     logoutBtn:    "ចាកចេញ",
     logoutConfirm:
       "តើអ្នកពិតជាចង់ចាកចេញមែនទេ?",
-    logoutSuccess:
-      "បានចាកចេញដោយជោគជ័យ។",
-    loggedInAs:   "ចូលប្រើក្នុងនាម",
 
-    // Student list
-    studentListTitle:
-      "កម្មវិធីគ្រប់គ្រងបញ្ជីសិស្ស",
+    studentListTitle: "គ្រប់គ្រងបញ្ជីសិស្ស",
     studentListHint:
-      "បន្ថែមសិស្សនៅទីនេះ។ ព័ត៌មានត្រូវបានរក្សាទុកជាអចិន្ត្រៃយ៍។",
+      "បន្ថែមសិស្សនៅទីនេះ។",
     labelStudentName:  "ឈ្មោះពេញ",
     labelStudentId:    "លេខសម្គាល់សិស្ស",
     labelStudentAge:   "អាយុ",
@@ -807,116 +837,103 @@ const tt = {
     colAction:         "សកម្មភាព",
     addStudent:        "➕ បន្ថែមសិស្ស",
     removeStudent:     "🗑 លុប",
-    phStudentName:     "ឈ្មោះពេញរបស់សិស្ស",
-    phStudentId:       "ឧ. STU001",
-    phStudentGrade:    "ឧ. ថ្នាក់ទី១០A",
-    studentAdded:
-      "បន្ថែមសិស្សដោយជោគជ័យ។",
-    studentRemoved:
-      "សិស្សត្រូវបានលុប។",
+    studentAdded:      "បន្ថែមសិស្សដោយជោគជ័យ។",
+    studentRemoved:    "សិស្សត្រូវបានលុប។",
     fillAllFields:
-      "សូមបំពេញព័ត៌មានសិស្សទាំងអស់។",
+      "សូមបំពេញព័ត៌មានទាំងអស់។",
     studentIdExists:
       "មានសិស្សដែលមានលេខសម្គាល់នេះហើយ។",
-    noStudentsYet:
-      "មិនទាន់មានសិស្សទេ។",
+    noStudentsYet:  "មិនទាន់មានសិស្សទេ។",
     confirmRemove:
-      "លុបសិស្សនេះចេញពីបញ្ជីមែនទេ?",
+      "លុបសិស្សនេះ?",
 
-    // Session
     sessionControlTitle: "គ្រប់គ្រងវគ្គ",
     sessionOpen:         "បើក",
     sessionClosed:       "បិទ",
     openTimeLabel:       "ម៉ោងបើក",
     closeTimeLabel:      "ម៉ោងបិទ",
-    startSession:        "▶ ចាប់ផ្ដើមវគ្គ",
-    endSession:          "⏹ បញ្ចប់វគ្គ",
+    startSession:        "▶ ចាប់ផ្ដើមវត្តមាន",
+    endSession:          "⏹ បញ្ចប់វត្តមាន",
     sessionActive:
-      "វគ្គកំពុងដំណើរការពី {open} ដល់ {close}។",
+      "វត្តមានបើកពី {open} ដល់ {close}។",
     sessionStarted:
-      "វគ្គបានចាប់ផ្ដើម។ កំណត់ត្រាត្រូវបានបង្កើត។",
+      "វត្តមានចាប់ផ្ដើម។ QR Code រួចរាល់។",
     sessionEnded:
-      "វគ្គបានបញ្ចប់។",
+      "វគ្គចុះវត្តមានបានបញ្ចប់។",
     confirmEnd:
-      "តើអ្នកពិតជាចង់បញ្ចប់វគ្គមែនទេ?",
+      "បញ្ចប់វត្តមាន? សិស្សនឹងមិនអាចចុះបានទៀតទេ។",
     setTimesAlert:
-      "សូមកំណត់ម៉ោងបើក និងម៉ោងបិទ។",
+      "សូមកំណត់ម៉ោងបើក និងបិទ។",
     timeOrderAlert:
       "ម៉ោងបិទត្រូវតែក្រោយម៉ោងបើក។",
     sessionError:
-      "មានបញ្ហាជាមួយវគ្គ។",
+      "មានបញ្ហា។ សូមព្យាយាមម្តងទៀត។",
     noStudentsError:
-      "សូមបន្ថែមសិស្សមុននឹងចាប់ផ្ដើមវគ្គ។",
+      "សូមបន្ថែមសិស្សមុន។",
 
-    // QR
-    qrTitle:
-      "📱 QR Code ថ្ងៃនេះ",
-    qrInstructions:
-      "បង្ហាញ QR Code នេះដល់សិស្ស។",
-    downloadQr:  "⬇ ទាញយក QR Code",
-    qrSession:   "វគ្គ",
+    attendanceStatusTitle: "ស្ថានភាពវត្តមាន",
+    statusLabel:           "ស្ថានភាព",
+    startedAtLabel:        "ចាប់ផ្ដើមនៅ",
+    elapsedLabel:          "ពេលវេលាដែលបានកន្លង",
+    presentLabel:          "មានវត្តមាន",
+    absentLabel2:          "អវត្តមាន",
+    sessionIdLabel:        "លេខវគ្គ",
+    qrStatusLabel:         "ស្ថានភាព QR",
+    qrActive:              "✅ សកម្ម",
+    qrInactive:            "🔴 អសកម្ម",
 
-    // Stats
+    qrTitle:        "📱 QR Code ថ្ងៃនេះ",
+    qrInstructions: "បង្ហាញ QR Code នេះដល់សិស្ស។",
+    downloadQr:     "⬇ ទាញយក QR Code",
+    qrSession:      "វគ្គ",
+
     totalLabel:   "សិស្សសរុប",
     todayLabel:   "មានវត្តមានថ្ងៃនេះ",
-    absentLabel:  "មិនទាន់ចុះវត្តមាន",
-    updatedLabel: "ធ្វើបច្ចុប្បន្នភាពចុងក្រោយ",
+    absentLabel:  "មិនទាន់ចុះ",
+    updatedLabel: "ធ្វើបច្ចុប្បន្នចុងក្រោយ",
 
-    // Search
     searchTitle:
       "🔍 ស្វែងរកសិស្ស",
     searchPlaceholder:
-      "ស្វែងរកតាមឈ្មោះ ឬលេខសម្គាល់...",
+      "ស្វែងរកតាមឈ្មោះ ឬលេខ...",
     results: "លទ្ធផល",
 
-    // Table
-    tableTitle: "📋 បញ្ជីវត្តមាន",
-    colNo:      "លរ",
-    colName:    "ឈ្មោះសិស្ស",
-    colAge:     "អាយុ",
-    colGrade:   "ថ្នាក់រៀន",
-    colDate:    "កាលបរិច្ឆេទ",
-    colTime:    "ម៉ោង",
-    colStatus:  "ស្ថានភាព",
-    colProfile: "ព័ត៌មាន",
-    viewBtn:    "👁 មើល",
+    tableTitle:  "📋 បញ្ជីវត្តមាន",
+    colNo:       "លរ",
+    colName:     "ឈ្មោះសិស្ស",
+    colAge:      "អាយុ",
+    colGrade:    "ថ្នាក់រៀន",
+    colCheckIn:  "ម៉ោងចូល",
+    colCheckOut: "ម៉ោងចេញ",
+    colStatus:   "ស្ថានភាព",
+    colProfile:  "ព័ត៌មាន",
+    viewBtn:     "👁 មើល",
 
-    // Profile
     profileAge:      "អាយុ",
     profileGrade:    "ថ្នាក់រៀន",
-    profileDate:     "កាលបរិច្ឆេទ",
-    profileTime:     "ម៉ោង",
-    profileStatus:   "ស្ថានភាព",
     profileLat:      "រយៈទទឹង",
     profileLon:      "រយៈបណ្តោយ",
     profileDistance: "ចម្ងាយពីសាលា",
     closeProfile:    "បិទ",
 
-    // Status
     notCheckedInYet: "មិនទាន់ចុះវត្តមាន",
     present:         "✅ មានវត្តមាន",
-    absent:          "❌ អវត្តមាន",
+    notCheckedOut:   "មិនទាន់ចេញ",
 
-    // Table states
     noRecords:
-      "រកមិនឃើញកំណត់ត្រាវត្តមានទេ។",
+      "រកមិនឃើញកំណត់ត្រា។",
     noRecordsSub:
-      "ចាប់ផ្ដើមវគ្គដើម្បីបង្កើតកំណត់ត្រា។",
-    loadError:
-      "មិនអាចផ្ទុកកំណត់ត្រាបានទេ។",
-    loading: "កំពុងផ្ទុក…",
-
-    exportEmpty:
-      "មិនមានទិន្នន័យដើម្បីនាំចេញទេ។"
+      "ចាប់ផ្ដើមវត្តមានដើម្បីបង្កើតកំណត់ត្រា។",
+    loading:     "កំពុងផ្ទុក…",
+    exportEmpty: "មិនមានទិន្នន័យ។"
   }
 };
 
 // ============================================
-// LANGUAGE STATE
+// LANGUAGE
 // ============================================
 let tLang =
-  localStorage.getItem("teacherLanguage")
-  || "en";
+  localStorage.getItem("teacherLanguage") || "en";
 
 function t(key) {
   return tt[tLang][key] || key;
@@ -931,13 +948,15 @@ let sessionIsOpen       = false;
 let currentSessionId    = null;
 let currentOpenTime     = null;
 let currentCloseTime    = null;
+let sessionStartedAt    = null;
 let unsubscribeListener = null;
+let elapsedInterval     = null;
 
 // ============================================
 // SAFE HTML
 // ============================================
-function escapeHTML(value) {
-  return String(value ?? "")
+function esc(v) {
+  return String(v ?? "")
     .replace(/&/g,  "&amp;")
     .replace(/</g,  "&lt;")
     .replace(/>/g,  "&gt;")
@@ -964,92 +983,49 @@ function applyTeacherLang(lang) {
       : "Teacher Dashboard - Tepranom";
 
   document.querySelectorAll("[data-t]")
-    .forEach(function (el) {
+    .forEach(el => {
       const key = el.getAttribute("data-t");
       const val = t(key);
       if (val !== key) el.textContent = val;
     });
 
-  document.querySelectorAll(
-    "[data-t-placeholder]"
-  ).forEach(function (el) {
-    const key =
-      el.getAttribute("data-t-placeholder");
-    const val = t(key);
-    if (val !== key) el.placeholder = val;
-  });
-
   const langBtn =
     document.getElementById("teacherLangBtn");
-  if (langBtn) {
-    langBtn.textContent = t("langBtn");
-  }
+  if (langBtn) langBtn.textContent = t("langBtn");
 
-  const searchInput =
+  const search =
     document.getElementById("searchInput");
-  if (searchInput) {
-    searchInput.placeholder =
-      t("searchPlaceholder");
+  if (search) {
+    search.placeholder = t("searchPlaceholder");
   }
 
   renderStudentList();
   displayRecords(allRecords);
   updateSessionBadge(sessionIsOpen);
-  retranslateSessionInfo();
 }
 
 // ============================================
-// RETRANSLATE SESSION INFO
-// ============================================
-function retranslateSessionInfo() {
-  const infoText =
-    document.getElementById("sessionInfoText");
-  if (!infoText) return;
-
-  if (
-    sessionIsOpen &&
-    currentOpenTime &&
-    currentCloseTime
-  ) {
-    infoText.textContent =
-      t("sessionActive")
-        .replace("{open}",  currentOpenTime)
-        .replace("{close}", currentCloseTime);
-  } else if (
-    !sessionIsOpen &&
-    infoText.textContent !== ""
-  ) {
-    infoText.textContent = t("sessionEnded");
-  }
-}
-
-// ============================================
-// UPDATE SESSION BADGE
+// SESSION BADGE
 // ============================================
 function updateSessionBadge(isOpen) {
   const badge =
-    document.getElementById(
-      "sessionStatusBadge"
-    );
-  const startBtn =
+    document.getElementById("sessionStatusBadge");
+  const start =
     document.getElementById("startSessionBtn");
-  const endBtn =
+  const end =
     document.getElementById("endSessionBtn");
 
   if (isOpen) {
-    badge.className =
-      "session-status-badge open";
-    badge.innerHTML =
-      "🟢 " + t("sessionOpen");
-    startBtn.style.display = "none";
-    endBtn.style.display   = "flex";
+    badge.className = "session-status-badge open";
+    badge.innerHTML = "🟢 " + t("sessionOpen");
+    start.style.display = "none";
+    end.style.display   = "flex";
   } else {
     badge.className =
       "session-status-badge closed";
-    badge.innerHTML =
-      "🔴 " + t("sessionClosed");
-    startBtn.style.display = "flex";
-    endBtn.style.display   = "none";
+    badge.innerHTML = "🔴 " + t("sessionClosed");
+    start.style.display = "flex";
+    end.style.display   = "none";
   }
 }
 
@@ -1059,36 +1035,32 @@ function updateSessionBadge(isOpen) {
 function generateSessionId() {
   const today =
     new Date().toLocaleDateString("en-CA");
-  const random =
+  const rand  =
     Math.random().toString(36)
       .substring(2, 8).toUpperCase();
-  return `${today}-${random}`;
+  return `${today}-${rand}`;
 }
 
 // ============================================
 // GENERATE QR CODE
 // ============================================
-function generateQRCode(sessionId) {
-  const studentPageUrl = getStudentPageUrl();
-  const attendanceUrl  =
-    studentPageUrl + "?session=" + sessionId;
-
-  const qrApiUrl =
+function generateQRCode(sid) {
+  const base = getStudentUrl();
+  const url  = base + "?session=" + sid;
+  const qr   =
     "https://api.qrserver.com/v1/" +
     "create-qr-code/?size=200x200&data=" +
-    encodeURIComponent(attendanceUrl);
+    encodeURIComponent(url);
 
-  document.getElementById("qrCodeImage")
-    .src = qrApiUrl;
+  document.getElementById("qrCodeImage").src = qr;
   document.getElementById("qrSessionInfo")
-    .textContent =
-      t("qrSession") + ": " + sessionId;
+    .textContent = t("qrSession") + ": " + sid;
 
-  const urlDisplay =
+  const urlEl =
     document.getElementById("qrUrlDisplay");
-  if (urlDisplay) {
-    urlDisplay.textContent = attendanceUrl;
-    urlDisplay.href        = attendanceUrl;
+  if (urlEl) {
+    urlEl.textContent = url;
+    urlEl.href        = url;
   }
 
   document.getElementById("qrPanel")
@@ -1096,14 +1068,102 @@ function generateQRCode(sessionId) {
 
   document.getElementById("downloadQrBtn")
     .onclick = function () {
-      const link =
-        document.createElement("a");
-      link.href      = qrApiUrl;
-      link.download  =
-        "qr-" + sessionId + ".png";
-      link.target    = "_blank";
-      link.click();
+      const a = document.createElement("a");
+      a.href     = qr;
+      a.download = "qr-" + sid + ".png";
+      a.target   = "_blank";
+      a.click();
     };
+}
+
+// ============================================
+// ELAPSED TIMER
+// ============================================
+function startElapsedTimer(startedAtISO) {
+  if (elapsedInterval) {
+    clearInterval(elapsedInterval);
+  }
+
+  const startMs = new Date(startedAtISO).getTime();
+
+  const startedEl =
+    document.getElementById("startedAtValue");
+  if (startedEl) {
+    startedEl.textContent =
+      new Date(startedAtISO).toLocaleTimeString(
+        [], { hour: "2-digit", minute: "2-digit" }
+      );
+  }
+
+  const elapsedEl =
+    document.getElementById("elapsedValue");
+
+  function tick() {
+    const elapsed = Date.now() - startMs;
+    if (elapsed < 0) return;
+    const h = Math.floor(elapsed / 3600000);
+    const m = Math.floor((elapsed % 3600000) / 60000);
+    const s = Math.floor((elapsed % 60000) / 1000);
+    if (elapsedEl) {
+      elapsedEl.textContent =
+        String(h).padStart(2,"0") + ":" +
+        String(m).padStart(2,"0") + ":" +
+        String(s).padStart(2,"0");
+    }
+  }
+
+  tick();
+  elapsedInterval = setInterval(tick, 1000);
+}
+
+function stopElapsedTimer() {
+  if (elapsedInterval) {
+    clearInterval(elapsedInterval);
+    elapsedInterval = null;
+  }
+  const el = document.getElementById("elapsedValue");
+  if (el) el.textContent = "00:00:00";
+}
+
+// ============================================
+// ATTENDANCE STATUS PANEL
+// ============================================
+function showStatusPanel(sid, startedAt) {
+  const panel = document.getElementById(
+    "attendanceStatusPanel"
+  );
+  if (panel) panel.style.display = "block";
+
+  const sidEl =
+    document.getElementById("statusSessionId");
+  if (sidEl) sidEl.textContent = sid;
+
+  const qrEl =
+    document.getElementById("qrStatusValue");
+  if (qrEl) {
+    qrEl.textContent = t("qrActive");
+    qrEl.className   =
+      "status-card-value status-qr-active";
+  }
+
+  startElapsedTimer(startedAt);
+}
+
+function hideStatusPanel() {
+  const panel = document.getElementById(
+    "attendanceStatusPanel"
+  );
+  if (panel) panel.style.display = "none";
+  stopElapsedTimer();
+}
+
+function updateStatusCounts(present, absent) {
+  const p =
+    document.getElementById("statusPresentCount");
+  const a =
+    document.getElementById("statusAbsentCount");
+  if (p) p.textContent = present;
+  if (a) a.textContent = absent;
 }
 
 // ============================================
@@ -1112,24 +1172,17 @@ function generateQRCode(sessionId) {
 async function loadStudents() {
   try {
     const snap =
-      await getDocs(
-        collection(db, "students")
-      );
+      await getDocs(collection(db, "students"));
     allStudents = [];
-    snap.forEach(function (d) {
-      allStudents.push({
-        id: d.id, ...d.data()
-      });
+    snap.forEach(d => {
+      allStudents.push({ id: d.id, ...d.data() });
     });
-    allStudents.sort(function (a, b) {
-      return a.fullName
-        .localeCompare(b.fullName);
-    });
+    allStudents.sort((a, b) =>
+      a.fullName.localeCompare(b.fullName)
+    );
     renderStudentList();
   } catch (err) {
-    console.error(
-      "Load students error:", err
-    );
+    console.error("Load students:", err);
   }
 }
 
@@ -1143,88 +1196,67 @@ function renderStudentList() {
 
   if (allStudents.length === 0) {
     tbody.innerHTML = `
-      <tr>
-        <td colspan="6"
-          style="padding:20px;
-                 text-align:center;
-                 color:#94a3b8;
-                 font-size:13px;">
-          ${escapeHTML(t("noStudentsYet"))}
-        </td>
-      </tr>
+      <tr><td colspan="6"
+        style="padding:20px;text-align:center;
+               color:#94a3b8;font-size:13px;">
+        ${esc(t("noStudentsYet"))}
+      </td></tr>
     `;
     return;
   }
 
-  tbody.innerHTML = allStudents
-    .map(function (s, i) {
-      return `
-        <tr>
-          <td style="color:#94a3b8;">
-            ${i + 1}
-          </td>
-          <td>
-            <strong>
-              ${escapeHTML(s.fullName)}
-            </strong>
-          </td>
-          <td style="color:#7c3aed;
-                     font-weight:600;">
-            ${escapeHTML(s.studentId)}
-          </td>
-          <td>${escapeHTML(s.age)}</td>
-          <td>${escapeHTML(s.grade)}</td>
-          <td>
-            <button
-              class="btn btn-red"
-              style="padding:4px 10px;
-                     font-size:12px;"
-              onclick="window._removeStudent(
-                '${escapeHTML(s.studentId)}'
-              )">
-              ${t("removeStudent")}
-            </button>
-          </td>
-        </tr>
-      `;
-    }).join("");
+  tbody.innerHTML = allStudents.map((s, i) => `
+    <tr>
+      <td style="color:#94a3b8;">${i + 1}</td>
+      <td><strong>${esc(s.fullName)}</strong></td>
+      <td style="color:#7c3aed;font-weight:600;">
+        ${esc(s.studentId)}
+      </td>
+      <td>${esc(s.age)}</td>
+      <td>${esc(s.grade)}</td>
+      <td>
+        <button class="btn btn-red"
+          style="padding:4px 10px;font-size:12px;"
+          onclick="window._removeStudent(
+            '${esc(s.studentId)}'
+          )">
+          ${t("removeStudent")}
+        </button>
+      </td>
+    </tr>
+  `).join("");
 }
 
 // ============================================
 // ADD STUDENT
 // ============================================
 async function addStudent() {
-  const nameEl =
+  const nameEl  =
     document.getElementById("newStudentName");
-  const idEl =
+  const idEl    =
     document.getElementById("newStudentId");
-  const ageEl =
+  const ageEl   =
     document.getElementById("newStudentAge");
   const gradeEl =
     document.getElementById("newStudentGrade");
-  const msgEl =
+  const msgEl   =
     document.getElementById("studentListMsg");
 
-  const fullName =
-    nameEl.value.trim();
+  const fullName  = nameEl.value.trim();
   const studentId =
     idEl.value.trim().toUpperCase();
   const age   = ageEl.value.trim();
   const grade = gradeEl.value.trim();
 
-  if (!fullName || !studentId ||
-      !age || !grade) {
+  if (!fullName || !studentId || !age || !grade) {
     msgEl.style.color = "#dc2626";
     msgEl.textContent = t("fillAllFields");
     return;
   }
 
-  const exists = allStudents.some(
-    function (s) {
-      return s.studentId === studentId;
-    }
-  );
-  if (exists) {
+  if (allStudents.some(s =>
+    s.studentId === studentId
+  )) {
     msgEl.style.color = "#dc2626";
     msgEl.textContent = t("studentIdExists");
     return;
@@ -1250,13 +1282,10 @@ async function addStudent() {
     msgEl.style.color = "#16a34a";
     msgEl.textContent = t("studentAdded");
     await loadStudents();
-
-    setTimeout(function () {
-      msgEl.textContent = "";
-    }, 3000);
+    setTimeout(() => { msgEl.textContent = ""; },
+      3000);
 
   } catch (err) {
-    console.error("Add student error:", err);
     msgEl.style.color = "#dc2626";
     msgEl.textContent =
       t("sessionError") + " " + err.message;
@@ -1268,23 +1297,19 @@ async function addStudent() {
 // ============================================
 async function removeStudent(studentId) {
   if (!confirm(t("confirmRemove"))) return;
-
   try {
     await deleteDoc(
       doc(db, "students", studentId)
     );
-    const msgEl =
+    const msg =
       document.getElementById("studentListMsg");
-    msgEl.style.color = "#16a34a";
-    msgEl.textContent = t("studentRemoved");
+    msg.style.color = "#16a34a";
+    msg.textContent = t("studentRemoved");
     await loadStudents();
-    setTimeout(function () {
-      msgEl.textContent = "";
-    }, 3000);
+    setTimeout(() => { msg.textContent = ""; },
+      3000);
   } catch (err) {
-    console.error(
-      "Remove student error:", err
-    );
+    console.error("Remove student:", err);
   }
 }
 
@@ -1300,69 +1325,70 @@ async function startSession() {
     document.getElementById("closeTime").value;
 
   if (!openTime || !closeTime) {
-    alert(t("setTimesAlert"));
-    return;
+    alert(t("setTimesAlert")); return;
   }
   if (openTime >= closeTime) {
-    alert(t("timeOrderAlert"));
-    return;
+    alert(t("timeOrderAlert")); return;
   }
   if (allStudents.length === 0) {
-    alert(t("noStudentsError"));
-    return;
+    alert(t("noStudentsError")); return;
   }
 
-  const sessionId = generateSessionId();
+  const sid   = generateSessionId();
   const today =
     new Date().toLocaleDateString("en-CA");
+  const now   = new Date();
 
   try {
     await setDoc(
       doc(db, "session", "current"),
       {
         isOpen:    true,
-        sessionId: sessionId,
+        sessionId: sid,
         date:      today,
         openTime:  openTime,
         closeTime: closeTime,
-        startedAt: new Date().toISOString()
+        startedAt: now.toISOString()
       }
     );
 
+    // Create records for all students
+    // with check-in/out = null initially
     const batch = writeBatch(db);
-    allStudents.forEach(function (student) {
-      const recordRef = doc(
-        db,
-        "sessionAttendance",
-        sessionId,
-        "records",
-        student.studentId
+    allStudents.forEach(student => {
+      const ref = doc(
+        db, "sessionAttendance",
+        sid, "records", student.studentId
       );
-      batch.set(recordRef, {
+      batch.set(ref, {
         fullName:           student.fullName,
         studentId:          student.studentId,
         age:                student.age,
         grade:              student.grade,
-        sessionId:          sessionId,
+        sessionId:          sid,
         date:               today,
-        checkInDate:        "មិនទាន់ចុះវត្តមាន",
-        checkInTime:        "មិនទាន់ចុះវត្តមាន",
         status:             "notCheckedInYet",
-        latitude:           "",
-        longitude:          "",
-        accuracy:           "",
-        distanceFromSchool: ""
+        checkInTime:        null,
+        checkInDisplay:     null,
+        checkOutTime:       null,
+        checkOutDisplay:    null,
+        latitude:           null,
+        longitude:          null,
+        gpsAccuracy:        null,
+        distanceFromSchool: null
       });
     });
     await batch.commit();
 
     sessionIsOpen    = true;
-    currentSessionId = sessionId;
+    currentSessionId = sid;
     currentOpenTime  = openTime;
     currentCloseTime = closeTime;
+    sessionStartedAt = now.toISOString();
 
     updateSessionBadge(true);
-    generateQRCode(sessionId);
+    generateQRCode(sid);
+    showStatusPanel(sid, now.toISOString());
 
     document.getElementById("sessionInfoText")
       .textContent =
@@ -1370,16 +1396,12 @@ async function startSession() {
           .replace("{open}",  openTime)
           .replace("{close}", closeTime);
 
-    startRealtimeListener(sessionId);
+    startRealtimeListener(sid);
     alert(t("sessionStarted"));
 
-  } catch (error) {
-    console.error(
-      "Start session error:", error
-    );
-    alert(
-      t("sessionError") + " " + error.message
-    );
+  } catch (err) {
+    console.error("Start session:", err);
+    alert(t("sessionError") + " " + err.message);
   }
 }
 
@@ -1397,32 +1419,34 @@ async function endSession() {
         sessionId: currentSessionId || "",
         date: new Date()
           .toLocaleDateString("en-CA"),
-        endedAt: new Date().toISOString()
+        endedAt:   new Date().toISOString(),
+        endReason: "manual"
       }
     );
 
     sessionIsOpen    = false;
     currentOpenTime  = null;
     currentCloseTime = null;
+    sessionStartedAt = null;
 
     if (unsubscribeListener) {
       unsubscribeListener();
       unsubscribeListener = null;
     }
 
+    hideStatusPanel();
     updateSessionBadge(false);
+
     document.getElementById("qrPanel")
       .style.display = "none";
     document.getElementById("sessionInfoText")
-      .textContent = t("sessionEnded");
+      .textContent = "";
 
     alert(t("sessionEnded"));
 
-  } catch (error) {
-    console.error("End session error:", error);
-    alert(
-      t("sessionError") + " " + error.message
-    );
+  } catch (err) {
+    console.error("End session:", err);
+    alert(t("sessionError") + " " + err.message);
   }
 }
 
@@ -1431,16 +1455,15 @@ async function endSession() {
 // ============================================
 async function loadSessionStatus() {
   try {
-    const sessionDoc = await getDoc(
+    const snap = await getDoc(
       doc(db, "session", "current")
     );
-
-    if (!sessionDoc.exists()) {
+    if (!snap.exists()) {
       updateSessionBadge(false);
       return;
     }
 
-    const data  = sessionDoc.data();
+    const data  = snap.data();
     const today =
       new Date().toLocaleDateString("en-CA");
 
@@ -1449,11 +1472,12 @@ async function loadSessionStatus() {
       currentSessionId = data.sessionId;
       currentOpenTime  = data.openTime;
       currentCloseTime = data.closeTime;
+      sessionStartedAt = data.startedAt || null;
 
-      document.getElementById("openTime")
-        .value = data.openTime  || "07:00";
-      document.getElementById("closeTime")
-        .value = data.closeTime || "08:30";
+      document.getElementById("openTime").value =
+        data.openTime  || "07:00";
+      document.getElementById("closeTime").value =
+        data.closeTime || "08:30";
 
       updateSessionBadge(true);
       generateQRCode(data.sessionId);
@@ -1464,67 +1488,65 @@ async function loadSessionStatus() {
             .replace("{open}",  data.openTime)
             .replace("{close}", data.closeTime);
 
-      startRealtimeListener(data.sessionId);
+      showStatusPanel(
+        data.sessionId,
+        data.startedAt || new Date().toISOString()
+      );
 
+      startRealtimeListener(data.sessionId);
     } else {
-      sessionIsOpen = false;
       updateSessionBadge(false);
     }
 
-  } catch (error) {
-    console.error(
-      "Load session error:", error
-    );
+  } catch (err) {
+    console.error("Load session status:", err);
   }
 }
 
 // ============================================
 // REAL-TIME LISTENER
 // ============================================
-function startRealtimeListener(sessionId) {
+function startRealtimeListener(sid) {
   if (unsubscribeListener) {
     unsubscribeListener();
   }
 
-  const recordsRef = collection(
-    db,
-    "sessionAttendance",
-    sessionId,
-    "records"
+  const ref = collection(
+    db, "sessionAttendance", sid, "records"
   );
 
-  unsubscribeListener = onSnapshot(
-    recordsRef,
-    function (snapshot) {
+  unsubscribeListener = onSnapshot(ref,
+    function (snap) {
       allRecords = [];
-      snapshot.forEach(function (d) {
+      snap.forEach(d => {
         const data = d.data();
         allRecords.push({
-          id:        d.id,
-          fullName:  data.fullName  || "",
-          studentId: data.studentId || "",
-          age:       data.age       ?? "",
-          grade:     data.grade     || "",
-          checkInDate:
-            data.checkInDate ||
-            "មិនទាន់ចុះវត្តមាន",
-          checkInTime:
-            data.checkInTime ||
-            "មិនទាន់ចុះវត្តមាន",
+          id:               d.id,
+          fullName:         data.fullName      || "",
+          studentId:        data.studentId     || "",
+          age:              data.age           ?? "",
+          grade:            data.grade         || "",
           status:
             data.status || "notCheckedInYet",
+          checkInDisplay:
+            data.checkInDisplay  || null,
+          checkOutDisplay:
+            data.checkOutDisplay || null,
+          checkInTime:
+            data.checkInTime     || null,
+          checkOutTime:
+            data.checkOutTime    || null,
           latitude:
-            data.latitude  ?? "",
+            data.latitude        ?? "",
           longitude:
-            data.longitude ?? "",
-          accuracy:
-            data.accuracy  ?? "",
+            data.longitude       ?? "",
           distanceFromSchool:
             data.distanceFromSchool ?? ""
         });
       });
 
-      allRecords.sort(function (a, b) {
+      // Sort: present first, then alphabetical
+      allRecords.sort((a, b) => {
         if (
           a.status === "present" &&
           b.status !== "present"
@@ -1533,34 +1555,34 @@ function startRealtimeListener(sessionId) {
           a.status !== "present" &&
           b.status === "present"
         ) return 1;
-        return a.fullName
-          .localeCompare(b.fullName);
+        return a.fullName.localeCompare(b.fullName);
       });
 
+      const present = allRecords.filter(
+        r => r.status === "present"
+      ).length;
+      const absent  = allRecords.length - present;
+
+      updateStatusCounts(present, absent);
       updateStats();
       displayRecords(allRecords);
 
       document.getElementById("lastUpdated")
         .textContent =
           new Date().toLocaleTimeString([], {
-            hour:   "2-digit",
-            minute: "2-digit"
+            hour: "2-digit", minute: "2-digit"
           });
     },
-    function (error) {
-      console.error("Snapshot error:", error);
-    }
+    err => console.error("Snapshot:", err)
   );
 }
 
 // ============================================
-// DISPLAY RECORDS
+// ✅ DISPLAY RECORDS — WITH CHECK-IN/OUT COLUMNS
 // ============================================
 function displayRecords(records) {
   const tbody =
-    document.getElementById(
-      "attendanceTableBody"
-    );
+    document.getElementById("attendanceTableBody");
 
   document.getElementById("recordCount")
     .textContent =
@@ -1577,12 +1599,9 @@ function displayRecords(records) {
                       margin-bottom:12px;">
             📭
           </div>
-          <strong>
-            ${escapeHTML(t("noRecords"))}
-          </strong>
-          <p style="margin-top:6px;
-                    font-size:13px;">
-            ${escapeHTML(t("noRecordsSub"))}
+          <strong>${esc(t("noRecords"))}</strong>
+          <p style="margin-top:6px;font-size:13px;">
+            ${esc(t("noRecordsSub"))}
           </p>
         </td>
       </tr>
@@ -1590,103 +1609,115 @@ function displayRecords(records) {
     return;
   }
 
-  tbody.innerHTML = records
-    .map(function (record, index) {
-      const isPresent =
-        record.status === "present";
+  tbody.innerHTML = records.map((r, idx) => {
+    const isPresent  = r.status === "present";
+    const isCheckedOut = !!r.checkOutTime;
 
-      const statusBadge = isPresent
-        ? `<span class="badge-present">
-             ${escapeHTML(t("present"))}
-           </span>`
-        : `<span style="background:#fef3c7;
-                        color:#92400e;
-                        padding:4px 10px;
-                        border-radius:20px;
-                        font-size:12px;
-                        font-weight:600;
-                        display:inline-block;">
-             ${escapeHTML(
-               t("notCheckedInYet")
-             )}
-           </span>`;
-
-      const dateDisplay = isPresent
-        ? escapeHTML(record.checkInDate)
-        : `<span style="color:#94a3b8;
-                        font-style:italic;
-                        font-size:12px;">
-             ${escapeHTML(
-               t("notCheckedInYet")
-             )}
-           </span>`;
-
-      const timeDisplay = isPresent
-        ? `<span style="color:#64748b;">
-             ${escapeHTML(record.checkInTime)}
-           </span>`
-        : `<span style="color:#94a3b8;
-                        font-style:italic;
-                        font-size:12px;">
-             ${escapeHTML(
-               t("notCheckedInYet")
-             )}
-           </span>`;
-
-      return `
-        <tr style="${
-          isPresent
-            ? ""
-            : "background:#fffbeb;"
-        }">
-          <td style="color:#94a3b8;">
-            ${index + 1}
-          </td>
-          <td>
-            <span class="teacher-name">
-              ${escapeHTML(record.fullName)}
-            </span>
-          </td>
-          <td style="color:#7c3aed;
+    // ✅ Status badge
+    let statusBadge;
+    if (isPresent) {
+      statusBadge = `
+        <span class="badge-present">
+          ${esc(t("present"))}
+        </span>`;
+    } else {
+      statusBadge = `
+        <span style="background:#fef3c7;
+                     color:#92400e;
+                     padding:4px 10px;
+                     border-radius:20px;
+                     font-size:12px;
                      font-weight:600;
+                     display:inline-block;">
+          ${esc(t("notCheckedInYet"))}
+        </span>`;
+    }
+
+    // ✅ Check-in time display
+    const checkInDisplay = isPresent
+      ? `<span style="color:#16a34a;
+                      font-weight:600;">
+           ${esc(r.checkInDisplay || "--")}
+         </span>`
+      : `<span style="color:#94a3b8;
+                      font-style:italic;
+                      font-size:12px;">
+           ${esc(t("notCheckedInYet"))}
+         </span>`;
+
+    // ✅ Check-out time display
+    let checkOutDisplay;
+    if (!isPresent) {
+      checkOutDisplay = `
+        <span style="color:#94a3b8;
+                     font-style:italic;
                      font-size:12px;">
-            ${escapeHTML(record.studentId)}
-          </td>
-          <td>${escapeHTML(record.age)}</td>
-          <td>${escapeHTML(record.grade)}</td>
-          <td style="white-space:nowrap;">
-            ${dateDisplay}
-          </td>
-          <td style="white-space:nowrap;">
-            ${timeDisplay}
-          </td>
-          <td>${statusBadge}</td>
-          <td>
-            <button
-              class="profile-btn"
-              data-id=
-                "${escapeHTML(record.id)}">
-              ${t("viewBtn")}
-            </button>
-          </td>
-        </tr>
-      `;
-    }).join("");
+          ${esc(t("notCheckedInYet"))}
+        </span>`;
+    } else if (isCheckedOut) {
+      checkOutDisplay = `
+        <span style="color:#16a34a;
+                     font-weight:600;">
+          ${esc(r.checkOutDisplay || "--")}
+        </span>`;
+    } else {
+      checkOutDisplay = `
+        <span style="color:#f59e0b;
+                     font-style:italic;
+                     font-size:12px;">
+          ${esc(t("notCheckedOut"))}
+        </span>`;
+    }
+
+    return `
+      <tr style="${isPresent ? "" :
+        "background:#fffbeb;"}">
+        <td style="color:#94a3b8;">
+          ${idx + 1}
+        </td>
+        <td>
+          <span class="teacher-name">
+            ${esc(r.fullName)}
+          </span>
+        </td>
+        <td style="color:#7c3aed;
+                   font-weight:600;
+                   font-size:12px;">
+          ${esc(r.studentId)}
+        </td>
+        <td>${esc(r.age)}</td>
+        <td>${esc(r.grade)}</td>
+
+        <!-- ✅ Check-in -->
+        <td style="white-space:nowrap;">
+          ${checkInDisplay}
+        </td>
+
+        <!-- ✅ Check-out -->
+        <td style="white-space:nowrap;">
+          ${checkOutDisplay}
+        </td>
+
+        <!-- ✅ Status -->
+        <td>${statusBadge}</td>
+
+        <td>
+          <button class="profile-btn"
+            data-id="${esc(r.id)}">
+            ${t("viewBtn")}
+          </button>
+        </td>
+      </tr>
+    `;
+  }).join("");
 
   document.querySelectorAll(".profile-btn")
-    .forEach(function (btn) {
-      btn.addEventListener("click",
-        function () {
-          const id =
-            btn.getAttribute("data-id");
-          const record = allRecords.find(
-            function (r) {
-              return r.id === id;
-            }
-          );
-          if (record) openProfile(record);
-        }
-      );
+    .forEach(btn => {
+      btn.addEventListener("click", function () {
+        const id = btn.getAttribute("data-id");
+        const r  = allRecords.find(x => x.id === id);
+        if (r) openProfile(r);
+      });
     });
 }
 
@@ -1694,20 +1725,17 @@ function displayRecords(records) {
 // UPDATE STATS
 // ============================================
 function updateStats() {
-  const total = allRecords.length;
+  const total   = allRecords.length;
   const present = allRecords.filter(
-    function (r) {
-      return r.status === "present";
-    }
+    r => r.status === "present"
   ).length;
-  const notIn = total - present;
 
   document.getElementById("totalCount")
     .textContent = total;
   document.getElementById("todayCount")
     .textContent = present;
   document.getElementById("absentCount")
-    .textContent = notIn;
+    .textContent = total - present;
 }
 
 // ============================================
@@ -1717,78 +1745,82 @@ function searchRecords() {
   const term =
     document.getElementById("searchInput")
       .value.toLowerCase().trim();
-  const resultText =
-    document.getElementById(
-      "searchResultText"
-    );
+  const resultEl =
+    document.getElementById("searchResultText");
 
-  if (term === "") {
+  if (!term) {
     displayRecords(allRecords);
-    resultText.textContent = "";
+    resultEl.textContent = "";
     return;
   }
 
-  const filtered = allRecords.filter(
-    function (r) {
-      return (
-        r.fullName.toLowerCase()
-          .includes(term) ||
-        r.grade.toLowerCase()
-          .includes(term) ||
-        r.studentId.toLowerCase()
-          .includes(term)
-      );
-    }
+  const filtered = allRecords.filter(r =>
+    r.fullName.toLowerCase().includes(term) ||
+    r.studentId.toLowerCase().includes(term) ||
+    r.grade.toLowerCase().includes(term)
   );
 
   displayRecords(filtered);
-  resultText.textContent =
+  resultEl.textContent =
     `${filtered.length} ${t("results")}`;
 }
 
 // ============================================
-// PROFILE MODAL
+// PROFILE MODAL — WITH CHECK-IN/OUT
 // ============================================
-function openProfile(record) {
-  const isPresent =
-    record.status === "present";
+function openProfile(r) {
+  const isPresent   = r.status === "present";
+  const isCheckedOut = !!r.checkOutTime;
 
   document.getElementById("profileName")
-    .textContent = record.fullName || "—";
-  document.getElementById(
-    "profileGradeHeader"
-  ).textContent = record.grade || "—";
+    .textContent = r.fullName || "—";
+  document.getElementById("profileGradeHeader")
+    .textContent = r.grade || "—";
   document.getElementById("profileStudentId")
-    .textContent = record.studentId || "—";
+    .textContent = r.studentId || "—";
   document.getElementById("profileAge")
-    .textContent = record.age || "—";
+    .textContent = r.age || "—";
   document.getElementById("profileGrade")
-    .textContent = record.grade || "—";
-  document.getElementById("profileDate")
-    .textContent = isPresent
-      ? record.checkInDate
+    .textContent = r.grade || "—";
+
+  // ✅ Check-in time
+  const ciEl =
+    document.getElementById("profileCheckIn");
+  if (ciEl) {
+    ciEl.textContent = isPresent
+      ? (r.checkInDisplay || "--")
       : t("notCheckedInYet");
-  document.getElementById("profileTime")
-    .textContent = isPresent
-      ? record.checkInTime
-      : t("notCheckedInYet");
+  }
+
+  // ✅ Check-out time
+  const coEl =
+    document.getElementById("profileCheckOut");
+  if (coEl) {
+    if (!isPresent) {
+      coEl.textContent = t("notCheckedInYet");
+    } else if (isCheckedOut) {
+      coEl.textContent = r.checkOutDisplay || "--";
+    } else {
+      coEl.textContent = t("notCheckedOut");
+    }
+  }
+
   document.getElementById("profileStatus")
     .textContent = isPresent
       ? t("present")
       : t("notCheckedInYet");
+
   document.getElementById("profileLat")
-    .textContent = record.latitude || "—";
+    .textContent = r.latitude || "—";
   document.getElementById("profileLon")
-    .textContent = record.longitude || "—";
+    .textContent = r.longitude || "—";
 
   const distEl =
     document.getElementById("profileDistance");
   if (distEl) {
     distEl.textContent =
-      record.distanceFromSchool !== ""
-        ? Math.round(
-            record.distanceFromSchool
-          ) + " m"
+      r.distanceFromSchool !== ""
+        ? Math.round(r.distanceFromSchool) + " m"
         : "—";
   }
 
@@ -1802,17 +1834,17 @@ function closeProfile() {
 }
 
 document.getElementById("closeProfileBtn")
-  .addEventListener("click", closeProfile);
+  ?.addEventListener("click", closeProfile);
 
 document.getElementById("profileModal")
-  .addEventListener("click", function (e) {
+  ?.addEventListener("click", function (e) {
     if (e.target.id === "profileModal") {
       closeProfile();
     }
   });
 
 // ============================================
-// EXPORT CSV
+// EXPORT CSV — WITH CHECK-IN/OUT
 // ============================================
 function exportToCSV() {
   if (allRecords.length === 0) {
@@ -1820,11 +1852,8 @@ function exportToCSV() {
     return;
   }
 
-  function csvVal(v) {
-    return `"${
-      String(v ?? "").replace(/"/g, '""')
-    }"`;
-  }
+  const csv_val = v =>
+    `"${String(v ?? "").replace(/"/g, '""')}"`;
 
   const headers = [
     t("colNo"),
@@ -1832,48 +1861,47 @@ function exportToCSV() {
     t("labelStudentId"),
     t("colAge"),
     t("colGrade"),
+    t("colCheckIn"),
+    t("colCheckOut"),
+    t("colStatus"),
     t("profileLat"),
     t("profileLon"),
-    t("profileDistance"),
-    t("colDate"),
-    t("colTime"),
-    t("colStatus")
+    t("profileDistance")
   ];
 
-  let csv =
-    headers.map(csvVal).join(",") + "\n";
+  let csv = headers.map(csv_val).join(",") + "\n";
 
-  allRecords.forEach(function (r, i) {
-    const isPresent = r.status === "present";
+  allRecords.forEach((r, i) => {
+    const isPresent   = r.status === "present";
+    const isCheckedOut = !!r.checkOutTime;
+
     csv += [
       i + 1,
       r.fullName,
       r.studentId,
       r.age,
       r.grade,
+      isPresent
+        ? (r.checkInDisplay || "--")
+        : t("notCheckedInYet"),
+      !isPresent
+        ? t("notCheckedInYet")
+        : isCheckedOut
+          ? (r.checkOutDisplay || "--")
+          : t("notCheckedOut"),
+      isPresent ? t("present") : t("notCheckedInYet"),
       r.latitude,
       r.longitude,
       r.distanceFromSchool !== ""
-        ? Math.round(r.distanceFromSchool) +
-          "m"
-        : "—",
-      isPresent
-        ? r.checkInDate
-        : t("notCheckedInYet"),
-      isPresent
-        ? r.checkInTime
-        : t("notCheckedInYet"),
-      isPresent
-        ? t("present")
-        : t("notCheckedInYet")
-    ].map(csvVal).join(",") + "\n";
+        ? Math.round(r.distanceFromSchool) + "m"
+        : "—"
+    ].map(csv_val).join(",") + "\n";
   });
 
   const blob = new Blob(
     ["\uFEFF" + csv],
     { type: "text/csv;charset=utf-8;" }
   );
-
   const url = URL.createObjectURL(blob);
   const a   = document.createElement("a");
   a.href     = url;
@@ -1888,18 +1916,15 @@ function exportToCSV() {
 }
 
 // ============================================
-// ✅ LOGOUT
+// LOGOUT
 // ============================================
 async function handleLogout() {
   if (!confirm(t("logoutConfirm"))) return;
-
   try {
     await signOut(auth);
-    // Redirect to login page
-    window.location.href = getLoginPageUrl();
-  } catch (error) {
-    console.error("Logout error:", error);
-    alert(error.message);
+    window.location.href = getLoginUrl();
+  } catch (err) {
+    alert(err.message);
   }
 }
 
@@ -1907,44 +1932,34 @@ async function handleLogout() {
 // BUTTON EVENTS
 // ============================================
 document.getElementById("addStudentBtn")
-  .addEventListener("click", addStudent);
-
+  ?.addEventListener("click", addStudent);
 document.getElementById("startSessionBtn")
-  .addEventListener("click", startSession);
-
+  ?.addEventListener("click", startSession);
 document.getElementById("endSessionBtn")
-  .addEventListener("click", endSession);
-
+  ?.addEventListener("click", endSession);
 document.getElementById("refreshBtn")
-  .addEventListener("click", function () {
+  ?.addEventListener("click", function () {
     if (currentSessionId) {
       startRealtimeListener(currentSessionId);
     }
   });
-
 document.getElementById("exportBtn")
-  .addEventListener("click", exportToCSV);
-
+  ?.addEventListener("click", exportToCSV);
 document.getElementById("searchInput")
-  .addEventListener("input", searchRecords);
-
+  ?.addEventListener("input", searchRecords);
 document.getElementById("teacherLangBtn")
-  .addEventListener("click", function () {
+  ?.addEventListener("click", function () {
     applyTeacherLang(
       tLang === "en" ? "km" : "en"
     );
   });
-
-// ✅ Logout button
 document.getElementById("logoutBtn")
-  .addEventListener("click", handleLogout);
-
+  ?.addEventListener("click", handleLogout);
 document.getElementById("newStudentName")
-  .addEventListener("keydown", function (e) {
+  ?.addEventListener("keydown", function (e) {
     if (e.key === "Enter") addStudent();
   });
 
 </script>
-
 </body>
 </html>
