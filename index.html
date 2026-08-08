@@ -1,16 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
-   
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport"
-    content="width=device-width, initial-scale=1.0">
+    content="width=device-width,
+             initial-scale=1.0">
   <title>Student QR Attendance</title>
 
   <link rel="preconnect"
     href="https://fonts.googleapis.com">
   <link rel="preconnect"
-    href="https://fonts.gstatic.com" crossorigin>
+    href="https://fonts.gstatic.com"
+    crossorigin>
   <link
     href="https://fonts.googleapis.com/css2?family=Battambang:wght@400;700&family=Kantumruy+Pro:ital,wght@0,100..700;1,100..700&display=swap"
     rel="stylesheet">
@@ -20,9 +22,7 @@
 <body>
 <div class="page-wrapper">
 
-  <!-- ======================================
-       LANGUAGE SWITCH — top right
-       ====================================== -->
+  <!-- LANGUAGE SWITCH -->
   <div class="language-area">
     <button id="languageButton"
       class="language-button">
@@ -30,23 +30,13 @@
     </button>
   </div>
 
-  <!-- ======================================
-       HEADER
-       Logo on left, title beside it
-       ====================================== -->
+  <!-- HEADER -->
   <header class="header">
-
-    <!-- ✅ Logo + title row -->
     <div class="header-top">
-
-      <!-- School logo -->
       <img
         src="school-logo.png"
         alt="School Logo"
-        class="school-logo"
-      >
-
-      <!-- Title text group -->
+        class="school-logo">
       <div class="header-title-group">
         <h1 data-i18n="title">
           QR Attendance System
@@ -55,13 +45,10 @@
           Tepranom High School
         </p>
       </div>
-
     </div>
   </header>
 
-  <!-- ======================================
-       SESSION STATUS BANNER
-       ====================================== -->
+  <!-- SESSION STATUS BANNER -->
   <div class="session-banner"
     id="sessionBanner"
     style="display:none;">
@@ -69,9 +56,7 @@
     <span id="sessionBannerText"></span>
   </div>
 
-  <!-- ======================================
-       LOCATION STATUS BOX
-       ====================================== -->
+  <!-- LOCATION STATUS BOX -->
   <div class="location-box" id="locationBox">
     <div class="location-icon">📍</div>
     <div class="location-text">
@@ -82,9 +67,7 @@
     </div>
   </div>
 
-  <!-- ======================================
-       DISTANCE STATUS BOX
-       ====================================== -->
+  <!-- DISTANCE STATUS BOX -->
   <div class="distance-box" id="distanceBox"
     style="display:none;">
     <div class="distance-icon"
@@ -106,17 +89,13 @@
              border-radius:8px;
              font-size:13px;
              cursor:pointer;
-             font-family:
-               'Kantumruy Pro',
-               'Poppins', sans-serif;"
+             font-family:inherit;"
       data-i18n="retryLocation">
       Check Location Again
     </button>
   </div>
 
-  <!-- ======================================
-       ATTENDANCE FORM
-       ====================================== -->
+  <!-- ATTENDANCE FORM — CHECK IN -->
   <main class="form-card" id="formCard">
 
     <h2 class="form-title"
@@ -135,63 +114,69 @@
           type="text"
           id="studentId"
           data-i18n-placeholder=
-            "studentIdPlaceholder"
-        >
+            "studentIdPlaceholder">
         <span class="field-error"
           id="studentIdError"></span>
       </div>
 
-      <!-- Full name -->
+      <!-- Full name — READ ONLY -->
       <div class="form-group">
         <label for="fullName">
           <span data-i18n="fullNameLabel">
           </span>
-          <span class="required">*</span>
         </label>
         <input
           type="text"
           id="fullName"
+          readonly
           data-i18n-placeholder=
             "fullNamePlaceholder"
-        >
-        <span class="field-error"
-          id="nameError"></span>
+          style="background:#f1f5f9;
+                 cursor:not-allowed;
+                 color:#64748b;">
       </div>
 
-      <!-- Age -->
+      <!-- Age — READ ONLY -->
       <div class="form-group">
         <label for="age">
           <span data-i18n="ageLabel"></span>
-          <span class="required">*</span>
         </label>
         <input
-          type="number"
+          type="text"
           id="age"
+          readonly
           data-i18n-placeholder="agePlaceholder"
-          min="5"
-          max="100"
-        >
-        <span class="field-error"
-          id="ageError"></span>
+          style="background:#f1f5f9;
+                 cursor:not-allowed;
+                 color:#64748b;">
       </div>
 
-      <!-- Grade -->
+      <!-- Grade — READ ONLY -->
       <div class="form-group">
         <label for="grade">
           <span data-i18n="gradeLabel"></span>
-          <span class="required">*</span>
         </label>
         <input
           type="text"
           id="grade"
+          readonly
           data-i18n-placeholder=
             "gradePlaceholder"
-        >
-        <span class="field-error"
-          id="gradeError"></span>
+          style="background:#f1f5f9;
+                 cursor:not-allowed;
+                 color:#64748b;">
       </div>
 
-      <!-- Submit button -->
+      <!-- Auto-fill message -->
+      <p id="autoFillMsg"
+        style="font-size:12px;
+               color:#16a34a;
+               font-weight:600;
+               margin-top:-10px;
+               margin-bottom:12px;
+               display:none;"></p>
+
+      <!-- Submit Check In button -->
       <button
         type="submit"
         class="submit-btn"
@@ -203,9 +188,78 @@
     </form>
   </main>
 
-  <!-- ======================================
-       SESSION CLOSED CARD
-       ====================================== -->
+  <!-- ✅ CHECK OUT CARD
+       Shows AFTER student successfully checks in
+       Hidden by default -->
+  <div class="checkout-card"
+    id="checkoutCard"
+    style="display:none;">
+
+    <div class="checkout-header">
+      <div style="font-size:36px;">✅</div>
+      <h2 data-i18n="checkedInTitle">
+        Checked In
+      </h2>
+      <p id="checkoutStudentName"
+        style="font-size:14px;
+               color:#166534;
+               margin-top:4px;
+               font-weight:600;"></p>
+    </div>
+
+    <!-- Check-in info -->
+    <div class="checkout-info-box">
+      <div class="checkout-info-row">
+        <span data-i18n="checkInTimeLabel">
+          Check In Time
+        </span>
+        <strong id="displayCheckInTime">
+          --
+        </strong>
+      </div>
+      <div class="checkout-info-row">
+        <span data-i18n="checkOutTimeLabel">
+          Check Out Time
+        </span>
+        <strong id="displayCheckOutTime"
+          data-i18n="notCheckedOut">
+          Not Checked Out
+        </strong>
+      </div>
+      <div class="checkout-info-row">
+        <span data-i18n="statusLabel">
+          Status
+        </span>
+        <strong id="displayStatus"
+          style="color:#16a34a;"
+          data-i18n="present">
+          Present
+        </strong>
+      </div>
+    </div>
+
+    <!-- Check Out button -->
+    <button
+      id="checkOutBtn"
+      class="checkout-btn"
+      data-i18n="checkOutButton">
+      Check Out
+    </button>
+
+    <!-- Already checked out message -->
+    <p id="alreadyCheckedOutMsg"
+      style="display:none;
+             text-align:center;
+             color:#16a34a;
+             font-size:14px;
+             font-weight:600;
+             margin-top:12px;"
+      data-i18n="alreadyCheckedOutMsg">
+    </p>
+
+  </div>
+
+  <!-- SESSION CLOSED CARD -->
   <div class="session-closed-card"
     id="sessionClosedCard"
     style="display:none;">
@@ -214,9 +268,7 @@
     <p data-i18n="sessionClosedMsg"></p>
   </div>
 
-  <!-- ======================================
-       SUCCESS CARD
-       ====================================== -->
+  <!-- SUCCESS CARD — CHECK IN -->
   <section class="success-card"
     id="successCard"
     style="display:none;">
@@ -229,9 +281,7 @@
       id="successDetails"></div>
   </section>
 
-  <!-- ======================================
-       ERROR CARD
-       ====================================== -->
+  <!-- ERROR CARD -->
   <section class="error-card"
     id="errorCard"
     style="display:none;">
@@ -240,9 +290,7 @@
       id="errorMessage"></p>
   </section>
 
-  <!-- ======================================
-       LOADING OVERLAY
-       ====================================== -->
+  <!-- LOADING OVERLAY -->
   <div class="loading-overlay"
     id="loadingOverlay"
     style="display:none;">
@@ -251,9 +299,7 @@
       data-i18n="savingText"></p>
   </div>
 
-  <!-- ======================================
-       FOOTER
-       ====================================== -->
+  <!-- FOOTER -->
   <footer class="footer">
     <p data-i18n="footerSecurity"></p>
     <p data-i18n="footerSchool"></p>
