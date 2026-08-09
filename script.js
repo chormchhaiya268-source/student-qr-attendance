@@ -1,5 +1,8 @@
 // ================================================
 // script.js — Student Attendance Page
+// ✅ Now includes time window validation.
+//    Check-In blocked outside checkIn window.
+//    Check-Out blocked outside checkOut window.
 // ================================================
 
 import {
@@ -64,6 +67,13 @@ let deviceToken      = null;
 let sessionListener  = null;
 let qrMode           = "checkIn";
 
+// ✅ Time window values read from Firebase session
+// These are set when session is loaded
+let checkInStartTime  = null;
+let checkInEndTime    = null;
+let checkOutStartTime = null;
+let checkOutEndTime   = null;
+
 let studentsMap    = new Map();
 let studentsLoaded = false;
 
@@ -73,7 +83,7 @@ let currentStudentId  = null;
 
 // ================================================
 // TRANSLATIONS
-// ✅ Age → Sex + all placeholder keys added
+// ✅ New keys: errCheckInClosed, errCheckOutClosed
 // ================================================
 const i18n = {
   en: {
@@ -137,13 +147,10 @@ const i18n = {
       "Full Name",
     fullNamePlaceholder:
       "Auto-filled from your ID",
-
-    // ✅ CHANGED: ageLabel → sexLabel
     sexLabel:
       "Sex",
     sexPlaceholder:
       "Auto-filled",
-
     gradeLabel:
       "Grade / Class",
     gradePlaceholder:
@@ -186,6 +193,12 @@ const i18n = {
       "Too many attempts.\nPlease wait 5 minutes.",
     errSessionClosed:
       "The attendance session has ended.",
+
+    // ✅ NEW: Time window blocked messages
+    errCheckInClosed:
+      "Check-In is currently closed. Please check the allowed time.",
+    errCheckOutClosed:
+      "Check-Out is currently closed. Please check the allowed time.",
 
     errNotCheckedInYet:
       "You have not checked in yet. You must check in before checking out.",
@@ -241,7 +254,6 @@ const i18n = {
     footerSchool:
       "Tepranom High School Attendance System",
 
-    // ✅ Sex values for display
     sexMale:   "Male",
     sexFemale: "Female",
 
@@ -310,13 +322,10 @@ const i18n = {
       "ឈ្មោះពេញ",
     fullNamePlaceholder:
       "បំពេញដោយស្វ័យប្រវត្តិ",
-
-    // ✅ CHANGED: ageLabel → sexLabel (Khmer)
     sexLabel:
       "ភេទ",
     sexPlaceholder:
       "បំពេញដោយស្វ័យប្រវត្តិ",
-
     gradeLabel:
       "ថ្នាក់រៀន",
     gradePlaceholder:
@@ -359,6 +368,12 @@ const i18n = {
       "អ្នកបានព្យាយាមច្រើនពេក។\nសូមរង់ចាំ ៥ នាទី។",
     errSessionClosed:
       "វគ្គចុះវត្តមានបានបញ្ចប់។",
+
+    // ✅ NEW: Time window blocked messages (Khmer)
+    errCheckInClosed:
+      "ការចុះម៉ោងចូលមិនទាន់បើកទេ។ សូមពិនិត្យម៉ោងដែលអនុញ្ញាត។",
+    errCheckOutClosed:
+      "ការចុះម៉ោងចេញមិនទាន់បើកទេ។ សូមពិនិត្យម៉ោងដែលអនុញ្ញាត។",
 
     errNotCheckedInYet:
       "មិនទាន់ចុះវត្តមាន — អ្នកត្រូវចុះម៉ោងចូលជាមុនសិន។",
@@ -414,7 +429,6 @@ const i18n = {
     footerSchool:
       "ប្រព័ន្ធវត្តមានវិទ្យាល័យទេពប្រណម្យ",
 
-    // ✅ Sex values for display (Khmer)
     sexMale:   "ប្រុស",
     sexFemale: "ស្រី",
 
@@ -432,20 +446,54 @@ function i(key) {
 
 // ================================================
 // TRANSLATE SEX VALUE
-// Firebase stores "Male" or "Female" in English.
-// This converts to the current language.
 // ================================================
 function translateSex(sexValue) {
   if (!sexValue) return "—";
-  if (sexValue === "Male") return i("sexMale");
+  if (sexValue === "Male")   return i("sexMale");
   if (sexValue === "Female") return i("sexFemale");
   return sexValue;
 }
 
 // ================================================
+// ✅ CHECK TIME WINDOW
+//
+// Converts "HH:MM" string to comparable minutes.
+// Gets current time as minutes since midnight.
+// Returns true if now is inside the window.
+// Returns false if now is outside the window.
+//
+// If no time window is configured (null),
+// the check passes (no restriction).
+// ================================================
+function timeToMinutes(timeStr) {
+  // timeStr is "HH:MM" format
+  if (!timeStr) return null;
+  const parts = timeStr.split(":");
+  if (parts.length < 2) return null;
+  return parseInt(parts[0]) * 60 +
+         parseInt(parts[1]);
+}
+
+function isWithinTimeWindow(startStr, endStr) {
+  // If no window configured, allow
+  if (!startStr || !endStr) return true;
+
+  const startMins = timeToMinutes(startStr);
+  const endMins   = timeToMinutes(endStr);
+  if (startMins === null || endMins === null) {
+    return true;
+  }
+
+  const now  = new Date();
+  const nowMins =
+    now.getHours() * 60 + now.getMinutes();
+
+  return nowMins >= startMins &&
+         nowMins <= endMins;
+}
+
+// ================================================
 // APPLY LANGUAGE
-// ✅ Fixed: now updates ALL placeholders and
-//    dynamic text using the translation system
 // ================================================
 function applyLanguage(lang) {
   currentLang = lang;
@@ -457,7 +505,6 @@ function applyLanguage(lang) {
     "khmer", lang === "km"
   );
 
-  // Update all data-i18n text content
   document.querySelectorAll("[data-i18n]")
     .forEach(function (el) {
       const key = el.getAttribute("data-i18n");
@@ -465,7 +512,6 @@ function applyLanguage(lang) {
       if (val !== key) el.textContent = val;
     });
 
-  // ✅ Update all data-i18n-placeholder inputs
   document.querySelectorAll(
     "[data-i18n-placeholder]"
   ).forEach(function (el) {
@@ -488,8 +534,7 @@ function applyLanguage(lang) {
     retryBtn.textContent = i("retryLocation");
   }
 
-  // ✅ Update sex field if already filled
-  // (re-translate displayed sex value)
+  // Re-translate sex field if filled
   const sexField =
     document.getElementById("sex");
   if (sexField && sexField.dataset.rawValue) {
@@ -497,10 +542,7 @@ function applyLanguage(lang) {
       translateSex(sexField.dataset.rawValue);
   }
 
-  // ✅ Update form title and button for mode
   updateFormForMode();
-
-  // ✅ Update mode banner text
   updateModeBanner();
 
   if (studentLocation) {
@@ -608,7 +650,6 @@ function updateStudentIdFieldState() {
 
 // ================================================
 // LOAD STUDENTS FROM FIREBASE
-// ✅ Now reads sex field instead of age
 // ================================================
 async function loadAllStudents() {
   studentsLoaded = false;
@@ -627,11 +668,8 @@ async function loadAllStudents() {
       studentsMap.set(docId, {
         studentId: docId,
         fullName:  data.fullName || "",
-        // ✅ Read sex field. Also check age
-        // for backward compatibility if some
-        // records still have age but not sex.
-        sex:       data.sex   || "",
-        grade:     data.grade || ""
+        sex:       data.sex      || "",
+        grade:     data.grade    || ""
       });
     });
 
@@ -665,7 +703,6 @@ function findStudent(rawId) {
 
 // ================================================
 // VALIDATE STUDENT ID — AUTO-FILL
-// ✅ Now fills sex field instead of age
 // ================================================
 function validateStudentId() {
   const idInput =
@@ -712,14 +749,12 @@ function validateStudentId() {
 
   setField("fullName", student.fullName);
 
-  // ✅ Fill sex field with translated value
-  // Store raw English value in data attribute
-  // so re-translation works when lang switches
   const sexField =
     document.getElementById("sex");
   if (sexField) {
     sexField.dataset.rawValue = student.sex;
-    sexField.value = translateSex(student.sex);
+    sexField.value =
+      translateSex(student.sex);
   }
 
   setField("grade", student.grade);
@@ -744,7 +779,6 @@ function setField(id, value) {
 function clearAutoFill() {
   setField("fullName", "");
 
-  // ✅ Clear sex field and raw value
   const sexField =
     document.getElementById("sex");
   if (sexField) {
@@ -1129,7 +1163,9 @@ function startSessionListener() {
 }
 
 // ================================================
-// LOAD SESSION
+// ✅ LOAD SESSION
+// Now also reads the 4 time window values
+// from Firebase and stores them in variables
 // ================================================
 async function loadSession() {
   const params  =
@@ -1196,6 +1232,22 @@ async function loadSession() {
       });
       return;
     }
+
+    // ✅ Read all 4 time windows from Firebase
+    // These are used to validate check-in/out
+    checkInStartTime  =
+      sessionData.checkInStartTime  || null;
+    checkInEndTime    =
+      sessionData.checkInEndTime    || null;
+    checkOutStartTime =
+      sessionData.checkOutStartTime || null;
+    checkOutEndTime   =
+      sessionData.checkOutEndTime   || null;
+
+    console.log("⏰ Check-In Window:",
+      checkInStartTime, "→", checkInEndTime);
+    console.log("⏰ Check-Out Window:",
+      checkOutStartTime, "→", checkOutEndTime);
 
     if (isRateLimited()) {
       showRateLimitBox();
@@ -1401,15 +1453,19 @@ function showNotCheckedInCard() {
 
 // ================================================
 // SUBMIT ATTENDANCE
+// ✅ Now checks time window FIRST before
+//    running any other checks
 // ================================================
 async function submitAttendance(e) {
   e.preventDefault();
 
+  // 1. Rate limit
   if (isRateLimited()) {
     showRateLimitBox();
     return;
   }
 
+  // 2. Form validation
   if (!validateForm()) {
     const idVal =
       document.getElementById("studentId")
@@ -1421,6 +1477,7 @@ async function submitAttendance(e) {
     return;
   }
 
+  // 3. GPS
   if (!locationVerified || !studentLocation) {
     showError(i("errLocation"));
     return;
@@ -1439,6 +1496,28 @@ async function submitAttendance(e) {
       document.getElementById("submitBtn");
     if (sb) sb.disabled = true;
     return;
+  }
+
+  // ✅ 4. TIME WINDOW CHECK
+  // Check BEFORE saving anything to Firebase
+  if (qrMode === "checkOut") {
+    // Check-Out time window
+    if (!isWithinTimeWindow(
+      checkOutStartTime,
+      checkOutEndTime
+    )) {
+      showError(i("errCheckOutClosed"));
+      return;
+    }
+  } else {
+    // Check-In time window
+    if (!isWithinTimeWindow(
+      checkInStartTime,
+      checkInEndTime
+    )) {
+      showError(i("errCheckInClosed"));
+      return;
+    }
   }
 
   const studentIdVal = normalizeId(
@@ -1476,7 +1555,6 @@ async function submitAttendance(e) {
 
 // ================================================
 // HANDLE CHECK-IN SUBMIT
-// ✅ Now uses sex instead of age
 // ================================================
 async function handleCheckInSubmit(
   studentIdVal,
@@ -1551,10 +1629,8 @@ async function handleCheckInSubmit(
       const checkDate   =
         now.toLocaleDateString("en-CA");
 
-      // ✅ Store sex instead of age
       const data = {
         fullName:           nameVal,
-        // Store English sex value in Firebase
         sex:                sexVal,
         grade:              gradeVal,
         studentId:          studentIdVal,
@@ -1767,6 +1843,7 @@ async function handleCheckOutSubmit(
 
 // ================================================
 // CHECK OUT BUTTON HANDLER
+// ✅ Also checks the check-out time window
 // ================================================
 async function handleCheckOut() {
   if (!studentCheckedIn) {
@@ -1776,6 +1853,15 @@ async function handleCheckOut() {
 
   if (studentCheckedOut) {
     showError(i("errAlreadyCheckedOut"));
+    return;
+  }
+
+  // ✅ Check time window for check-out button too
+  if (!isWithinTimeWindow(
+    checkOutStartTime,
+    checkOutEndTime
+  )) {
+    showError(i("errCheckOutClosed"));
     return;
   }
 
