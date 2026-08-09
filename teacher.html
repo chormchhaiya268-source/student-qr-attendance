@@ -6,7 +6,7 @@
   <meta name="viewport"
     content="width=device-width,
              initial-scale=1.0">
-  <title>Teacher Dashboard - Tepranom</title>
+  <title>Student Absence Dashboard - Teppranam</title>
   <link rel="stylesheet" href="style.css">
   <link rel="preconnect"
     href="https://fonts.googleapis.com">
@@ -28,7 +28,7 @@
     .att-mode-label {
       font-size: 14px;
       font-weight: 600;
-      color: #374151;
+      color: #435065;
     }
     .att-mode-track {
       display: flex;
@@ -161,11 +161,11 @@
     <div>
       <h1>
         <span data-t="dashTitle">
-          Teacher Dashboard
+          Student Absence Dashboard
         </span>
       </h1>
       <p data-t="dashSubtitle">
-        Tepranom High School
+        Teppranam High School
       </p>
     </div>
   </div>
@@ -990,9 +990,9 @@ onAuthStateChanged(auth, function (user) {
 const tt = {
   en: {
     dashTitle:
-      "Teacher Dashboard",
+      "Student Absence Dashboard",
     dashSubtitle:
-      "Tepranom High School — Attendance Records",
+      "Teppranam High School — Attendance Records",
     studentPage:  "Student Page",
     refresh:      "Refresh",
     export:       "Export CSV",
@@ -1145,7 +1145,7 @@ const tt = {
 
   km: {
     dashTitle:
-      "ផ្ទាំងគ្រប់គ្រងគ្រូ",
+      "ផ្ទាំងគ្រប់គ្រងវត្តមានសិស្ស",
     dashSubtitle:
       "វិទ្យាល័យទេពប្រណម្យ — កំណត់ត្រាវត្តមាន",
     studentPage:  "ទំព័រសិស្ស",
@@ -1379,8 +1379,8 @@ function applyTeacherLang(lang) {
 
   document.title =
     lang === "km"
-      ? "ផ្ទាំងគ្រប់គ្រងគ្រូ - វិទ្យាល័យទេពប្រណម្យ"
-      : "Teacher Dashboard - Tepranom";
+      ? "ផ្ទាំងគ្រប់គ្រងវត្តមានសិស្ស - វិទ្យាល័យទេពប្រណម្យ"
+      : "Student Absence Dashboard - Teppranam";
 
   document.querySelectorAll("[data-t]")
     .forEach(el => {
