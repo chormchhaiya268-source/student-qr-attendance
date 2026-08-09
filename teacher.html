@@ -81,18 +81,70 @@
       color: #92400e;
       border: 1px solid #fcd34d;
     }
+
+    /* ✅ NEW: Time range row style */
     .mode-time-row {
       display: flex;
       align-items: center;
       gap: 10px;
       flex-wrap: wrap;
       margin-top: 10px;
+      padding: 12px 14px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
     }
     .mode-time-row label {
       font-size: 13px;
       font-weight: 600;
       color: #374151;
-      min-width: 110px;
+      min-width: 90px;
+    }
+    .time-range-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .time-range-group input[type="time"] {
+      padding: 8px 12px;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: inherit;
+      background: white;
+      color: #1e293b;
+      cursor: pointer;
+    }
+    .time-range-group input[type="time"]:focus {
+      outline: none;
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
+    }
+    .time-arrow {
+      font-size: 16px;
+      color: #64748b;
+      font-weight: 700;
+    }
+    /* Small label under each time input */
+    .time-input-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+    }
+    .time-input-sublabel {
+      font-size: 11px;
+      color: #94a3b8;
+      font-weight: 500;
+    }
+    /* Time window error message */
+    .time-range-error {
+      font-size: 12px;
+      color: #dc2626;
+      margin-top: 6px;
+      min-height: 16px;
+      font-weight: 500;
     }
   </style>
 </head>
@@ -208,7 +260,6 @@
                  width:120px;">
       </div>
 
-      <!-- ✅ CHANGED: Age → Sex -->
       <div class="session-field">
         <label data-t="labelStudentSex">
           Sex
@@ -272,7 +323,6 @@
             <th data-t="labelStudentId">
               Student ID
             </th>
-            <!-- ✅ CHANGED: colAge → colSex -->
             <th data-t="colSex">Sex</th>
             <th data-t="colGrade">Grade</th>
             <th data-t="colAction">Action</th>
@@ -343,46 +393,111 @@
       </span>
     </div>
 
-    <!-- CHECK-IN TIME ROW -->
+    <!-- =============================================
+         ✅ CHECK-IN TIME RANGE ROW
+         Shown when mode = checkIn
+         Has TWO inputs: Start → End
+    ============================================= -->
     <div class="mode-time-row"
       id="checkInTimeRow">
-      <label for="checkInTime"
-        data-t="checkInTimeLabel">
+
+      <label data-t="checkInTimeLabel">
         ម៉ោងចូល:
       </label>
-      <input type="time"
-        id="checkInTime"
-        value="07:00"
-        style="padding:8px 12px;
-               border:1px solid #e2e8f0;
-               border-radius:8px;
-               font-size:14px;">
+
+      <div class="time-range-group">
+        <!-- Start time -->
+        <div class="time-input-wrap">
+          <input
+            type="time"
+            id="checkInStartTime"
+            value="07:00">
+          <span class="time-input-sublabel"
+            data-t="startTimeLabel">
+            Start
+          </span>
+        </div>
+
+        <!-- Arrow separator -->
+        <span class="time-arrow">→</span>
+
+        <!-- End time -->
+        <div class="time-input-wrap">
+          <input
+            type="time"
+            id="checkInEndTime"
+            value="07:20">
+          <span class="time-input-sublabel"
+            data-t="endTimeLabel">
+            End
+          </span>
+        </div>
+      </div>
+
+      <!-- Validation error for check-in times -->
+      <p class="time-range-error"
+        id="checkInTimeError"></p>
+
     </div>
 
-    <!-- CHECK-OUT TIME ROW -->
+    <!-- =============================================
+         ✅ CHECK-OUT TIME RANGE ROW
+         Shown when mode = checkOut
+         Has TWO inputs: Start → End
+         Hidden by default
+    ============================================= -->
     <div class="mode-time-row"
       id="checkOutTimeRow"
       style="display:none;">
-      <label for="checkOutTime"
-        data-t="checkOutTimeLabel">
+
+      <label data-t="checkOutTimeLabel">
         ម៉ោងចេញ:
       </label>
-      <input type="time"
-        id="checkOutTime"
-        value="11:30"
-        style="padding:8px 12px;
-               border:1px solid #e2e8f0;
-               border-radius:8px;
-               font-size:14px;">
+
+      <div class="time-range-group">
+        <!-- Start time -->
+        <div class="time-input-wrap">
+          <input
+            type="time"
+            id="checkOutStartTime"
+            value="11:00">
+          <span class="time-input-sublabel"
+            data-t="startTimeLabel">
+            Start
+          </span>
+        </div>
+
+        <!-- Arrow separator -->
+        <span class="time-arrow">→</span>
+
+        <!-- End time -->
+        <div class="time-input-wrap">
+          <input
+            type="time"
+            id="checkOutEndTime"
+            value="12:59">
+          <span class="time-input-sublabel"
+            data-t="endTimeLabel">
+            End
+          </span>
+        </div>
+      </div>
+
+      <!-- Validation error for check-out times -->
+      <p class="time-range-error"
+        id="checkOutTimeError"></p>
+
     </div>
 
-    <!-- SESSION OPEN/CLOSE CONTROLS -->
+    <!-- SESSION OPEN/CLOSE CONTROLS
+         These remain exactly as before.
+         Hidden time inputs kept for compatibility -->
     <div class="session-controls"
       style="margin-top:14px;">
       <input type="hidden"
         id="openTime" value="07:00">
       <input type="hidden"
-        id="closeTime" value="11:30">
+        id="closeTime" value="12:59">
       <button id="startSessionBtn"
         class="btn btn-blue">
         <span data-t="startSession">
@@ -473,6 +588,33 @@
             id="qrStatusValue"
             data-t="qrActive">Active</div>
         </div>
+
+        <!-- ✅ NEW: Check-In Window Card -->
+        <div class="status-card">
+          <div class="status-card-icon">📥</div>
+          <div class="status-card-label"
+            data-t="checkInWindowLabel">
+            Check-In Window
+          </div>
+          <div class="status-card-value"
+            id="statusCheckInWindow"
+            style="font-size:12px;
+                   color:#16a34a;">—</div>
+        </div>
+
+        <!-- ✅ NEW: Check-Out Window Card -->
+        <div class="status-card">
+          <div class="status-card-icon">📤</div>
+          <div class="status-card-label"
+            data-t="checkOutWindowLabel">
+            Check-Out Window
+          </div>
+          <div class="status-card-value"
+            id="statusCheckOutWindow"
+            style="font-size:12px;
+                   color:#f59e0b;">—</div>
+        </div>
+
       </div>
     </div>
 
@@ -616,7 +758,6 @@
             <th data-t="labelStudentId">
               Student ID
             </th>
-            <!-- ✅ CHANGED: colAge → colSex -->
             <th data-t="colSex">Sex</th>
             <th data-t="colGrade">
               Grade / Class
@@ -667,7 +808,6 @@
         <span class="profile-row-value"
           id="profileStudentId"></span>
       </div>
-      <!-- ✅ CHANGED: profileAge → profileSex -->
       <div class="profile-row">
         <span class="profile-row-label"
           data-t="colSex">Sex</span>
@@ -842,7 +982,10 @@ onAuthStateChanged(auth, function (user) {
 
 // ============================================
 // TRANSLATIONS
-// ✅ Age → Sex changes + placeholder keys added
+// ✅ New keys: startTimeLabel, endTimeLabel,
+//    timeRangeError, checkInWindowLabel,
+//    checkOutWindowLabel, errCheckInClosed,
+//    errCheckOutClosed
 // ============================================
 const tt = {
   en: {
@@ -863,7 +1006,6 @@ const tt = {
       "Add students here. They are saved permanently.",
     labelStudentName:  "Full Name",
     labelStudentId:    "Student ID",
-    // ✅ CHANGED: labelStudentAge → labelStudentSex
     labelStudentSex:   "Sex",
     labelStudentGrade: "Grade / Class",
     colAction:         "Action",
@@ -879,14 +1021,12 @@ const tt = {
     confirmRemove:
       "Remove this student?",
 
-    // ✅ Placeholder keys for teacher inputs
     phStudentName:  "Student full name",
     phStudentId:    "e.g. IT01",
     phStudentGrade: "e.g. Grade 10A",
     searchPlaceholder:
       "Search by name or ID...",
 
-    // ✅ Sex dropdown options
     optSelectSex: "Select Sex",
     optMale:      "Male",
     optFemale:    "Female",
@@ -897,7 +1037,7 @@ const tt = {
     startSession:        "▶ Start Attendance",
     endSession:          "⏹ End Attendance",
     sessionActive:
-      "Attendance open from {open} to {close}.",
+      "Session active.",
     sessionStarted:
       "Attendance started. QR Code is ready.",
     sessionEnded:
@@ -905,13 +1045,25 @@ const tt = {
     confirmEnd:
       "End attendance? Students cannot check in after this.",
     setTimesAlert:
-      "Please set both open and close times.",
+      "Please set all time values.",
     timeOrderAlert:
-      "Close time must be after open time.",
+      "End time must be later than start time.",
     sessionError:
       "Session error. Please try again.",
     noStudentsError:
       "Please add students before starting.",
+
+    // ✅ NEW translation keys for time range
+    startTimeLabel:
+      "Start",
+    endTimeLabel:
+      "End",
+    timeRangeError:
+      "End time must be later than start time.",
+    checkInWindowLabel:
+      "Check-In Window",
+    checkOutWindowLabel:
+      "Check-Out Window",
 
     attModeLabel:
       "Attendance Mode:",
@@ -964,7 +1116,6 @@ const tt = {
     tableTitle:  "📋 Attendance List",
     colNo:       "No.",
     colName:     "Student Name",
-    // ✅ CHANGED: colAge → colSex
     colSex:      "Sex",
     colGrade:    "Grade / Class",
     colCheckIn:  "ម៉ោងចូល",
@@ -973,7 +1124,6 @@ const tt = {
     colProfile:  "Profile",
     viewBtn:     "👁 View",
 
-    // ✅ CHANGED: profileAge → profileSex
     profileSex:      "Sex",
     profileGrade:    "Grade / Class",
     profileLat:      "Latitude",
@@ -1011,7 +1161,6 @@ const tt = {
       "បន្ថែមសិស្សនៅទីនេះ។",
     labelStudentName:  "ឈ្មោះពេញ",
     labelStudentId:    "លេខសម្គាល់សិស្ស",
-    // ✅ CHANGED
     labelStudentSex:   "ភេទ",
     labelStudentGrade: "ថ្នាក់រៀន",
     colAction:         "សកម្មភាព",
@@ -1027,14 +1176,12 @@ const tt = {
     confirmRemove:
       "លុបសិស្សនេះ?",
 
-    // ✅ Khmer placeholders
     phStudentName:  "ឈ្មោះពេញរបស់សិស្ស",
     phStudentId:    "ឧ. IT01",
     phStudentGrade: "ឧ. ថ្នាក់ទី ១០A",
     searchPlaceholder:
       "ស្វែងរកតាមឈ្មោះ ឬលេខ...",
 
-    // ✅ Sex dropdown options (Khmer)
     optSelectSex: "ជ្រើសរើសភេទ",
     optMale:      "ប្រុស",
     optFemale:    "ស្រី",
@@ -1045,7 +1192,7 @@ const tt = {
     startSession:        "▶ ចាប់ផ្ដើមវត្តមាន",
     endSession:          "⏹ បញ្ចប់វត្តមាន",
     sessionActive:
-      "វត្តមានបើកពី {open} ដល់ {close}។",
+      "វគ្គកំពុងដំណើរការ។",
     sessionStarted:
       "វត្តមានចាប់ផ្ដើម។ QR Code រួចរាល់។",
     sessionEnded:
@@ -1053,13 +1200,25 @@ const tt = {
     confirmEnd:
       "បញ្ចប់វត្តមាន? សិស្សនឹងមិនអាចចុះបានទៀតទេ។",
     setTimesAlert:
-      "សូមកំណត់ម៉ោងបើក និងបិទ។",
+      "សូមកំណត់ម៉ោងទាំងអស់។",
     timeOrderAlert:
-      "ម៉ោងបិទត្រូវតែក្រោយម៉ោងបើក។",
+      "ម៉ោងបញ្ចប់ត្រូវតែយឺតជាងម៉ោងចាប់ផ្ដើម។",
     sessionError:
       "មានបញ្ហា។ សូមព្យាយាមម្តងទៀត។",
     noStudentsError:
       "សូមបន្ថែមសិស្សមុន។",
+
+    // ✅ NEW translation keys (Khmer)
+    startTimeLabel:
+      "ចាប់ផ្ដើម",
+    endTimeLabel:
+      "បញ្ចប់",
+    timeRangeError:
+      "ម៉ោងបញ្ចប់ត្រូវតែយឺតជាងម៉ោងចាប់ផ្ដើម។",
+    checkInWindowLabel:
+      "ម៉ោងអនុញ្ញាតចូល",
+    checkOutWindowLabel:
+      "ម៉ោងអនុញ្ញាតចេញ",
 
     attModeLabel:
       "របៀបវត្តមាន:",
@@ -1110,7 +1269,6 @@ const tt = {
     tableTitle:  "📋 បញ្ជីវត្តមាន",
     colNo:       "លរ",
     colName:     "ឈ្មោះសិស្ស",
-    // ✅ CHANGED: colAge → colSex
     colSex:      "ភេទ",
     colGrade:    "ថ្នាក់រៀន",
     colCheckIn:  "ម៉ោងចូល",
@@ -1119,7 +1277,6 @@ const tt = {
     colProfile:  "ព័ត៌មាន",
     viewBtn:     "👁 មើល",
 
-    // ✅ CHANGED
     profileSex:      "ភេទ",
     profileGrade:    "ថ្នាក់រៀន",
     profileLat:      "រយៈទទឹង",
@@ -1177,9 +1334,38 @@ function esc(v) {
 }
 
 // ============================================
+// ✅ VALIDATE TIME RANGE FOR ONE MODE
+// Returns true if valid, false if invalid.
+// Also shows/clears the error message.
+// ============================================
+function validateTimeRange(
+  startId, endId, errorId
+) {
+  const startVal =
+    document.getElementById(startId)?.value;
+  const endVal =
+    document.getElementById(endId)?.value;
+  const errEl =
+    document.getElementById(errorId);
+
+  if (!startVal || !endVal) {
+    if (errEl) errEl.textContent = "";
+    return true; // empty means not set yet
+  }
+
+  if (endVal <= startVal) {
+    if (errEl) {
+      errEl.textContent = t("timeRangeError");
+    }
+    return false;
+  }
+
+  if (errEl) errEl.textContent = "";
+  return true;
+}
+
+// ============================================
 // APPLY LANGUAGE
-// ✅ Now handles data-t-placeholder and
-//    select option translation too
 // ============================================
 function applyTeacherLang(lang) {
   tLang = lang;
@@ -1196,7 +1382,6 @@ function applyTeacherLang(lang) {
       ? "ផ្ទាំងគ្រប់គ្រងគ្រូ - វិទ្យាល័យទេពប្រណម្យ"
       : "Teacher Dashboard - Tepranom";
 
-  // Update all data-t text content
   document.querySelectorAll("[data-t]")
     .forEach(el => {
       const key = el.getAttribute("data-t");
@@ -1204,7 +1389,6 @@ function applyTeacherLang(lang) {
       if (val !== key) el.textContent = val;
     });
 
-  // ✅ Update all data-t-placeholder inputs
   document.querySelectorAll(
     "[data-t-placeholder]"
   ).forEach(el => {
@@ -1214,7 +1398,6 @@ function applyTeacherLang(lang) {
     if (val !== key) el.placeholder = val;
   });
 
-  // ✅ Update select option text
   document.querySelectorAll(
     "[data-t-opt]"
   ).forEach(el => {
@@ -1331,7 +1514,47 @@ function generateQRCode(sid) {
 }
 
 // ============================================
+// ✅ UPDATE STATUS PANEL WINDOW CARDS
+// Shows the time windows in the status panel
+// ============================================
+function updateWindowCards() {
+  const ciStart =
+    document.getElementById(
+      "checkInStartTime"
+    )?.value || "--";
+  const ciEnd =
+    document.getElementById(
+      "checkInEndTime"
+    )?.value || "--";
+  const coStart =
+    document.getElementById(
+      "checkOutStartTime"
+    )?.value || "--";
+  const coEnd =
+    document.getElementById(
+      "checkOutEndTime"
+    )?.value || "--";
+
+  const ciCard =
+    document.getElementById("statusCheckInWindow");
+  const coCard =
+    document.getElementById(
+      "statusCheckOutWindow"
+    );
+
+  if (ciCard) {
+    ciCard.textContent =
+      ciStart + " → " + ciEnd;
+  }
+  if (coCard) {
+    coCard.textContent =
+      coStart + " → " + coEnd;
+  }
+}
+
+// ============================================
 // UPDATE MODE UI
+// ✅ Now shows two time inputs per mode
 // ============================================
 function updateModeUI() {
   const ciBtn =
@@ -1388,6 +1611,9 @@ function updateModeUI() {
       modeCard.style.color = "#f59e0b";
     }
   }
+
+  // Update window cards in status panel
+  updateWindowCards();
 
   if (sessionIsOpen && currentSessionId) {
     generateQRCode(currentSessionId);
@@ -1486,6 +1712,9 @@ function showStatusPanel(sid, startedAt) {
     }
   }
 
+  // Update window cards
+  updateWindowCards();
+
   startElapsedTimer(startedAt);
 }
 
@@ -1528,7 +1757,6 @@ async function loadStudents() {
 
 // ============================================
 // RENDER STUDENT LIST
-// ✅ Now shows sex instead of age
 // ============================================
 function renderStudentList() {
   const tbody =
@@ -1547,7 +1775,6 @@ function renderStudentList() {
   }
 
   tbody.innerHTML = allStudents.map((s, i) => {
-    // ✅ Translate sex value for display
     let sexDisplay = s.sex || "—";
     if (s.sex === "Male") {
       sexDisplay = t("optMale");
@@ -1584,7 +1811,6 @@ function renderStudentList() {
 
 // ============================================
 // ADD STUDENT
-// ✅ Now uses sex instead of age
 // ============================================
 async function addStudent() {
   const nameEl  =
@@ -1601,8 +1827,6 @@ async function addStudent() {
   const fullName  = nameEl.value.trim();
   const studentId =
     idEl.value.trim().toUpperCase();
-  // ✅ sex is from dropdown — always English
-  // value (Male/Female) stored in Firebase
   const sex   = sexEl.value;
   const grade = gradeEl.value.trim();
 
@@ -1626,7 +1850,6 @@ async function addStudent() {
       {
         fullName:  fullName,
         studentId: studentId,
-        // ✅ Store "sex" field, not "age"
         sex:       sex,
         grade:     grade,
         addedAt:   new Date().toISOString()
@@ -1675,29 +1898,64 @@ async function removeStudent(studentId) {
 window._removeStudent = removeStudent;
 
 // ============================================
-// START SESSION
-// ✅ Now uses sex instead of age in records
+// ✅ START SESSION
+// Now reads FOUR time values and stores them
+// all separately in Firebase
 // ============================================
 async function startSession() {
-  const checkInTime =
-    document.getElementById("checkInTime").value;
-  const checkOutTime =
-    document.getElementById("checkOutTime").value;
 
-  document.getElementById("openTime").value =
-    checkInTime;
-  document.getElementById("closeTime").value =
-    checkOutTime;
+  // Read all 4 time values
+  const ciStart =
+    document.getElementById(
+      "checkInStartTime"
+    ).value;
+  const ciEnd =
+    document.getElementById(
+      "checkInEndTime"
+    ).value;
+  const coStart =
+    document.getElementById(
+      "checkOutStartTime"
+    ).value;
+  const coEnd =
+    document.getElementById(
+      "checkOutEndTime"
+    ).value;
 
-  if (!checkInTime || !checkOutTime) {
+  // Check all 4 are filled
+  if (!ciStart || !ciEnd || !coStart || !coEnd) {
     alert(t("setTimesAlert")); return;
   }
-  if (checkInTime >= checkOutTime) {
-    alert(t("timeOrderAlert")); return;
+
+  // Validate check-in range
+  if (ciEnd <= ciStart) {
+    document.getElementById(
+      "checkInTimeError"
+    ).textContent = t("timeRangeError");
+    alert(t("timeOrderAlert"));
+    return;
   }
+
+  // Validate check-out range
+  if (coEnd <= coStart) {
+    document.getElementById(
+      "checkOutTimeError"
+    ).textContent = t("timeRangeError");
+    alert(t("timeOrderAlert"));
+    return;
+  }
+
   if (allStudents.length === 0) {
     alert(t("noStudentsError")); return;
   }
+
+  // Keep hidden inputs in sync
+  // openTime = earliest time (check-in start)
+  // closeTime = latest time (check-out end)
+  document.getElementById("openTime").value =
+    ciStart;
+  document.getElementById("closeTime").value =
+    coEnd;
 
   const sid   = generateSessionId();
   const today =
@@ -1705,18 +1963,23 @@ async function startSession() {
   const now   = new Date();
 
   try {
+    // ✅ Store all 4 time windows in Firebase
     await setDoc(
       doc(db, "session", "current"),
       {
-        isOpen:            true,
-        sessionId:         sid,
-        date:              today,
-        openTime:          checkInTime,
-        closeTime:         checkOutTime,
-        scheduledCheckIn:  checkInTime,
-        scheduledCheckOut: checkOutTime,
-        startedAt:         now.toISOString(),
-        attendanceMode:    attendanceMode
+        isOpen:           true,
+        sessionId:        sid,
+        date:             today,
+        // Keep openTime/closeTime for compatibility
+        openTime:         ciStart,
+        closeTime:        coEnd,
+        // ✅ NEW: four separate time windows
+        checkInStartTime: ciStart,
+        checkInEndTime:   ciEnd,
+        checkOutStartTime:coStart,
+        checkOutEndTime:  coEnd,
+        startedAt:        now.toISOString(),
+        attendanceMode:   attendanceMode
       }
     );
 
@@ -1726,7 +1989,6 @@ async function startSession() {
         db, "sessionAttendance",
         sid, "records", student.studentId
       );
-      // ✅ Store sex not age
       batch.set(ref, {
         fullName:           student.fullName,
         studentId:          student.studentId,
@@ -1749,8 +2011,8 @@ async function startSession() {
 
     sessionIsOpen    = true;
     currentSessionId = sid;
-    currentOpenTime  = checkInTime;
-    currentCloseTime = checkOutTime;
+    currentOpenTime  = ciStart;
+    currentCloseTime = coEnd;
     sessionStartedAt = now.toISOString();
 
     updateSessionBadge(true);
@@ -1758,10 +2020,7 @@ async function startSession() {
     showStatusPanel(sid, now.toISOString());
 
     document.getElementById("sessionInfoText")
-      .textContent =
-        t("sessionActive")
-          .replace("{open}",  checkInTime)
-          .replace("{close}", checkOutTime);
+      .textContent = t("sessionActive");
 
     startRealtimeListener(sid);
     alert(t("sessionStarted"));
@@ -1818,7 +2077,8 @@ async function endSession() {
 }
 
 // ============================================
-// LOAD SESSION STATUS
+// ✅ LOAD SESSION STATUS
+// Now restores all 4 time values
 // ============================================
 async function loadSessionStatus() {
   try {
@@ -1841,19 +2101,35 @@ async function loadSessionStatus() {
       currentCloseTime = data.closeTime;
       sessionStartedAt = data.startedAt || null;
 
-      const ciInput =
-        document.getElementById("checkInTime");
-      const coInput =
-        document.getElementById("checkOutTime");
-      if (ciInput) {
-        ciInput.value =
-          data.scheduledCheckIn ||
+      // ✅ Restore all 4 time inputs
+      const ciStartEl =
+        document.getElementById("checkInStartTime");
+      const ciEndEl =
+        document.getElementById("checkInEndTime");
+      const coStartEl =
+        document.getElementById(
+          "checkOutStartTime"
+        );
+      const coEndEl =
+        document.getElementById("checkOutEndTime");
+
+      if (ciStartEl) {
+        ciStartEl.value =
+          data.checkInStartTime ||
           data.openTime || "07:00";
       }
-      if (coInput) {
-        coInput.value =
-          data.scheduledCheckOut ||
-          data.closeTime || "11:30";
+      if (ciEndEl) {
+        ciEndEl.value =
+          data.checkInEndTime || "07:20";
+      }
+      if (coStartEl) {
+        coStartEl.value =
+          data.checkOutStartTime || "11:00";
+      }
+      if (coEndEl) {
+        coEndEl.value =
+          data.checkOutEndTime ||
+          data.closeTime || "12:59";
       }
 
       if (data.attendanceMode) {
@@ -1865,10 +2141,7 @@ async function loadSessionStatus() {
       generateQRCode(data.sessionId);
 
       document.getElementById("sessionInfoText")
-        .textContent =
-          t("sessionActive")
-            .replace("{open}",  data.openTime)
-            .replace("{close}", data.closeTime);
+        .textContent = t("sessionActive");
 
       showStatusPanel(
         data.sessionId,
@@ -1887,7 +2160,6 @@ async function loadSessionStatus() {
 
 // ============================================
 // REAL-TIME LISTENER
-// ✅ Now reads sex instead of age
 // ============================================
 function startRealtimeListener(sid) {
   if (unsubscribeListener) {
@@ -1907,7 +2179,6 @@ function startRealtimeListener(sid) {
           id:        d.id,
           fullName:  data.fullName  || "",
           studentId: data.studentId || "",
-          // ✅ sex instead of age
           sex:       data.sex       || "",
           grade:     data.grade     || "",
           status:
@@ -1963,7 +2234,6 @@ function startRealtimeListener(sid) {
 
 // ============================================
 // DISPLAY RECORDS
-// ✅ Now shows sex instead of age
 // ============================================
 function displayRecords(records) {
   const tbody =
@@ -2001,7 +2271,6 @@ function displayRecords(records) {
     const isPresent    = r.status === "present";
     const isCheckedOut = !!r.checkOutTime;
 
-    // ✅ Translate sex for display
     let sexDisplay = r.sex || "—";
     if (r.sex === "Male") {
       sexDisplay = t("optMale");
@@ -2078,7 +2347,6 @@ function displayRecords(records) {
                    font-size:12px;">
           ${esc(r.studentId)}
         </td>
-        <!-- ✅ sex instead of age -->
         <td>${esc(sexDisplay)}</td>
         <td>${esc(r.grade)}</td>
         <td style="white-space:nowrap;">
@@ -2155,7 +2423,6 @@ function searchRecords() {
 
 // ============================================
 // PROFILE MODAL
-// ✅ Now shows sex instead of age
 // ============================================
 function openProfile(r) {
   const isPresent    = r.status === "present";
@@ -2168,7 +2435,6 @@ function openProfile(r) {
   document.getElementById("profileStudentId")
     .textContent = r.studentId || "—";
 
-  // ✅ Show sex (translated) instead of age
   const sexEl =
     document.getElementById("profileSex");
   if (sexEl) {
@@ -2244,7 +2510,6 @@ document.getElementById("profileModal")
 
 // ============================================
 // EXPORT CSV
-// ✅ Now exports sex instead of age
 // ============================================
 function exportToCSV() {
   if (allRecords.length === 0) {
@@ -2377,6 +2642,37 @@ document.getElementById("modeCheckOutBtn")
   ?.addEventListener("click", function () {
     switchMode("checkOut");
   });
+
+// ✅ Live validation when teacher changes times
+[
+  "checkInStartTime",
+  "checkInEndTime"
+].forEach(id => {
+  document.getElementById(id)
+    ?.addEventListener("change", function () {
+      validateTimeRange(
+        "checkInStartTime",
+        "checkInEndTime",
+        "checkInTimeError"
+      );
+      updateWindowCards();
+    });
+});
+
+[
+  "checkOutStartTime",
+  "checkOutEndTime"
+].forEach(id => {
+  document.getElementById(id)
+    ?.addEventListener("change", function () {
+      validateTimeRange(
+        "checkOutStartTime",
+        "checkOutEndTime",
+        "checkOutTimeError"
+      );
+      updateWindowCards();
+    });
+});
 
 // ============================================
 // INIT
