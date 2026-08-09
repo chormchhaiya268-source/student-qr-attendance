@@ -41,8 +41,8 @@ const auth = getAuth(app);
 // ================================================
 const lt = {
   en: {
-    pageTitle:    "Teacher Login - Tepranom",
-    schoolName:   "Tepranom High School",
+    pageTitle:    "Teacher Login - Teppranam",
+    schoolName:   "Teppranam High School",
     schoolSub:    "វិទ្យាល័យទេពប្រណម្យ",
     loginTitle:   "Teacher Login",
     emailLabel:   "Email",
@@ -100,7 +100,7 @@ const lt = {
     schoolName:
       "វិទ្យាល័យទេពប្រណម្យ",
     schoolSub:
-      "Tepranom High School",
+      "Teppranam High School",
     loginTitle:
       "ចូលប្រើសម្រាប់គ្រូ",
     emailLabel:
