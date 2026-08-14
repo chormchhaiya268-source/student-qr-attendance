@@ -302,6 +302,49 @@
       margin-top: 10px;
       font-style: italic;
     }
+
+    /* ✅ NEW: Compact column sizing for the
+       Student List Manager table — stops the
+       Sex/Grade columns from stretching with
+       empty space while keeping Name/Action
+       roomy enough to read/click. */
+    #studentListTable {
+      table-layout: fixed;
+      width: 100%;
+    }
+    #studentListTable th,
+    #studentListTable td {
+      padding: 6px 10px;
+      font-size: 13px;
+    }
+    #studentListTable td:nth-child(1),
+    #studentListTable td:nth-child(3),
+    #studentListTable td:nth-child(4) {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    #studentListTable th:nth-child(1),
+    #studentListTable td:nth-child(1) {
+      width: 15%;
+    }
+    #studentListTable th:nth-child(2),
+    #studentListTable td:nth-child(2) {
+      width: 30%;
+      white-space: normal;
+    }
+    #studentListTable th:nth-child(3),
+    #studentListTable td:nth-child(3) {
+      width: 11%;
+    }
+    #studentListTable th:nth-child(4),
+    #studentListTable td:nth-child(4) {
+      width: 15%;
+    }
+    #studentListTable th:nth-child(5),
+    #studentListTable td:nth-child(5) {
+      width: 29%;
+    }
   </style>
 </head>
 
@@ -471,7 +514,8 @@
              overflow-y:auto;
              border:1px solid #e2e8f0;
              border-radius:10px;">
-      <table class="attendance-table">
+      <table class="attendance-table"
+        id="studentListTable">
         <thead>
           <tr>
             <th data-t="labelStudentId">
@@ -2340,10 +2384,10 @@ function renderStudentList() {
                       align-items:center;
                       gap:6px;">
             <button class="btn btn-blue"
-              style="padding:4px 10px;
+              style="padding:4px 8px;
                      font-size:12px;
                      white-space:nowrap;
-                     width:90px;
+                     width:80px;
                      box-sizing:border-box;
                      display:flex;
                      align-items:center;
@@ -2355,10 +2399,10 @@ function renderStudentList() {
               ${t("editStudentBtn")}
             </button>
             <button class="btn btn-red"
-              style="padding:4px 10px;
+              style="padding:4px 8px;
                      font-size:12px;
                      white-space:nowrap;
-                     width:90px;
+                     width:80px;
                      box-sizing:border-box;
                      display:flex;
                      align-items:center;
