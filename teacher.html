@@ -264,6 +264,11 @@
       gap: 10px;
       margin-top: 18px;
     }
+    .std-modal-actions .btn {
+      min-width: 110px;
+      text-align: center;
+      box-sizing: border-box;
+    }
     .std-btn-cancel {
       background: #e2e8f0 !important;
       color: #334155 !important;
@@ -2301,7 +2306,10 @@ function renderStudentList() {
             <button class="btn btn-blue"
               style="padding:4px 10px;
                      font-size:12px;
-                     white-space:nowrap;"
+                     white-space:nowrap;
+                     width:90px;
+                     box-sizing:border-box;
+                     text-align:center;"
               onclick="window._editStudent(
                 '${esc(s.studentId)}'
               )">
@@ -2310,7 +2318,10 @@ function renderStudentList() {
             <button class="btn btn-red"
               style="padding:4px 10px;
                      font-size:12px;
-                     white-space:nowrap;"
+                     white-space:nowrap;
+                     width:90px;
+                     box-sizing:border-box;
+                     text-align:center;"
               onclick="window._openDeleteStudent(
                 '${esc(s.studentId)}'
               )">
