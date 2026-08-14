@@ -1731,6 +1731,37 @@ function formatDisplay12(hhmm) {
     " " + p.ampm;
 }
 
+// ✅ NEW: Convert a student's stored
+// check-in / check-out display value into
+// 12-hour AM/PM format, no matter how it was
+// originally saved (24-hour "HH:MM" like
+// "15:25", a full timestamp, or already in
+// 12-hour form). Display-only — never touches
+// what's stored in Firebase.
+function formatAttendanceTime12(value) {
+  if (!value || value === "--") return "--";
+
+  // Already has AM/PM — leave as-is.
+  if (/am|pm/i.test(value)) return value;
+
+  // Plain 24-hour "H:MM" or "HH:MM" (e.g. "15:25").
+  if (/^\d{1,2}:\d{2}$/.test(value.trim())) {
+    return formatDisplay12(value.trim());
+  }
+
+  // Fallback: try parsing as a full date/timestamp.
+  const d = new Date(value);
+  if (!isNaN(d.getTime())) {
+    return d.toLocaleTimeString([], {
+      hour:   "2-digit",
+      minute: "2-digit",
+      hour12: true
+    });
+  }
+
+  return value;
+}
+
 // Build the Hour / Minute / AM-PM dropdowns
 // inside `containerId`, keeping them in sync
 // with the 24-hour value stored in the
@@ -3037,7 +3068,7 @@ function displayRecords(records) {
     const checkInDisplay = isPresent
       ? `<span style="color:#16a34a;
                       font-weight:600;">
-           ${esc(r.checkInDisplay || "--")}
+           ${esc(formatAttendanceTime12(r.checkInDisplay) || "--")}
          </span>`
       : `<span style="color:#94a3b8;
                       font-style:italic;
@@ -3057,7 +3088,7 @@ function displayRecords(records) {
       checkOutDisplay = `
         <span style="color:#16a34a;
                      font-weight:600;">
-          ${esc(r.checkOutDisplay || "--")}
+          ${esc(formatAttendanceTime12(r.checkOutDisplay) || "--")}
         </span>`;
     } else {
       checkOutDisplay = `
@@ -3191,7 +3222,7 @@ function openProfile(r) {
     document.getElementById("profileCheckIn");
   if (ciEl) {
     ciEl.textContent = isPresent
-      ? (r.checkInDisplay || "--")
+      ? (formatAttendanceTime12(r.checkInDisplay) || "--")
       : t("notCheckedInYet");
   }
 
@@ -3201,7 +3232,8 @@ function openProfile(r) {
     if (!isPresent) {
       coEl.textContent = t("notCheckedInYet");
     } else if (isCheckedOut) {
-      coEl.textContent = r.checkOutDisplay || "--";
+      coEl.textContent =
+        formatAttendanceTime12(r.checkOutDisplay) || "--";
     } else {
       coEl.textContent = t("notCheckedOut");
     }
@@ -3292,12 +3324,12 @@ function exportToCSV() {
       sexDisplay,
       r.grade,
       isPresent
-        ? (r.checkInDisplay || "--")
+        ? (formatAttendanceTime12(r.checkInDisplay) || "--")
         : t("notCheckedInYet"),
       !isPresent
         ? t("notCheckedInYet")
         : isCheckedOut
-          ? (r.checkOutDisplay || "--")
+          ? (formatAttendanceTime12(r.checkOutDisplay) || "--")
           : t("notCheckedOut"),
       isPresent
         ? t("present")
