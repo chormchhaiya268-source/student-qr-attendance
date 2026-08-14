@@ -474,11 +474,10 @@
       <table class="attendance-table">
         <thead>
           <tr>
-            <th data-t="colNo">No.</th>
-            <th data-t="colName">Name</th>
             <th data-t="labelStudentId">
               Student ID
             </th>
+            <th data-t="colName">Name</th>
             <th data-t="colSex">Sex</th>
             <th data-t="colGrade">Grade</th>
             <th data-t="colAction">Action</th>
@@ -486,7 +485,7 @@
         </thead>
         <tbody id="studentListBody">
           <tr>
-            <td colspan="6"
+            <td colspan="5"
               class="table-loading">
               Loading...
             </td>
@@ -2307,7 +2306,7 @@ function renderStudentList() {
 
   if (allStudents.length === 0) {
     tbody.innerHTML = `
-      <tr><td colspan="6"
+      <tr><td colspan="5"
         style="padding:20px;text-align:center;
                color:#94a3b8;font-size:13px;">
         ${esc(t("noStudentsYet"))}
@@ -2326,13 +2325,12 @@ function renderStudentList() {
 
     return `
       <tr>
-        <td style="color:#94a3b8;">${i + 1}</td>
-        <td>
-          <strong>${esc(s.fullName)}</strong>
-        </td>
         <td style="color:#7c3aed;
                    font-weight:600;">
           ${esc(s.studentId)}
+        </td>
+        <td>
+          <strong>${esc(s.fullName)}</strong>
         </td>
         <td>${esc(sexDisplay)}</td>
         <td>${esc(s.grade)}</td>
