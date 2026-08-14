@@ -146,6 +146,39 @@
       min-height: 16px;
       font-weight: 500;
     }
+
+    /* ✅ NEW: 12-hour AM/PM time selector
+       (replaces native <input type="time">,
+       which cannot reliably show AM/PM
+       across all browsers) */
+    .time12-selects {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .time12-select {
+      padding: 8px 8px;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: inherit;
+      background: white;
+      color: #1e293b;
+      cursor: pointer;
+    }
+    .time12-select:focus {
+      outline: none;
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
+    }
+    .time12-select.time12-ampm {
+      font-weight: 600;
+    }
+    .time12-colon {
+      font-size: 14px;
+      font-weight: 700;
+      color: #64748b;
+    }
   </style>
 </head>
 
@@ -408,8 +441,10 @@
       <div class="time-range-group">
         <!-- Start time -->
         <div class="time-input-wrap">
+          <div class="time12-selects"
+            id="checkInStartTimeSelects"></div>
           <input
-            type="time"
+            type="hidden"
             id="checkInStartTime"
             value="07:00">
           <span class="time-input-sublabel"
@@ -423,8 +458,10 @@
 
         <!-- End time -->
         <div class="time-input-wrap">
+          <div class="time12-selects"
+            id="checkInEndTimeSelects"></div>
           <input
-            type="time"
+            type="hidden"
             id="checkInEndTime"
             value="07:20">
           <span class="time-input-sublabel"
@@ -457,8 +494,10 @@
       <div class="time-range-group">
         <!-- Start time -->
         <div class="time-input-wrap">
+          <div class="time12-selects"
+            id="checkOutStartTimeSelects"></div>
           <input
-            type="time"
+            type="hidden"
             id="checkOutStartTime"
             value="11:00">
           <span class="time-input-sublabel"
@@ -472,8 +511,10 @@
 
         <!-- End time -->
         <div class="time-input-wrap">
+          <div class="time12-selects"
+            id="checkOutEndTimeSelects"></div>
           <input
-            type="time"
+            type="hidden"
             id="checkOutEndTime"
             value="12:59">
           <span class="time-input-sublabel"
@@ -1334,6 +1375,169 @@ function esc(v) {
 }
 
 // ============================================
+// ✅ 12-HOUR <-> 24-HOUR TIME HELPERS
+//
+// The teacher UI shows time as 12-hour AM/PM
+// (7:00 AM, 1:00 PM, etc).
+//
+// Internally, and in Firebase, time is still
+// stored as a 24-hour "HH:MM" string
+// (e.g. "07:00", "13:00") exactly like before,
+// so all existing comparison logic
+// (checkInStartTime, checkInEndTime, etc.)
+// keeps working without any changes.
+// ============================================
+
+// Convert a 24-hour "HH:MM" string into
+// { hour: 1-12, minute: 0-59, ampm: "AM"|"PM" }
+function to12Parts(hhmm) {
+  const safe = (hhmm && hhmm.includes(":"))
+    ? hhmm : "07:00";
+  const [hStr, mStr] = safe.split(":");
+  let h = parseInt(hStr, 10);
+  let m = parseInt(mStr, 10);
+  if (isNaN(h)) h = 7;
+  if (isNaN(m)) m = 0;
+
+  const ampm = h >= 12 ? "PM" : "AM";
+  let h12 = h % 12;
+  if (h12 === 0) h12 = 12; // 0 (midnight) and 12 (noon) both show as 12
+
+  return { hour: h12, minute: m, ampm: ampm };
+}
+
+// Convert 12-hour parts back into a reliable
+// 24-hour "HH:MM" string for storage/compare.
+// Handles midnight (12 AM = 00) and
+// noon (12 PM = 12) correctly.
+function to24(hour12, minute, ampm) {
+  let h = parseInt(hour12, 10) % 12; // 12 -> 0
+  if (ampm === "PM") h += 12;        // PM adds 12 (except 12 PM handled above)
+  const hh = String(h).padStart(2, "0");
+  const mm = String(parseInt(minute, 10))
+    .padStart(2, "0");
+  return hh + ":" + mm;
+}
+
+// Format a 24-hour "HH:MM" string as a
+// display string like "7:00 AM" for read-only
+// displays (e.g. the status window cards).
+function formatDisplay12(hhmm) {
+  if (!hhmm || hhmm === "--") return "--";
+  const p = to12Parts(hhmm);
+  return p.hour + ":" +
+    String(p.minute).padStart(2, "0") +
+    " " + p.ampm;
+}
+
+// Build the Hour / Minute / AM-PM dropdowns
+// inside `containerId`, keeping them in sync
+// with the 24-hour value stored in the
+// hidden input `hiddenId`.
+function buildTimeSelector(containerId, hiddenId) {
+  const container =
+    document.getElementById(containerId);
+  const hidden =
+    document.getElementById(hiddenId);
+  if (!container || !hidden) return;
+
+  const hourSel = document.createElement("select");
+  hourSel.className =
+    "time12-select time12-hour";
+  hourSel.id = hiddenId + "_hour";
+  for (let h = 1; h <= 12; h++) {
+    const opt = document.createElement("option");
+    opt.value = h;
+    opt.textContent = h;
+    hourSel.appendChild(opt);
+  }
+
+  const colon = document.createElement("span");
+  colon.textContent = ":";
+  colon.className = "time12-colon";
+
+  const minSel = document.createElement("select");
+  minSel.className =
+    "time12-select time12-minute";
+  minSel.id = hiddenId + "_min";
+  for (let m = 0; m < 60; m++) {
+    const mm = String(m).padStart(2, "0");
+    const opt = document.createElement("option");
+    opt.value = mm;
+    opt.textContent = mm;
+    minSel.appendChild(opt);
+  }
+
+  const ampmSel = document.createElement("select");
+  ampmSel.className =
+    "time12-select time12-ampm";
+  ampmSel.id = hiddenId + "_ampm";
+  ["AM", "PM"].forEach(v => {
+    const opt = document.createElement("option");
+    opt.value = v;
+    opt.textContent = v;
+    ampmSel.appendChild(opt);
+  });
+
+  container.appendChild(hourSel);
+  container.appendChild(colon);
+  container.appendChild(minSel);
+  container.appendChild(ampmSel);
+
+  // Initialize dropdowns from the hidden
+  // input's current 24-hour value
+  setSelectorFrom24(hiddenId);
+
+  function syncHiddenFromSelector() {
+    hidden.value =
+      to24(hourSel.value, minSel.value, ampmSel.value);
+    // Fire a "change" event on the hidden input
+    // so all existing listeners
+    // (validateTimeRange, updateWindowCards, etc.)
+    // keep working exactly as before.
+    hidden.dispatchEvent(
+      new Event("change", { bubbles: true })
+    );
+  }
+
+  hourSel.addEventListener(
+    "change", syncHiddenFromSelector
+  );
+  minSel.addEventListener(
+    "change", syncHiddenFromSelector
+  );
+  ampmSel.addEventListener(
+    "change", syncHiddenFromSelector
+  );
+}
+
+// Re-sync the visible Hour/Minute/AM-PM
+// dropdowns from whatever 24-hour value is
+// currently sitting in the hidden input.
+// Call this any time the hidden input's
+// .value is set directly from code
+// (e.g. after loading session data from
+// Firebase).
+function setSelectorFrom24(hiddenId) {
+  const hidden =
+    document.getElementById(hiddenId);
+  const hourSel =
+    document.getElementById(hiddenId + "_hour");
+  const minSel =
+    document.getElementById(hiddenId + "_min");
+  const ampmSel =
+    document.getElementById(hiddenId + "_ampm");
+  if (!hidden || !hourSel || !minSel || !ampmSel) {
+    return;
+  }
+
+  const p = to12Parts(hidden.value);
+  hourSel.value = p.hour;
+  minSel.value = String(p.minute).padStart(2, "0");
+  ampmSel.value = p.ampm;
+}
+
+// ============================================
 // ✅ VALIDATE TIME RANGE FOR ONE MODE
 // Returns true if valid, false if invalid.
 // Also shows/clears the error message.
@@ -1544,11 +1748,13 @@ function updateWindowCards() {
 
   if (ciCard) {
     ciCard.textContent =
-      ciStart + " → " + ciEnd;
+      formatDisplay12(ciStart) + " → " +
+      formatDisplay12(ciEnd);
   }
   if (coCard) {
     coCard.textContent =
-      coStart + " → " + coEnd;
+      formatDisplay12(coStart) + " → " +
+      formatDisplay12(coEnd);
   }
 }
 
@@ -2132,6 +2338,13 @@ async function loadSessionStatus() {
           data.closeTime || "12:59";
       }
 
+      // ✅ Re-sync the visible AM/PM dropdowns
+      // to match the values just restored above
+      setSelectorFrom24("checkInStartTime");
+      setSelectorFrom24("checkInEndTime");
+      setSelectorFrom24("checkOutStartTime");
+      setSelectorFrom24("checkOutEndTime");
+
       if (data.attendanceMode) {
         attendanceMode = data.attendanceMode;
       }
@@ -2677,6 +2890,23 @@ document.getElementById("modeCheckOutBtn")
 // ============================================
 // INIT
 // ============================================
+
+// ✅ Build the 12-hour AM/PM dropdowns for
+// all 4 time fields (reads their default
+// 24-hour value from the hidden inputs above)
+buildTimeSelector(
+  "checkInStartTimeSelects", "checkInStartTime"
+);
+buildTimeSelector(
+  "checkInEndTimeSelects", "checkInEndTime"
+);
+buildTimeSelector(
+  "checkOutStartTimeSelects", "checkOutStartTime"
+);
+buildTimeSelector(
+  "checkOutEndTimeSelects", "checkOutEndTime"
+);
+
 updateModeUI();
 
 </script>
