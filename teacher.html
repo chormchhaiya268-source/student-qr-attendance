@@ -2150,7 +2150,11 @@ function startElapsedTimer(startedAtISO) {
   if (startedEl) {
     startedEl.textContent =
       new Date(startedAtISO).toLocaleTimeString(
-        [], { hour: "2-digit", minute: "2-digit" }
+        [], {
+          hour:   "2-digit",
+          minute: "2-digit",
+          hour12: true
+        }
       );
   }
   const elapsedEl =
@@ -2957,7 +2961,8 @@ function startRealtimeListener(sid) {
         .textContent =
           new Date().toLocaleTimeString([], {
             hour:   "2-digit",
-            minute: "2-digit"
+            minute: "2-digit",
+            hour12: true
           });
     },
     err => console.error("Snapshot:", err)
