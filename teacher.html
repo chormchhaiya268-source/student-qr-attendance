@@ -1507,7 +1507,7 @@ const tt = {
 
     phStudentName:  "ឈ្មោះពេញរបស់សិស្ស",
     phStudentId:    "ឧ. IT01",
-    phStudentGrade: "ឧ. Year2(IT)",
+    phStudentGrade: "ឧ. ថ្នាក់ទី ១០A",
     searchPlaceholder:
       "ស្វែងរកតាមឈ្មោះ ឬលេខ...",
 
@@ -2294,23 +2294,29 @@ function renderStudentList() {
         <td>${esc(sexDisplay)}</td>
         <td>${esc(s.grade)}</td>
         <td>
-          <button class="btn btn-blue"
-            style="padding:4px 10px;
-                   font-size:12px;
-                   margin-right:6px;"
-            onclick="window._editStudent(
-              '${esc(s.studentId)}'
-            )">
-            ${t("editStudentBtn")}
-          </button>
-          <button class="btn btn-red"
-            style="padding:4px 10px;
-                   font-size:12px;"
-            onclick="window._openDeleteStudent(
-              '${esc(s.studentId)}'
-            )">
-            ${t("removeStudent")}
-          </button>
+          <div style="display:flex;
+                      flex-wrap:nowrap;
+                      align-items:center;
+                      gap:6px;">
+            <button class="btn btn-blue"
+              style="padding:4px 10px;
+                     font-size:12px;
+                     white-space:nowrap;"
+              onclick="window._editStudent(
+                '${esc(s.studentId)}'
+              )">
+              ${t("editStudentBtn")}
+            </button>
+            <button class="btn btn-red"
+              style="padding:4px 10px;
+                     font-size:12px;
+                     white-space:nowrap;"
+              onclick="window._openDeleteStudent(
+                '${esc(s.studentId)}'
+              )">
+              ${t("removeStudent")}
+            </button>
+          </div>
         </td>
       </tr>
     `;
