@@ -1214,6 +1214,26 @@
   </div>
 </div>
 
+<!-- ✅ NEW: DUPLICATE STUDENT ID POPUP -->
+<div id="duplicateIdModal" class="std-modal-overlay">
+  <div class="std-modal-box">
+    <p data-t="studentIdExists"
+      style="font-size:15px;
+             color:#1e293b;
+             margin:0;
+             line-height:1.5;">
+      A student with this ID already exists.
+    </p>
+    <div class="std-modal-actions">
+      <button id="duplicateIdOkBtn"
+        class="btn btn-blue"
+        data-t="confirmBtn">
+        Confirm
+      </button>
+    </div>
+  </div>
+</div>
+
 <!-- AUTH LOADING OVERLAY -->
 <div id="authOverlay"
   class="loading-overlay"
@@ -2332,7 +2352,7 @@ async function loadStudents() {
       allStudents.push({ id: d.id, ...d.data() });
     });
     allStudents.sort((a, b) =>
-      a.fullName.localeCompare(b.fullName)
+      a.studentId.localeCompare(b.studentId)
     );
     renderStudentList();
   } catch (err) {
@@ -2450,8 +2470,8 @@ async function addStudent() {
   if (allStudents.some(s =>
     s.studentId === studentId
   )) {
-    msgEl.style.color = "#dc2626";
-    msgEl.textContent = t("studentIdExists");
+    document.getElementById("duplicateIdModal")
+      .classList.add("open");
     return;
   }
 
@@ -2696,6 +2716,20 @@ document.getElementById("deleteStudentModal")
   ?.addEventListener("click", (e) => {
     if (e.target.id === "deleteStudentModal") {
       closeDeleteStudentModal();
+    }
+  });
+
+// ✅ NEW: Duplicate Student ID popup
+function closeDuplicateIdModal() {
+  document.getElementById("duplicateIdModal")
+    .classList.remove("open");
+}
+document.getElementById("duplicateIdOkBtn")
+  ?.addEventListener("click", closeDuplicateIdModal);
+document.getElementById("duplicateIdModal")
+  ?.addEventListener("click", (e) => {
+    if (e.target.id === "duplicateIdModal") {
+      closeDuplicateIdModal();
     }
   });
 
