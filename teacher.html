@@ -345,6 +345,29 @@
     #studentListTable td:nth-child(5) {
       width: 29%;
     }
+
+    /* ✅ NEW: Attendance History panel */
+    .history-hidden {
+      display: none !important;
+    }
+    .history-field {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .history-field label {
+      font-size: 13px;
+      font-weight: 600;
+      color: #374151;
+    }
+    .history-field input {
+      padding: 8px 12px;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: inherit;
+      background: white;
+    }
   </style>
 </head>
 
@@ -393,6 +416,13 @@
     <button id="refreshBtn"
       class="btn btn-white">
       <span data-t="refresh">Refresh</span>
+    </button>
+
+    <button id="historyToggleBtn"
+      class="btn btn-white">
+      <span data-t="historyBtn">
+        📜 Attendance History
+      </span>
     </button>
 
     <button id="exportBtn"
@@ -995,6 +1025,125 @@
     </div>
   </section>
 
+  <!-- ✅ NEW: ATTENDANCE HISTORY -->
+  <section class="table-container
+                   history-hidden"
+    id="historySection">
+
+    <div class="table-header">
+      <h2 data-t="historyTitle">
+        📜 Attendance History
+      </h2>
+    </div>
+
+    <p style="font-size:13px;
+              color:#64748b;
+              margin:-6px 0 14px 0;"
+      data-t="historyHint">
+      View attendance records from previous days.
+    </p>
+
+    <div style="display:flex;
+                gap:10px;
+                flex-wrap:wrap;
+                align-items:flex-end;
+                margin-bottom:14px;">
+
+      <div class="history-field">
+        <label data-t="historyDateLabel">
+          Date
+        </label>
+        <input type="date" id="historyDate">
+      </div>
+
+      <div class="history-field">
+        <label data-t="historyFromLabel">
+          From Date
+        </label>
+        <input type="date" id="historyFromDate">
+      </div>
+
+      <div class="history-field">
+        <label data-t="historyToLabel">
+          To Date
+        </label>
+        <input type="date" id="historyToDate">
+      </div>
+
+      <button id="historySearchDateBtn"
+        class="btn btn-blue">
+        <span data-t="historySearchBtn">
+          🔍 Search
+        </span>
+      </button>
+
+      <button id="historyExportBtn"
+        class="btn btn-green">
+        <span data-t="historyExportBtn">
+          ⬇️ Export Attendance
+        </span>
+      </button>
+    </div>
+
+    <div class="history-field"
+      style="max-width:320px;margin-bottom:14px;">
+      <label data-t="historySearchLabel">
+        Search
+      </label>
+      <input type="text"
+        id="historySearchInput"
+        data-t-placeholder="historySearchPlaceholder"
+        placeholder="Student ID, Name, or Class">
+    </div>
+
+    <div class="table-header"
+      style="margin-bottom:8px;">
+      <span></span>
+      <span id="historyResultCount"
+        style="color:#64748b;font-size:13px;">
+      </span>
+    </div>
+
+    <div class="table-scroll">
+      <table class="attendance-table">
+        <thead>
+          <tr>
+            <th data-t="labelStudentId">
+              Student ID
+            </th>
+            <th data-t="colName">
+              Student Name
+            </th>
+            <th data-t="colSex">Sex</th>
+            <th data-t="colGrade">
+              Grade / Class
+            </th>
+            <th data-t="colCheckIn">
+              ម៉ោងចូល
+            </th>
+            <th data-t="colCheckOut">
+              ម៉ោងចេញ
+            </th>
+            <th data-t="colStatus">
+              ស្ថានភាព
+            </th>
+            <th data-t="historyColDate">
+              Date
+            </th>
+          </tr>
+        </thead>
+        <tbody id="historyTableBody">
+        </tbody>
+      </table>
+    </div>
+
+    <p id="historyMsg"
+      style="font-size:13px;
+             color:#64748b;
+             margin-top:8px;
+             min-height:20px;"></p>
+  </section>
+
 </main>
 
 <!-- PROFILE MODAL -->
@@ -1256,6 +1405,7 @@ import {
 import {
   getFirestore,
   collection,
+  collectionGroup,
   getDocs,
   doc,
   setDoc,
@@ -1263,7 +1413,9 @@ import {
   updateDoc,
   deleteDoc,
   onSnapshot,
-  writeBatch
+  writeBatch,
+  query,
+  where
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 import {
@@ -1521,7 +1673,26 @@ const tt = {
     noRecordsSub:
       "Start attendance to create records.",
     loading:     "Loading...",
-    exportEmpty: "No records to export."
+    exportEmpty: "No records to export.",
+
+    // ✅ NEW: Attendance History
+    historyBtn:   "📜 Attendance History",
+    historyTitle: "📜 Attendance History",
+    historyHint:
+      "View attendance records from previous days.",
+    historyDateLabel: "Date",
+    historyFromLabel: "From Date",
+    historyToLabel:   "To Date",
+    historySearchLabel: "Search",
+    historySearchPlaceholder:
+      "Student ID, Name, or Class",
+    historySearchBtn:  "🔍 Search",
+    historyExportBtn:  "⬇️ Export Attendance",
+    historyColDate:    "Date",
+    historyNoData:
+      "No attendance records found for this date.",
+    historySelectDate:
+      "Please select a date, or a From/To date range."
   },
 
   km: {
@@ -1693,7 +1864,26 @@ const tt = {
     noRecordsSub:
       "ចាប់ផ្ដើមវត្តមានដើម្បីបង្កើតកំណត់ត្រា។",
     loading:     "កំពុងផ្ទុក…",
-    exportEmpty: "មិនមានទិន្នន័យ។"
+    exportEmpty: "មិនមានទិន្នន័យ។",
+
+    // ✅ NEW: Attendance History
+    historyBtn:   "📜 ប្រវត្តិវត្តមាន",
+    historyTitle: "📜 ប្រវត្តិវត្តមាន",
+    historyHint:
+      "មើលកំណត់ត្រាវត្តមានពីថ្ងៃមុនៗ។",
+    historyDateLabel: "កាលបរិច្ឆេទ",
+    historyFromLabel: "ពីថ្ងៃទី",
+    historyToLabel:   "ដល់ថ្ងៃទី",
+    historySearchLabel: "ស្វែងរក",
+    historySearchPlaceholder:
+      "លេខសម្គាល់សិស្ស ឈ្មោះ ឬថ្នាក់",
+    historySearchBtn:  "🔍 ស្វែងរក",
+    historyExportBtn:  "⬇️ នាំចេញវត្តមាន",
+    historyColDate:    "កាលបរិច្ឆេទ",
+    historyNoData:
+      "រកមិនឃើញទិន្នន័យវត្តមានសម្រាប់កាលបរិច្ឆេទនេះទេ។",
+    historySelectDate:
+      "សូមជ្រើសរើសកាលបរិច្ឆេទ ឬចន្លោះកាលបរិច្ឆេទ។"
   }
 };
 
@@ -1720,6 +1910,10 @@ let sessionStartedAt    = null;
 let unsubscribeListener = null;
 let elapsedInterval     = null;
 let attendanceMode      = "checkIn";
+
+// ✅ NEW: Attendance History state
+let historyRecords      = [];
+let historyLoaded       = false;
 
 // ✅ NEW: Edit / Delete student modal state
 let editingStudentId    = null;
@@ -2018,6 +2212,7 @@ function applyTeacherLang(lang) {
   updateModeUI();
   renderStudentList();
   displayRecords(allRecords);
+  if (historyLoaded) renderHistoryTable();
   updateSessionBadge(sessionIsOpen);
 }
 
@@ -3352,6 +3547,284 @@ document.getElementById("profileModal")
       closeProfile();
     }
   });
+
+// ============================================
+// ✅ NEW: ATTENDANCE HISTORY
+// Reads past sessionAttendance records using a
+// Firestore collection-group query on the
+// existing "records" subcollections — no new
+// collections or fields are created, and
+// nothing here writes/modifies any historical
+// document (read-only).
+// ============================================
+function toggleHistorySection() {
+  const section =
+    document.getElementById("historySection");
+  if (!section) return;
+
+  const isHidden =
+    section.classList.contains("history-hidden");
+
+  if (isHidden) {
+    section.classList.remove("history-hidden");
+    if (!historyLoaded) {
+      // Default the single-date picker to today
+      // so the panel isn't empty on first open.
+      const dateEl =
+        document.getElementById("historyDate");
+      if (dateEl && !dateEl.value) {
+        dateEl.value =
+          new Date().toLocaleDateString("en-CA");
+      }
+      loadAttendanceHistory();
+    }
+  } else {
+    section.classList.add("history-hidden");
+  }
+}
+
+async function loadAttendanceHistory() {
+  const dateEl = document.getElementById("historyDate");
+  const fromEl = document.getElementById("historyFromDate");
+  const toEl   = document.getElementById("historyToDate");
+  const msgEl  = document.getElementById("historyMsg");
+  const tbody  = document.getElementById("historyTableBody");
+  const countEl =
+    document.getElementById("historyResultCount");
+
+  const singleDate = dateEl?.value || "";
+  const fromDate   = fromEl?.value || "";
+  const toDate     = toEl?.value   || "";
+
+  let startDate, endDate;
+
+  if (fromDate && toDate) {
+    startDate = fromDate;
+    endDate   = toDate;
+  } else if (singleDate) {
+    startDate = singleDate;
+    endDate   = singleDate;
+  } else {
+    msgEl.style.color = "#dc2626";
+    msgEl.textContent = t("historySelectDate");
+    return;
+  }
+
+  msgEl.style.color = "#64748b";
+  msgEl.textContent = "";
+  if (countEl) countEl.textContent = "";
+  tbody.innerHTML = `
+    <tr><td colspan="8" class="table-loading">
+      ${esc(t("loading"))}
+    </td></tr>
+  `;
+
+  try {
+    // ✅ READ-ONLY: query the existing
+    // "records" subcollections (under
+    // sessionAttendance/{sessionId}/records)
+    // across every session, filtered by the
+    // "date" field that is already stored on
+    // each record. No data is modified.
+    const recordsRef = collectionGroup(db, "records");
+    const q = query(
+      recordsRef,
+      where("date", ">=", startDate),
+      where("date", "<=", endDate)
+    );
+    const snap = await getDocs(q);
+
+    historyRecords = [];
+    snap.forEach(d => historyRecords.push(d.data()));
+
+    historyRecords.sort((a, b) => {
+      const dateA = a.date || "";
+      const dateB = b.date || "";
+      if (dateA !== dateB) return dateA.localeCompare(dateB);
+      return (a.studentId || "")
+        .localeCompare(b.studentId || "");
+    });
+
+    historyLoaded = true;
+    renderHistoryTable();
+
+  } catch (err) {
+    console.error("Load attendance history:", err);
+    tbody.innerHTML = "";
+    msgEl.style.color = "#dc2626";
+    msgEl.textContent =
+      t("sessionError") + " " + err.message;
+  }
+}
+
+function renderHistoryTable() {
+  const tbody =
+    document.getElementById("historyTableBody");
+  const searchEl =
+    document.getElementById("historySearchInput");
+  const countEl =
+    document.getElementById("historyResultCount");
+  const msgEl =
+    document.getElementById("historyMsg");
+  if (!tbody) return;
+
+  const q = (searchEl?.value || "")
+    .trim().toLowerCase();
+
+  let filtered = historyRecords;
+  if (q) {
+    filtered = historyRecords.filter(r =>
+      (r.studentId || "").toLowerCase().includes(q) ||
+      (r.fullName  || "").toLowerCase().includes(q) ||
+      (r.grade     || "").toLowerCase().includes(q)
+    );
+  }
+
+  if (countEl) {
+    countEl.textContent =
+      filtered.length + " " + t("results");
+  }
+
+  if (filtered.length === 0) {
+    tbody.innerHTML = "";
+    msgEl.style.color = "#64748b";
+    msgEl.textContent = t("historyNoData");
+    return;
+  }
+  msgEl.textContent = "";
+
+  tbody.innerHTML = filtered.map(r => {
+    let sexDisplay = r.sex || "—";
+    if (r.sex === "Male") {
+      sexDisplay = t("optMale");
+    } else if (r.sex === "Female") {
+      sexDisplay = t("optFemale");
+    }
+
+    const isPresent    = r.status === "present";
+    const isCheckedOut = !!r.checkOutTime;
+
+    const checkInText = isPresent
+      ? (formatAttendanceTime12(r.checkInDisplay) || "--")
+      : t("notCheckedInYet");
+
+    const checkOutText = !isPresent
+      ? t("notCheckedInYet")
+      : isCheckedOut
+        ? (formatAttendanceTime12(r.checkOutDisplay) || "--")
+        : t("notCheckedOut");
+
+    const statusText = isPresent
+      ? t("present")
+      : t("notCheckedInYet");
+
+    return `
+      <tr>
+        <td style="color:#7c3aed;
+                   font-weight:600;">
+          ${esc(r.studentId)}
+        </td>
+        <td>${esc(r.fullName)}</td>
+        <td>${esc(sexDisplay)}</td>
+        <td>${esc(r.grade)}</td>
+        <td>${esc(checkInText)}</td>
+        <td>${esc(checkOutText)}</td>
+        <td>${esc(statusText)}</td>
+        <td>${esc(r.date)}</td>
+      </tr>`;
+  }).join("");
+}
+
+function exportHistoryCSV() {
+  const searchEl =
+    document.getElementById("historySearchInput");
+  const q = (searchEl?.value || "")
+    .trim().toLowerCase();
+
+  let filtered = historyRecords;
+  if (q) {
+    filtered = historyRecords.filter(r =>
+      (r.studentId || "").toLowerCase().includes(q) ||
+      (r.fullName  || "").toLowerCase().includes(q) ||
+      (r.grade     || "").toLowerCase().includes(q)
+    );
+  }
+
+  if (filtered.length === 0) {
+    alert(t("exportEmpty"));
+    return;
+  }
+
+  const csv_val = v =>
+    `"${String(v ?? "").replace(/"/g, '""')}"`;
+
+  const headers = [
+    t("labelStudentId"),
+    t("colName"),
+    t("colSex"),
+    t("colGrade"),
+    t("colCheckIn"),
+    t("colCheckOut"),
+    t("colStatus"),
+    t("historyColDate")
+  ];
+
+  let csv = headers.map(csv_val).join(",") + "\n";
+
+  filtered.forEach(r => {
+    let sexDisplay = r.sex || "";
+    if (r.sex === "Male") {
+      sexDisplay = t("optMale");
+    } else if (r.sex === "Female") {
+      sexDisplay = t("optFemale");
+    }
+
+    const isPresent    = r.status === "present";
+    const isCheckedOut = !!r.checkOutTime;
+
+    csv += [
+      r.studentId,
+      r.fullName,
+      sexDisplay,
+      r.grade,
+      isPresent
+        ? (formatAttendanceTime12(r.checkInDisplay) || "--")
+        : t("notCheckedInYet"),
+      !isPresent
+        ? t("notCheckedInYet")
+        : isCheckedOut
+          ? (formatAttendanceTime12(r.checkOutDisplay) || "--")
+          : t("notCheckedOut"),
+      isPresent ? t("present") : t("notCheckedInYet"),
+      r.date
+    ].map(csv_val).join(",") + "\n";
+  });
+
+  const blob = new Blob(
+    ["\uFEFF" + csv],
+    { type: "text/csv;charset=utf-8;" }
+  );
+  const url = URL.createObjectURL(blob);
+  const a   = document.createElement("a");
+  a.href     = url;
+  a.download =
+    `attendance-history-${
+      new Date().toLocaleDateString("en-CA")
+    }.csv`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
+document.getElementById("historyToggleBtn")
+  ?.addEventListener("click", toggleHistorySection);
+document.getElementById("historySearchDateBtn")
+  ?.addEventListener("click", loadAttendanceHistory);
+document.getElementById("historySearchInput")
+  ?.addEventListener("input", renderHistoryTable);
+document.getElementById("historyExportBtn")
+  ?.addEventListener("click", exportHistoryCSV);
 
 // ============================================
 // EXPORT CSV
