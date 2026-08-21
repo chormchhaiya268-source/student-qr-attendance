@@ -1,20 +1,5 @@
 // ================================================
 // script.js — Student Attendance Page
-//
-// BUG FIXES in this version:
-//
-// FIX 1: Sex field was empty because:
-//   - Old Firebase records used "age" not "sex"
-//   - Added fallback: reads sex first, then age
-//   - If neither exists, shows "—" gracefully
-//
-// FIX 2: Submit button stayed disabled because:
-//   - GPS sometimes finishes before students load
-//   - showDistanceResult() ran before studentsMap
-//     was populated, so findStudent() returned null
-//   - Added: after loadAllStudents() completes,
-//     re-check if ID is typed + location verified
-//     and enable the button if both are true
 // ================================================
 
 import {
@@ -79,7 +64,6 @@ let deviceToken      = null;
 let sessionListener  = null;
 let qrMode           = "checkIn";
 
-// Time window values read from Firebase session
 let checkInStartTime  = null;
 let checkInEndTime    = null;
 let checkOutStartTime = null;
@@ -125,28 +109,30 @@ const i18n = {
     modeBannerCheckOut:
       "🚪 This is a CHECK-OUT QR Code",
 
+    // ================================================
+    // SIMPLIFIED LOCATION MESSAGES
+    // ================================================
     requestingLocation:
-      "Requesting your location...",
+      "📍 Checking your location...",
     locationReason:
-      "Your location is needed to verify " +
-      "you are at school.",
+      "Please allow location access " +
+      "to verify you are at school.",
     locating:
-      "Getting your GPS location...",
+      "📍 Getting your location...",
     locationVerifiedMsg:
-      "✅ Location verified. You are within " +
-      "the school area.",
+      "✅ You are at school. Ready to submit.",
     locationTooFar:
-      "❌ You are outside the school area. " +
-      "Attendance is not allowed.",
+      "❌ You are not at school. " +
+      "Please come to school to submit attendance.",
     locationDenied:
-      "Location permission is required before " +
-      "you can check in.",
+      "⚠️ Location access was blocked. " +
+      "Please allow location and try again.",
     locationError:
-      "Could not get your location. " +
+      "⚠️ Could not get your location. " +
       "Please try again.",
     locationPoorAccuracy:
-      "GPS accuracy is too low. " +
-      "Please move to an open area.",
+      "⚠️ GPS signal is weak. " +
+      "Please go outside and try again.",
     retryLocation:
       "Try Again",
     gpsAccuracy:
@@ -287,10 +273,9 @@ const i18n = {
     footerSchool:
       "Tepranom High School Attendance System",
 
-    // ✅ Sex display values
-    sexMale:      "Male",
-    sexFemale:    "Female",
-    sexNotSet:    "—",
+    sexMale:   "Male",
+    sexFemale: "Female",
+    sexNotSet: "—",
 
     colDate: "Date",
     colTime: "Time"
@@ -324,28 +309,30 @@ const i18n = {
     modeBannerCheckOut:
       "🚪 QR Code នេះសម្រាប់ម៉ោងចេញ",
 
+    // ================================================
+    // SIMPLIFIED LOCATION MESSAGES (KHMER)
+    // ================================================
     requestingLocation:
-      "កំពុងស្នើទីតាំងរបស់អ្នក...",
+      "📍 កំពុងពិនិត្យទីតាំង...",
     locationReason:
-      "ត្រូវការទីតាំងរបស់អ្នក " +
+      "សូមអនុញ្ញាតការប្រើទីតាំង " +
       "ដើម្បីផ្ទៀងផ្ទាត់ថាអ្នកនៅសាលា។",
     locating:
-      "កំពុងទទួល GPS ទីតាំង...",
+      "📍 កំពុងទទួលទីតាំង...",
     locationVerifiedMsg:
-      "✅ ទីតាំងត្រូវបានផ្ទៀងផ្ទាត់។ " +
-      "អ្នកស្ថិតនៅក្នុងបរិវេណសាលា។",
+      "✅ អ្នកស្ថិតនៅសាលា។ អាចចុះវត្តមានបាន។",
     locationTooFar:
-      "❌ អ្នកស្ថិតនៅក្រៅបរិវេណសាលា។ " +
-      "មិនអាចចុះវត្តមានបានទេ។",
+      "❌ អ្នកមិននៅក្នុងបរិវេណសាលាទេ។ " +
+      "សូមមកសាលាដើម្បីចុះវត្តមាន។",
     locationDenied:
-      "អ្នកត្រូវតែអនុញ្ញាតការប្រើទីតាំង " +
-      "មុនពេលអាចចុះវត្តមានបាន។",
+      "⚠️ ការប្រើទីតាំងត្រូវបានបិទ។ " +
+      "សូមអនុញ្ញាតហើយព្យាយាមម្តងទៀត។",
     locationError:
-      "មិនអាចទទួលទីតាំងរបស់អ្នក។ " +
+      "⚠️ មិនអាចទទួលទីតាំងបានទេ។ " +
       "សូមព្យាយាមម្តងទៀត។",
     locationPoorAccuracy:
-      "GPS មិនមានភាពត្រឹមត្រូវ។ " +
-      "សូមទៅកន្លែងដែលមានទីធ្លា។",
+      "⚠️ សញ្ញា GPS ខ្សោយ។ " +
+      "សូមចេញទៅក្រៅ ហើយព្យាយាមម្តងទៀត។",
     retryLocation:
       "ព្យាយាមម្តងទៀត",
     gpsAccuracy:
@@ -490,10 +477,9 @@ const i18n = {
     footerSchool:
       "ប្រព័ន្ធវត្តមានវិទ្យាល័យទេពប្រណម្យ",
 
-    // ✅ Sex display values (Khmer)
-    sexMale:      "ប្រុស",
-    sexFemale:    "ស្រី",
-    sexNotSet:    "—",
+    sexMale:   "ប្រុស",
+    sexFemale: "ស្រី",
+    sexNotSet: "—",
 
     colDate: "កាលបរិច្ឆេទ",
     colTime: "ម៉ោង"
@@ -508,50 +494,20 @@ function i(key) {
 }
 
 // ================================================
-// ✅ FIXED: TRANSLATE SEX VALUE
-//
-// BEFORE: only handled "Male" and "Female"
-// NOW: also handles empty string, undefined,
-//      null gracefully by showing "—"
-//
-// Also handles old Firebase records that may
-// have stored Khmer text directly — we keep
-// them as-is if not recognized.
+// TRANSLATE SEX VALUE
 // ================================================
 function translateSex(sexValue) {
-  // No value at all → show dash
   if (!sexValue || sexValue.trim() === "") {
     return i("sexNotSet");
   }
-
   const normalized = sexValue.trim();
-
-  if (normalized === "Male") {
-    return i("sexMale");
-  }
-  if (normalized === "Female") {
-    return i("sexFemale");
-  }
-
-  // If already in Khmer or unknown value,
-  // return as-is so data is not lost
+  if (normalized === "Male")   return i("sexMale");
+  if (normalized === "Female") return i("sexFemale");
   return normalized;
 }
 
 // ================================================
-// ✅ FIXED: CHECK IF SUBMIT BUTTON SHOULD ENABLE
-//
-// This is a NEW central function that checks
-// ALL conditions needed to enable the button.
-//
-// Called from:
-//   - after student ID validation
-//   - after location is verified
-//   - after students finish loading
-//
-// This fixes the race condition where GPS
-// finished before students loaded (or vice versa)
-// and the button never got enabled.
+// CHECK IF SUBMIT BUTTON SHOULD ENABLE
 // ================================================
 function checkAndEnableSubmitButton() {
   const submitBtn =
@@ -562,11 +518,6 @@ function checkAndEnableSubmitButton() {
     document.getElementById("studentId")
       ?.value.trim() || "";
 
-  // All conditions must be true:
-  // 1. Students are loaded from Firebase
-  // 2. Student ID is entered
-  // 3. Student exists in Firebase
-  // 4. Location is verified (within 100m)
   const shouldEnable =
     studentsLoaded &&
     idVal !== "" &&
@@ -574,16 +525,6 @@ function checkAndEnableSubmitButton() {
     locationVerified;
 
   submitBtn.disabled = !shouldEnable;
-
-  // Log for debugging
-  console.log(
-    "🔘 Submit button check:",
-    "\n  studentsLoaded:", studentsLoaded,
-    "\n  idVal:", idVal,
-    "\n  studentFound:", findStudent(idVal) !== null,
-    "\n  locationVerified:", locationVerified,
-    "\n  → button enabled:", shouldEnable
-  );
 }
 
 // ================================================
@@ -628,11 +569,7 @@ function applyLanguage(lang) {
     retryBtn.textContent = i("retryLocation");
   }
 
-  // ✅ Re-translate sex field if already filled
-  // Uses rawValue stored in dataset to
-  // convert to the new language
-  const sexField =
-    document.getElementById("sex");
+  const sexField = document.getElementById("sex");
   if (
     sexField &&
     sexField.dataset.rawValue !== undefined &&
@@ -728,8 +665,7 @@ function getOrCreateDeviceToken() {
 // STUDENT ID FIELD STATE
 // ================================================
 function updateStudentIdFieldState() {
-  const el =
-    document.getElementById("studentId");
+  const el = document.getElementById("studentId");
   if (!el) return;
 
   if (!studentsLoaded) {
@@ -740,8 +676,7 @@ function updateStudentIdFieldState() {
     el.style.color      = "#94a3b8";
   } else {
     el.disabled         = false;
-    el.placeholder      =
-      i("studentIdPlaceholder");
+    el.placeholder      = i("studentIdPlaceholder");
     el.style.background = "";
     el.style.cursor     = "";
     el.style.color      = "";
@@ -749,27 +684,7 @@ function updateStudentIdFieldState() {
 }
 
 // ================================================
-// ✅ FIXED: LOAD STUDENTS FROM FIREBASE
-//
-// CHANGE: Now reads BOTH "sex" AND "age" fields.
-//
-// Why: Old student records in Firebase were
-// created when the system used "age". After the
-// change to "sex", old records still have "age"
-// but no "sex". New records have "sex".
-//
-// Fix: Read sex first. If sex is empty/missing,
-// try reading age as a fallback display value.
-// This way old records still show something
-// instead of being blank.
-//
-// IMPORTANT: We do NOT delete or overwrite
-// existing Firebase data. We just read
-// whichever field exists.
-//
-// ✅ FIX 2: After loading, re-check button state
-// This handles the race condition where GPS
-// finishes before students load.
+// LOAD STUDENTS FROM FIREBASE
 // ================================================
 async function loadAllStudents() {
   studentsLoaded = false;
@@ -785,67 +700,37 @@ async function loadAllStudents() {
       const docId =
         String(d.id).trim().toUpperCase();
 
-      // ✅ Read sex field
-      // If sex is missing (old record), use age
-      // as a display fallback.
-      // Store original Firebase field in rawSex
-      // so we know what the actual DB value is.
       let sexValue = "";
-
       if (
         data.sex !== undefined &&
         data.sex !== null &&
         String(data.sex).trim() !== ""
       ) {
-        // New record: has sex field
         sexValue = String(data.sex).trim();
       } else if (
         data.age !== undefined &&
         data.age !== null &&
         String(data.age).trim() !== ""
       ) {
-        // Old record: has age field, use it
-        // We show it as-is since we cannot
-        // know if it was Male/Female
         sexValue = String(data.age).trim();
       }
 
-      console.log(
-        "📚 Loaded student:",
-        docId,
-        "| sex:", sexValue,
-        "| grade:", data.grade
-      );
-
       studentsMap.set(docId, {
         studentId: docId,
-        fullName:  data.fullName  || "",
+        fullName:  data.fullName || "",
         sex:       sexValue,
-        grade:     data.grade     || ""
+        grade:     data.grade    || ""
       });
     });
 
     studentsLoaded = true;
     updateStudentIdFieldState();
 
-    // ✅ FIX: After students load, re-validate
-    // any ID the student already typed.
-    // This handles the case where GPS finished
-    // first and students loaded second.
-    const el =
-      document.getElementById("studentId");
+    const el = document.getElementById("studentId");
     if (el && el.value.trim() !== "") {
-      console.log(
-        "🔄 Students loaded after ID entered.",
-        "Re-validating ID:",
-        el.value.trim()
-      );
       validateStudentId();
     }
 
-    // ✅ Always re-check button state after
-    // students load, regardless of whether
-    // ID was already typed
     checkAndEnableSubmitButton();
 
   } catch (err) {
@@ -863,21 +748,11 @@ function normalizeId(rawId) {
 }
 
 function findStudent(rawId) {
-  return studentsMap.get(normalizeId(rawId))
-    || null;
+  return studentsMap.get(normalizeId(rawId)) || null;
 }
 
 // ================================================
-// ✅ FIXED: VALIDATE STUDENT ID — AUTO-FILL
-//
-// CHANGE: Sex field now uses the fixed
-// translateSex() which handles empty values
-// gracefully instead of showing nothing.
-//
-// CHANGE: Button enabling now calls the central
-// checkAndEnableSubmitButton() instead of
-// checking locationVerified directly here.
-// This ensures consistent behavior.
+// VALIDATE STUDENT ID
 // ================================================
 function validateStudentId() {
   const idInput =
@@ -893,10 +768,8 @@ function validateStudentId() {
 
   if (!studentsLoaded) {
     if (idError) {
-      idError.textContent =
-        i("errStudentIdLoading");
+      idError.textContent = i("errStudentIdLoading");
     }
-    // ✅ Ensure button is disabled while loading
     const submitBtn =
       document.getElementById("submitBtn");
     if (submitBtn) submitBtn.disabled = true;
@@ -905,9 +778,8 @@ function validateStudentId() {
 
   if (!rawId.trim()) {
     if (idError) idError.textContent = "";
-    if (msgEl) msgEl.style.display = "none";
+    if (msgEl)   msgEl.style.display = "none";
     clearAutoFill();
-    // ✅ Recheck button (will disable it)
     checkAndEnableSubmitButton();
     return false;
   }
@@ -916,42 +788,24 @@ function validateStudentId() {
 
   if (!student) {
     if (idError) {
-      idError.textContent =
-        i("errStudentIdNotFound");
+      idError.textContent = i("errStudentIdNotFound");
     }
     if (msgEl) msgEl.style.display = "none";
     clearAutoFill();
-    // ✅ Recheck button (will disable it)
     checkAndEnableSubmitButton();
     return false;
   }
 
-  // ✅ Student found — clear error
   if (idError) idError.textContent = "";
 
-  // Fill name field
   setField("fullName", student.fullName);
 
-  // ✅ FIXED: Fill sex field properly
-  // Store raw English value in dataset
-  // so language switch can re-translate it
-  const sexField =
-    document.getElementById("sex");
+  const sexField = document.getElementById("sex");
   if (sexField) {
-    // Store the raw Firebase value
     sexField.dataset.rawValue = student.sex;
-    // Display translated value
-    const displaySex = translateSex(student.sex);
-    sexField.value = displaySex;
-
-    console.log(
-      "👤 Sex field filled:",
-      "\n  raw value:", student.sex,
-      "\n  displayed:", displaySex
-    );
+    sexField.value = translateSex(student.sex);
   }
 
-  // Fill grade field
   setField("grade", student.grade);
 
   if (msgEl) {
@@ -959,19 +813,7 @@ function validateStudentId() {
     msgEl.style.display = "block";
   }
 
-  console.log(
-    "✅ Student validated:",
-    "\n  ID:", student.studentId,
-    "\n  Name:", student.fullName,
-    "\n  Sex:", student.sex,
-    "\n  Grade:", student.grade,
-    "\n  locationVerified:", locationVerified
-  );
-
-  // ✅ FIXED: Use central function to check
-  // all conditions and enable/disable button
   checkAndEnableSubmitButton();
-
   return true;
 }
 
@@ -982,23 +824,18 @@ function setField(id, value) {
 
 function clearAutoFill() {
   setField("fullName", "");
-
-  const sexField =
-    document.getElementById("sex");
+  const sexField = document.getElementById("sex");
   if (sexField) {
     sexField.value = "";
     sexField.dataset.rawValue = "";
   }
-
   setField("grade", "");
 }
 
 // ================================================
 // HAVERSINE FORMULA
 // ================================================
-function haversineDistance(
-  lat1, lon1, lat2, lon2
-) {
+function haversineDistance(lat1, lon1, lat2, lon2) {
   const R     = 6371000;
   const toRad = d => d * Math.PI / 180;
   const dLat  = toRad(lat2 - lat1);
@@ -1014,36 +851,25 @@ function haversineDistance(
 }
 
 // ================================================
-// ✅ FIXED: SHOW DISTANCE RESULT
-//
-// CHANGE: Now calls checkAndEnableSubmitButton()
-// instead of directly checking findStudent().
-//
-// This fixes the case where:
-// - GPS finishes AFTER students load
-// - The central function checks all conditions
+// SHOW DISTANCE RESULT
+// Simplified messages — no technical GPS numbers
+// shown to students
 // ================================================
 function showDistanceResult(loc) {
-  const box    =
-    document.getElementById("distanceBox");
-  const status =
-    document.getElementById("distanceStatus");
-  const detail =
-    document.getElementById("distanceDetail");
-  const icon   =
-    document.getElementById("distanceIcon");
-  const retry  =
-    document.getElementById("retryLocationBtn");
+  const box    = document.getElementById("distanceBox");
+  const status = document.getElementById("distanceStatus");
+  const detail = document.getElementById("distanceDetail");
+  const icon   = document.getElementById("distanceIcon");
+  const retry  = document.getElementById("retryLocationBtn");
 
   const isNear = loc.distance <= MAX_DISTANCE;
   box.style.display = "flex";
 
+  // ✅ SIMPLIFIED: Only show distance in meters
+  // Remove confusing GPS accuracy number
   detail.textContent =
     i("distanceFromSchool") + ": " +
     Math.round(loc.distance) +
-    " " + i("meters") +
-    " | " + i("gpsAccuracy") + ": ±" +
-    Math.round(loc.accuracy) +
     " " + i("meters");
 
   if (isNear) {
@@ -1054,11 +880,6 @@ function showDistanceResult(loc) {
     box.style.borderColor = "#86efac";
     retry.style.display   = "none";
     locationVerified      = true;
-
-    console.log(
-      "📍 Location verified.",
-      "Distance:", Math.round(loc.distance), "m"
-    );
   } else {
     icon.textContent      = "❌";
     status.textContent    = i("locationTooFar");
@@ -1067,40 +888,31 @@ function showDistanceResult(loc) {
     box.style.borderColor = "#fca5a5";
     retry.style.display   = "block";
     locationVerified      = false;
-
-    console.log(
-      "📍 Location too far.",
-      "Distance:", Math.round(loc.distance), "m"
-    );
   }
 
-  // ✅ FIXED: Use central function
-  // This handles both cases:
-  // GPS finishes before or after students load
   checkAndEnableSubmitButton();
 }
 
 // ================================================
 // REQUEST LOCATION
+// ✅ FIX: Called immediately when page loads
+// so browser asks for permission right away
 // ================================================
 function requestLocation() {
   const locStatus =
     document.getElementById("locationStatus");
-  const box   =
-    document.getElementById("distanceBox");
-  const retry =
-    document.getElementById("retryLocationBtn");
+  const box   = document.getElementById("distanceBox");
+  const retry = document.getElementById("retryLocationBtn");
 
-  locationVerified    = false;
-  studentLocation     = null;
+  locationVerified = false;
+  studentLocation  = null;
 
-  // Disable button while re-requesting location
-  const submitBtn =
-    document.getElementById("submitBtn");
+  const submitBtn = document.getElementById("submitBtn");
   if (submitBtn) submitBtn.disabled = true;
 
   box.style.display   = "none";
   retry.style.display = "none";
+
   if (locStatus) {
     locStatus.textContent = i("locating");
   }
@@ -1112,31 +924,46 @@ function requestLocation() {
     return;
   }
 
+  // ✅ This triggers the browser permission popup
   navigator.geolocation.getCurrentPosition(
     function (pos) {
       const lat      = pos.coords.latitude;
       const lon      = pos.coords.longitude;
       const accuracy = pos.coords.accuracy;
 
+      // ✅ SIMPLIFIED: Poor accuracy shows simple
+      // message without technical numbers
       if (accuracy > MAX_ACCURACY) {
         if (locStatus) {
           locStatus.textContent =
             i("locationPoorAccuracy");
         }
+
         box.style.display     = "flex";
         box.style.background  = "#fffbeb";
         box.style.borderColor = "#fcd34d";
-        document.getElementById("distanceIcon")
-          .textContent = "⚠️";
-        document.getElementById("distanceStatus")
-          .textContent = i("locationPoorAccuracy");
-        document.getElementById("distanceStatus")
-          .style.color = "#92400e";
-        document.getElementById("distanceDetail")
-          .textContent =
-            i("gpsAccuracy") + ": ±" +
-            Math.round(accuracy) +
-            " " + i("meters");
+
+        const distIcon =
+          document.getElementById("distanceIcon");
+        const distStatus =
+          document.getElementById("distanceStatus");
+        const distDetail =
+          document.getElementById("distanceDetail");
+
+        if (distIcon)   distIcon.textContent   = "⚠️";
+        if (distStatus) {
+          distStatus.textContent = i("locationPoorAccuracy");
+          distStatus.style.color = "#92400e";
+        }
+        // ✅ REMOVED: GPS accuracy number (±213 m)
+        // REPLACED: Simple instruction
+        if (distDetail) {
+          distDetail.textContent =
+            currentLang === "km"
+              ? "សូមចេញទៅក្រៅ ហើយចុច \"ព្យាយាមម្តងទៀត\""
+              : "Go outside and tap \"Try Again\"";
+        }
+
         retry.style.display = "block";
         return;
       }
@@ -1153,17 +980,19 @@ function requestLocation() {
       };
 
       if (locStatus) {
-        locStatus.textContent =
-          i("requestingLocation");
+        locStatus.textContent = i("requestingLocation");
       }
+
       showDistanceResult(studentLocation);
     },
 
     function (err) {
-      const msg =
-        err.code === err.PERMISSION_DENIED
-          ? i("locationDenied")
-          : i("locationError");
+      // ✅ SIMPLIFIED: Plain language error messages
+      let msg = i("locationError");
+
+      if (err.code === err.PERMISSION_DENIED) {
+        msg = i("locationDenied");
+      }
 
       if (locStatus) {
         locStatus.textContent = msg;
@@ -1172,18 +1001,38 @@ function requestLocation() {
       box.style.display     = "flex";
       box.style.background  = "#fef2f2";
       box.style.borderColor = "#fca5a5";
-      document.getElementById("distanceIcon")
-        .textContent = "❌";
-      document.getElementById("distanceStatus")
-        .textContent = msg;
-      document.getElementById("distanceStatus")
-        .style.color = "#dc2626";
+
+      const distIcon =
+        document.getElementById("distanceIcon");
+      const distStatus =
+        document.getElementById("distanceStatus");
+      const distDetail =
+        document.getElementById("distanceDetail");
+
+      if (distIcon)   distIcon.textContent   = "❌";
+      if (distStatus) {
+        distStatus.textContent = msg;
+        distStatus.style.color = "#dc2626";
+      }
+      // ✅ REMOVED: Technical error details
+      // REPLACED: Simple instruction
+      if (distDetail) {
+        distDetail.textContent =
+          err.code === err.PERMISSION_DENIED
+            ? (currentLang === "km"
+                ? "ចុចប៊ូតុងខាងក្រោម ហើយអនុញ្ញាតការប្រើទីតាំង"
+                : "Tap the button below and allow location")
+            : (currentLang === "km"
+                ? "ចុចប៊ូតុងខាងក្រោម ហើយព្យាយាមម្តងទៀត"
+                : "Tap the button below and try again");
+      }
+
       retry.style.display = "block";
     },
 
     {
       enableHighAccuracy: true,
-      timeout:            10000,
+      timeout:            15000,
       maximumAge:         0
     }
   );
@@ -1239,20 +1088,19 @@ function resetRateLimit() {
 }
 
 function showRateLimitBox() {
-  const formCard =
-    document.getElementById("formCard");
+  const formCard = document.getElementById("formCard");
   if (!formCard) return;
 
-  const old =
-    document.getElementById("rateLimitWarning");
+  const old = document.getElementById("rateLimitWarning");
   if (old) old.remove();
 
   const box = document.createElement("div");
   box.id        = "rateLimitWarning";
   box.className = "rate-limit-box";
   box.innerHTML = `
-    <div style="font-size:28px;
-                margin-bottom:8px;">⛔</div>
+    <div style="font-size:28px;margin-bottom:8px;">
+      ⛔
+    </div>
     <p style="font-weight:700;
               color:#991b1b;
               font-size:15px;">
@@ -1271,28 +1119,20 @@ function showRateLimitBox() {
     const d   = getRateData();
     const now = Date.now();
     if (!d.lockedUntil || now >= d.lockedUntil) {
-      const b = document.getElementById(
-        "rateLimitWarning"
-      );
+      const b = document.getElementById("rateLimitWarning");
       if (b) b.remove();
-      const fc =
-        document.getElementById("formCard");
+      const fc = document.getElementById("formCard");
       if (fc) fc.style.display = "block";
       resetRateLimit();
       return;
     }
-    const rem  = Math.ceil(
-      (d.lockedUntil - now) / 1000
-    );
+    const rem  = Math.ceil((d.lockedUntil - now) / 1000);
     const mins = Math.floor(rem / 60);
     const secs = rem % 60;
-    const el =
-      document.getElementById("rlCountdown");
+    const el   = document.getElementById("rlCountdown");
     if (el) {
       el.textContent =
-        `⏱ ${mins}:${
-          String(secs).padStart(2, "0")
-        }`;
+        `⏱ ${mins}:${String(secs).padStart(2, "0")}`;
     }
     setTimeout(tick, 1000);
   }
@@ -1328,9 +1168,7 @@ function handleSessionClosed() {
     const msg = closed.querySelector(
       "[data-i18n='sessionClosedMsg']"
     );
-    if (msg) {
-      msg.textContent = i("sessionEndedMsg");
-    }
+    if (msg) msg.textContent = i("sessionEndedMsg");
   }
 
   const banner =
@@ -1345,9 +1183,7 @@ function handleSessionClosed() {
     const text =
       document.getElementById("sessionBannerText");
     if (icon) icon.textContent = "🔴";
-    if (text) {
-      text.textContent = i("attendanceClosed");
-    }
+    if (text) text.textContent = i("attendanceClosed");
   }
 }
 
@@ -1427,8 +1263,8 @@ async function loadSession() {
       return;
     }
 
-    sessionData   = snap.data();
-    const today   =
+    sessionData = snap.data();
+    const today =
       new Date().toLocaleDateString("en-CA");
 
     if (
@@ -1446,15 +1282,10 @@ async function loadSession() {
       return;
     }
 
-    // Read time windows from Firebase
-    checkInStartTime  =
-      sessionData.checkInStartTime  || null;
-    checkInEndTime    =
-      sessionData.checkInEndTime    || null;
-    checkOutStartTime =
-      sessionData.checkOutStartTime || null;
-    checkOutEndTime   =
-      sessionData.checkOutEndTime   || null;
+    checkInStartTime  = sessionData.checkInStartTime  || null;
+    checkInEndTime    = sessionData.checkInEndTime    || null;
+    checkOutStartTime = sessionData.checkOutStartTime || null;
+    checkOutEndTime   = sessionData.checkOutEndTime   || null;
 
     if (isRateLimited()) {
       showRateLimitBox();
@@ -1473,23 +1304,12 @@ async function loadSession() {
     deviceToken = getOrCreateDeviceToken();
     startSessionListener();
 
-    // ✅ NEW: If this device already has a
-    // Firebase-verified attendance record for
-    // THIS exact session (e.g. the student
-    // refreshed the page after checking in),
-    // restore the success screen instead of
-    // showing the form again.
     const restored = await tryRestoreAttendanceState();
     if (restored) return;
 
-    // Load students AND start location at same time
-    await Promise.all([
-      loadAllStudents(),
-      new Promise(resolve => {
-        requestLocation();
-        resolve();
-      })
-    ]);
+    // ✅ Load students — location already
+    // started earlier at page load
+    await loadAllStudents();
 
   } catch (err) {
     console.error("Load session error:", err);
@@ -1499,20 +1319,15 @@ async function loadSession() {
 }
 
 // ================================================
-// SHOW ERROR MESSAGE
+// SHOW ERROR
 // ================================================
 function showError(message) {
-  const card =
-    document.getElementById("errorCard");
-  const msg  =
-    document.getElementById("errorMessage");
+  const card = document.getElementById("errorCard");
+  const msg  = document.getElementById("errorMessage");
   if (card && msg) {
     msg.textContent    = message;
     card.style.display = "block";
-    card.scrollIntoView({
-      behavior: "smooth",
-      block:    "center"
-    });
+    card.scrollIntoView({ behavior: "smooth", block: "center" });
     setTimeout(() => {
       card.style.display = "none";
     }, 6000);
@@ -1520,7 +1335,7 @@ function showError(message) {
 }
 
 // ================================================
-// VALIDATE FORM BEFORE SUBMIT
+// VALIDATE FORM
 // ================================================
 function validateForm() {
   const idVal =
@@ -1582,11 +1397,9 @@ function isWithinTimeWindow(startStr, endStr) {
   }
 
   const now     = new Date();
-  const nowMins =
-    now.getHours() * 60 + now.getMinutes();
+  const nowMins = now.getHours() * 60 + now.getMinutes();
 
-  return nowMins >= startMins &&
-         nowMins <= endMins;
+  return nowMins >= startMins && nowMins <= endMins;
 }
 
 // ================================================
@@ -1598,19 +1411,15 @@ function showCheckoutCard(
   checkOutDisplay,
   isCheckedOut
 ) {
-  const formCard =
-    document.getElementById("formCard");
+  const formCard = document.getElementById("formCard");
   if (formCard) formCard.style.display = "none";
 
-  const distBox =
-    document.getElementById("distanceBox");
-  const locBox =
-    document.getElementById("locationBox");
+  const distBox = document.getElementById("distanceBox");
+  const locBox  = document.getElementById("locationBox");
   if (distBox) distBox.style.display = "none";
   if (locBox)  locBox.style.display  = "none";
 
-  const card =
-    document.getElementById("checkoutCard");
+  const card = document.getElementById("checkoutCard");
   if (!card) return;
   card.style.display = "block";
 
@@ -1620,41 +1429,32 @@ function showCheckoutCard(
 
   const ciEl =
     document.getElementById("displayCheckInTime");
-  if (ciEl) {
-    ciEl.textContent = checkInDisplay || "--";
-  }
+  if (ciEl) ciEl.textContent = checkInDisplay || "--";
 
   const coEl =
     document.getElementById("displayCheckOutTime");
   if (coEl) {
-    coEl.textContent =
-      checkOutDisplay || i("notCheckedOut");
+    coEl.textContent = checkOutDisplay || i("notCheckedOut");
   }
 
-  const stEl =
-    document.getElementById("displayStatus");
+  const stEl = document.getElementById("displayStatus");
   if (stEl) {
     stEl.textContent = i("present");
     stEl.style.color = "#16a34a";
   }
 
-  const btn =
-    document.getElementById("checkOutBtn");
-  const doneMsg =
-    document.getElementById("alreadyCheckedOutMsg");
+  const btn     = document.getElementById("checkOutBtn");
+  const doneMsg = document.getElementById("alreadyCheckedOutMsg");
 
   if (isCheckedOut) {
-    if (btn) btn.style.display     = "none";
+    if (btn) btn.style.display = "none";
     if (doneMsg) {
-      doneMsg.textContent   =
-        i("alreadyCheckedOutMsg");
+      doneMsg.textContent   = i("alreadyCheckedOutMsg");
       doneMsg.style.display = "block";
     }
   } else {
-    if (btn) btn.style.display     = "block";
-    if (doneMsg) {
-      doneMsg.style.display = "none";
-    }
+    if (btn) btn.style.display = "block";
+    if (doneMsg) doneMsg.style.display = "none";
   }
 }
 
@@ -1663,75 +1463,40 @@ function showCheckoutCard(
 // ================================================
 function showNotCheckedInCard() {
   const hideIds = [
-    "formCard",
-    "distanceBox",
-    "locationBox",
-    "checkoutCard",
-    "successCard",
-    "errorCard"
+    "formCard", "distanceBox", "locationBox",
+    "checkoutCard", "successCard", "errorCard"
   ];
   hideIds.forEach(id => {
     const el = document.getElementById(id);
     if (el) el.style.display = "none";
   });
 
-  const card =
-    document.getElementById("notCheckedInCard");
+  const card = document.getElementById("notCheckedInCard");
   if (card) {
-    const title =
-      card.querySelector(
-        "[data-i18n='notCheckedInTitle']"
-      );
-    const msg =
-      card.querySelector(
-        "[data-i18n='notCheckedInMsg']"
-      );
-    if (title) {
-      title.textContent = i("notCheckedInTitle");
-    }
-    if (msg) {
-      msg.textContent = i("notCheckedInMsg");
-    }
+    const title = card.querySelector(
+      "[data-i18n='notCheckedInTitle']"
+    );
+    const msg = card.querySelector(
+      "[data-i18n='notCheckedInMsg']"
+    );
+    if (title) title.textContent = i("notCheckedInTitle");
+    if (msg)   msg.textContent   = i("notCheckedInMsg");
     card.style.display = "block";
   }
 }
 
 // ================================================
-// ✅ NEW: LOCAL ATTENDANCE STATE (refresh fix)
-//
-// PURPOSE:
-// Only fixes the UI after an accidental page
-// refresh/reload. It does NOT create or prove
-// attendance by itself — Firebase Firestore is
-// still the real source of truth.
-//
-// The key is scoped to the current sessionId,
-// which already encodes today's date
-// (e.g. "2026-08-21-AB12X9" — see
-// generateSessionId() in teacher.html), so a
-// saved state can never be mistaken for a
-// different day's or a different session's
-// attendance.
+// LOCAL ATTENDANCE STATE (refresh fix)
 // ================================================
 function saveAttendanceState(state) {
   try {
     const key = "attendanceState_" + sessionId;
     localStorage.setItem(key, JSON.stringify(state));
   } catch (err) {
-    console.error(
-      "Save attendance state error:", err
-    );
+    console.error("Save attendance state error:", err);
   }
 }
 
-// Reads the locally saved state (if any) for
-// THIS session, then verifies it against the
-// real Firestore attendance record before
-// trusting it. Only restores the success page
-// if Firebase confirms the student is actually
-// checked in. Returns true if it restored the
-// UI, false otherwise (caller should continue
-// with the normal form flow).
 async function tryRestoreAttendanceState() {
   let saved = null;
   try {
@@ -1761,10 +1526,6 @@ async function tryRestoreAttendanceState() {
     );
     const snap = await getDoc(recordRef);
 
-    // ✅ Firebase is the real source of truth.
-    // If the record doesn't exist, or was never
-    // actually marked present, do NOT restore —
-    // fall back to the normal attendance form.
     if (!snap.exists()) return false;
     const rd = snap.data();
     if (rd.status !== "present" || !rd.checkInTime) {
@@ -1782,8 +1543,6 @@ async function tryRestoreAttendanceState() {
       !!rd.checkOutTime
     );
 
-    // Keep the local copy in sync with the
-    // verified Firebase values.
     saveAttendanceState({
       studentId:       saved.studentId,
       sessionId:       sessionId,
@@ -1800,9 +1559,7 @@ async function tryRestoreAttendanceState() {
     return true;
 
   } catch (err) {
-    console.error(
-      "Restore attendance state error:", err
-    );
+    console.error("Restore attendance state error:", err);
     return false;
   }
 }
@@ -1847,20 +1604,13 @@ async function submitAttendance(e) {
     return;
   }
 
-  // Time window check
   if (qrMode === "checkOut") {
-    if (!isWithinTimeWindow(
-      checkOutStartTime,
-      checkOutEndTime
-    )) {
+    if (!isWithinTimeWindow(checkOutStartTime, checkOutEndTime)) {
       showError(i("errCheckOutClosed"));
       return;
     }
   } else {
-    if (!isWithinTimeWindow(
-      checkInStartTime,
-      checkInEndTime
-    )) {
+    if (!isWithinTimeWindow(checkInStartTime, checkInEndTime)) {
       showError(i("errCheckInClosed"));
       return;
     }
@@ -1874,27 +1624,16 @@ async function submitAttendance(e) {
   const sexVal   = student?.sex      || "";
   const gradeVal = student?.grade    || "";
 
-  const overlay =
-    document.getElementById("loadingOverlay");
+  const overlay = document.getElementById("loadingOverlay");
   if (overlay) overlay.style.display = "flex";
 
   if (qrMode === "checkOut") {
     await handleCheckOutSubmit(
-      studentIdVal,
-      nameVal,
-      sexVal,
-      gradeVal,
-      dist,
-      overlay
+      studentIdVal, nameVal, sexVal, gradeVal, dist, overlay
     );
   } else {
     await handleCheckInSubmit(
-      studentIdVal,
-      nameVal,
-      sexVal,
-      gradeVal,
-      dist,
-      overlay
+      studentIdVal, nameVal, sexVal, gradeVal, dist, overlay
     );
   }
 }
@@ -1903,12 +1642,8 @@ async function submitAttendance(e) {
 // HANDLE CHECK-IN SUBMIT
 // ================================================
 async function handleCheckInSubmit(
-  studentIdVal,
-  nameVal,
-  sexVal,
-  gradeVal,
-  dist,
-  overlay
+  studentIdVal, nameVal, sexVal,
+  gradeVal, dist, overlay
 ) {
   try {
     const freshSnap = await getDoc(
@@ -1916,8 +1651,7 @@ async function handleCheckInSubmit(
     );
     if (freshSnap.exists()) {
       const fd    = freshSnap.data();
-      const today =
-        new Date().toLocaleDateString("en-CA");
+      const today = new Date().toLocaleDateString("en-CA");
       if (
         !fd.isOpen          ||
         fd.date   !== today ||
@@ -1929,27 +1663,19 @@ async function handleCheckInSubmit(
       }
     }
 
-    const deviceKey    =
-      sessionId + "_" + deviceToken;
-    const deviceLogRef =
-      doc(db, "deviceLogs", deviceKey);
-
-    const recordRef = doc(
-      db,
-      "sessionAttendance",
-      sessionId,
-      "records",
-      studentIdVal
+    const deviceKey    = sessionId + "_" + deviceToken;
+    const deviceLogRef = doc(db, "deviceLogs", deviceKey);
+    const recordRef    = doc(
+      db, "sessionAttendance",
+      sessionId, "records", studentIdVal
     );
 
     let alreadyUsedByOther = false;
     let alreadyCheckedIn   = false;
 
     await runTransaction(db, async (tx) => {
-      const deviceSnap =
-        await tx.get(deviceLogRef);
-      const recordSnap =
-        await tx.get(recordRef);
+      const deviceSnap = await tx.get(deviceLogRef);
+      const recordSnap = await tx.get(recordRef);
 
       if (deviceSnap.exists()) {
         const dl = deviceSnap.data();
@@ -1959,9 +1685,7 @@ async function handleCheckInSubmit(
         }
       }
 
-      if (!recordSnap.exists()) {
-        return;
-      }
+      if (!recordSnap.exists()) return;
 
       const rd = recordSnap.data();
       if (rd.status === "present") {
@@ -1972,11 +1696,8 @@ async function handleCheckInSubmit(
       const now         = new Date();
       const checkInTime = now.toISOString();
       const display     = formatTime(now);
-      const checkDate   =
-        now.toLocaleDateString("en-CA");
+      const checkDate   = now.toLocaleDateString("en-CA");
 
-      // Store the raw English sex value
-      // in Firebase (not translated Khmer)
       const data = {
         fullName:           nameVal,
         sex:                sexVal,
@@ -1995,11 +1716,10 @@ async function handleCheckInSubmit(
         distanceFromSchool: dist,
         deviceToken:
           deviceToken.substring(0, 8) + "...",
-        submittedAt:        checkInTime
+        submittedAt: checkInTime
       };
 
       tx.update(recordRef, data);
-
       tx.set(deviceLogRef, {
         deviceToken: deviceToken,
         studentId:   studentIdVal,
@@ -2029,15 +1749,8 @@ async function handleCheckInSubmit(
     studentCheckedIn = true;
 
     const now = new Date();
-    showCheckoutCard(
-      nameVal,
-      formatTime(now),
-      null,
-      false
-    );
+    showCheckoutCard(nameVal, formatTime(now), null, false);
 
-    // ✅ NEW: remember this so a page refresh
-    // restores this same success screen
     saveAttendanceState({
       studentId:       studentIdVal,
       sessionId:       sessionId,
@@ -2062,12 +1775,8 @@ async function handleCheckInSubmit(
 // HANDLE CHECK-OUT SUBMIT
 // ================================================
 async function handleCheckOutSubmit(
-  studentIdVal,
-  nameVal,
-  sexVal,
-  gradeVal,
-  dist,
-  overlay
+  studentIdVal, nameVal, sexVal,
+  gradeVal, dist, overlay
 ) {
   try {
     const freshSnap = await getDoc(
@@ -2075,8 +1784,7 @@ async function handleCheckOutSubmit(
     );
     if (freshSnap.exists()) {
       const fd    = freshSnap.data();
-      const today =
-        new Date().toLocaleDateString("en-CA");
+      const today = new Date().toLocaleDateString("en-CA");
       if (
         !fd.isOpen          ||
         fd.date   !== today ||
@@ -2088,14 +1796,10 @@ async function handleCheckOutSubmit(
       }
     }
 
-    const recordRef = doc(
-      db,
-      "sessionAttendance",
-      sessionId,
-      "records",
-      studentIdVal
+    const recordRef  = doc(
+      db, "sessionAttendance",
+      sessionId, "records", studentIdVal
     );
-
     const recordSnap = await getDoc(recordRef);
 
     if (overlay) overlay.style.display = "none";
@@ -2107,10 +1811,7 @@ async function handleCheckOutSubmit(
 
     const rd = recordSnap.data();
 
-    if (
-      !rd.checkInTime ||
-      rd.status !== "present"
-    ) {
+    if (!rd.checkInTime || rd.status !== "present") {
       showNotCheckedInCard();
       return;
     }
@@ -2118,11 +1819,10 @@ async function handleCheckOutSubmit(
     if (rd.checkOutTime) {
       showCheckoutCard(
         rd.fullName || nameVal,
-        rd.checkInDisplay || "--",
+        rd.checkInDisplay  || "--",
         rd.checkOutDisplay || "--",
         true
       );
-      // ✅ NEW: keep local state in sync
       saveAttendanceState({
         studentId:       studentIdVal,
         sessionId:       sessionId,
@@ -2145,14 +1845,11 @@ async function handleCheckOutSubmit(
         const freshLat  = pos.coords.latitude;
         const freshLon  = pos.coords.longitude;
         const freshDist = haversineDistance(
-          freshLat, freshLon,
-          SCHOOL_LAT, SCHOOL_LON
+          freshLat, freshLon, SCHOOL_LAT, SCHOOL_LON
         );
 
         if (freshDist > MAX_DISTANCE) {
-          if (overlay) {
-            overlay.style.display = "none";
-          }
+          if (overlay) overlay.style.display = "none";
           showError(i("errCheckOutLocation"));
           return;
         }
@@ -2170,9 +1867,7 @@ async function handleCheckOutSubmit(
             checkOutDist:    freshDist
           });
 
-          if (overlay) {
-            overlay.style.display = "none";
-          }
+          if (overlay) overlay.style.display = "none";
 
           currentStudentId  = studentIdVal;
           studentCheckedIn  = true;
@@ -2185,8 +1880,6 @@ async function handleCheckOutSubmit(
             true
           );
 
-          // ✅ NEW: remember the completed
-          // checkout so a refresh restores it
           saveAttendanceState({
             studentId:       studentIdVal,
             sessionId:       sessionId,
@@ -2201,28 +1894,18 @@ async function handleCheckOutSubmit(
           });
 
         } catch (err) {
-          console.error(
-            "Check-out save error:", err
-          );
-          if (overlay) {
-            overlay.style.display = "none";
-          }
+          console.error("Check-out save error:", err);
+          if (overlay) overlay.style.display = "none";
           showError(err.message);
         }
       },
 
-      function (err) {
-        if (overlay) {
-          overlay.style.display = "none";
-        }
+      function () {
+        if (overlay) overlay.style.display = "none";
         showError(i("locationError"));
       },
 
-      {
-        enableHighAccuracy: true,
-        timeout:            10000,
-        maximumAge:         0
-      }
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
     );
 
   } catch (err) {
@@ -2246,23 +1929,16 @@ async function handleCheckOut() {
     return;
   }
 
-  if (!isWithinTimeWindow(
-    checkOutStartTime,
-    checkOutEndTime
-  )) {
+  if (!isWithinTimeWindow(checkOutStartTime, checkOutEndTime)) {
     showError(i("errCheckOutClosed"));
     return;
   }
 
-  const overlay =
-    document.getElementById("loadingOverlay");
-  const loadingText =
-    document.querySelector(".loading-text");
+  const overlay     = document.getElementById("loadingOverlay");
+  const loadingText = document.querySelector(".loading-text");
 
-  if (overlay) overlay.style.display = "flex";
-  if (loadingText) {
-    loadingText.textContent = i("checkingOut");
-  }
+  if (overlay)     overlay.style.display     = "flex";
+  if (loadingText) loadingText.textContent   = i("checkingOut");
 
   navigator.geolocation.getCurrentPosition(
     async function (pos) {
@@ -2273,13 +1949,8 @@ async function handleCheckOut() {
       );
 
       if (dist > MAX_DISTANCE) {
-        if (overlay) {
-          overlay.style.display = "none";
-        }
-        if (loadingText) {
-          loadingText.textContent =
-            i("savingText");
-        }
+        if (overlay)     overlay.style.display   = "none";
+        if (loadingText) loadingText.textContent = i("savingText");
         showError(i("errCheckOutLocation"));
         return;
       }
@@ -2290,47 +1961,34 @@ async function handleCheckOut() {
         );
         if (freshSnap.exists()) {
           const fd    = freshSnap.data();
-          const today =
-            new Date().toLocaleDateString("en-CA");
+          const today = new Date().toLocaleDateString("en-CA");
           if (
             !fd.isOpen          ||
             fd.date   !== today ||
             fd.sessionId !== sessionId
           ) {
-            if (overlay) {
-              overlay.style.display = "none";
-            }
+            if (overlay) overlay.style.display = "none";
             handleSessionClosed();
             return;
           }
         }
 
-        const recordRef = doc(
-          db,
-          "sessionAttendance",
-          sessionId,
-          "records",
-          currentStudentId
+        const recordRef  = doc(
+          db, "sessionAttendance",
+          sessionId, "records", currentStudentId
         );
+        const recordSnap = await getDoc(recordRef);
 
-        const recordSnap =
-          await getDoc(recordRef);
         if (!recordSnap.exists()) {
-          if (overlay) {
-            overlay.style.display = "none";
-          }
-          showError(
-            "Attendance record not found."
-          );
+          if (overlay) overlay.style.display = "none";
+          showError("Attendance record not found.");
           return;
         }
 
         const rd = recordSnap.data();
 
         if (rd.checkOutTime) {
-          if (overlay) {
-            overlay.style.display = "none";
-          }
+          if (overlay) overlay.style.display = "none";
           studentCheckedOut = true;
           showError(i("errAlreadyCheckedOut"));
           return;
@@ -2350,41 +2008,23 @@ async function handleCheckOut() {
 
         studentCheckedOut = true;
 
-        if (overlay) {
-          overlay.style.display = "none";
-        }
-        if (loadingText) {
-          loadingText.textContent = i("savingText");
-        }
+        if (overlay)     overlay.style.display   = "none";
+        if (loadingText) loadingText.textContent = i("savingText");
 
-        const coEl = document.getElementById(
-          "displayCheckOutTime"
-        );
-        if (coEl) {
-          coEl.textContent = checkOutDisplay;
-        }
+        const coEl = document.getElementById("displayCheckOutTime");
+        if (coEl) coEl.textContent = checkOutDisplay;
 
-        const btn =
-          document.getElementById("checkOutBtn");
-        const doneMsg = document.getElementById(
-          "alreadyCheckedOutMsg"
-        );
+        const btn     = document.getElementById("checkOutBtn");
+        const doneMsg = document.getElementById("alreadyCheckedOutMsg");
         if (btn) btn.style.display = "none";
         if (doneMsg) {
-          doneMsg.textContent   =
-            i("checkOutSuccess");
+          doneMsg.textContent   = i("checkOutSuccess");
           doneMsg.style.display = "block";
           doneMsg.style.color   = "#16a34a";
         }
 
-        // ✅ NEW: remember the completed
-        // checkout so a refresh restores it
-        const nameElNow = document.getElementById(
-          "checkoutStudentName"
-        );
-        const ciElNow = document.getElementById(
-          "displayCheckInTime"
-        );
+        const nameElNow = document.getElementById("checkoutStudentName");
+        const ciElNow   = document.getElementById("displayCheckInTime");
         saveAttendanceState({
           studentId:       currentStudentId,
           sessionId:       sessionId,
@@ -2402,29 +2042,19 @@ async function handleCheckOut() {
 
       } catch (err) {
         console.error("Check-out error:", err);
-        if (overlay) {
-          overlay.style.display = "none";
-        }
-        if (loadingText) {
-          loadingText.textContent = i("savingText");
-        }
+        if (overlay)     overlay.style.display   = "none";
+        if (loadingText) loadingText.textContent = i("savingText");
         showError(err.message);
       }
     },
 
-    function (err) {
-      if (overlay) overlay.style.display = "none";
-      if (loadingText) {
-        loadingText.textContent = i("savingText");
-      }
+    function () {
+      if (overlay)     overlay.style.display   = "none";
+      if (loadingText) loadingText.textContent = i("savingText");
       showError(i("locationError"));
     },
 
-    {
-      enableHighAccuracy: true,
-      timeout:            10000,
-      maximumAge:         0
-    }
+    { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
   );
 }
 
@@ -2433,9 +2063,7 @@ async function handleCheckOut() {
 // ================================================
 document.getElementById("languageButton")
   ?.addEventListener("click", function () {
-    applyLanguage(
-      currentLang === "en" ? "km" : "en"
-    );
+    applyLanguage(currentLang === "en" ? "km" : "en");
   });
 
 document.getElementById("retryLocationBtn")
@@ -2462,8 +2090,18 @@ document.getElementById("studentId")
 
 // ================================================
 // START
+// ✅ FIX: requestLocation() is called FIRST
+// before everything else so the browser shows
+// the location permission popup immediately
+// when the student scans the QR code
 // ================================================
 const savedLang =
   localStorage.getItem("studentLanguage") || "en";
 applyLanguage(savedLang);
+
+// ✅ Ask for location permission RIGHT AWAY
+// This is what makes the popup appear immediately
+requestLocation();
+
+// Then load the session and students
 await loadSession();
