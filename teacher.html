@@ -346,27 +346,185 @@
       width: 29%;
     }
 
-    /* ✅ NEW: Attendance History panel */
+    /* ✅ NEW: Attendance History — separate
+       full-screen panel */
     .history-hidden {
       display: none !important;
     }
-    .history-field {
+
+    .history-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 9998;
+      background: rgba(15,23,42,0.55);
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 24px 16px;
+      overflow-y: auto;
+    }
+
+    .history-overlay-box {
+      background: #f8fafc;
+      border-radius: 16px;
+      width: 100%;
+      max-width: 780px;
+      padding: 22px;
+      box-shadow: 0 24px 60px rgba(0,0,0,0.3);
+      box-sizing: border-box;
+    }
+
+    .history-overlay-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    .history-overlay-header h2 {
+      margin: 0;
+      font-size: 19px;
+      color: #1e293b;
+    }
+    .history-close-btn {
+      border: none;
+      background: #e2e8f0;
+      color: #334155;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      font-size: 15px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .history-close-btn:hover {
+      background: #cbd5e1;
+    }
+
+    .history-msg {
+      font-size: 13px;
+      color: #64748b;
+      min-height: 18px;
+      margin: 4px 0 12px 0;
+    }
+
+    /* Date list — clean cards */
+    .history-date-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .history-date-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      cursor: pointer;
+      transition: box-shadow 0.15s, border-color 0.15s;
+    }
+    .history-date-card:hover {
+      border-color: #7c3aed;
+      box-shadow: 0 6px 16px rgba(124,58,237,0.12);
+    }
+    .history-date-card-main {
       display: flex;
       flex-direction: column;
       gap: 4px;
+      min-width: 0;
     }
-    .history-field label {
+    .history-date-card-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #1e293b;
+      white-space: nowrap;
+    }
+    .history-date-card-stats {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
       font-size: 13px;
-      font-weight: 600;
-      color: #374151;
     }
-    .history-field input {
+    .history-date-card-stats .present {
+      color: #16a34a;
+      font-weight: 600;
+    }
+    .history-date-card-stats .absent {
+      color: #dc2626;
+      font-weight: 600;
+    }
+    .history-date-card-view {
+      color: #7c3aed;
+      font-weight: 600;
+      font-size: 13px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    /* Detail view */
+    .history-back-btn {
+      border: none;
+      background: transparent;
+      color: #7c3aed;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 6px 0 14px 0;
+    }
+    .history-back-btn:hover {
+      text-decoration: underline;
+    }
+    .history-detail-date {
+      margin: 0 0 14px 0;
+      font-size: 16px;
+      color: #1e293b;
+    }
+    .history-detail-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .history-search-input {
+      flex: 1;
+      min-width: 180px;
       padding: 8px 12px;
       border: 1px solid #e2e8f0;
       border-radius: 8px;
       font-size: 14px;
       font-family: inherit;
       background: white;
+      box-sizing: border-box;
+    }
+    .history-detail-count {
+      display: block;
+      color: #64748b;
+      font-size: 13px;
+      margin: 4px 0 8px 0;
+    }
+    .history-detail-table-wrap {
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      overflow: auto;
+      max-height: 340px;
+    }
+
+    @media (max-width: 560px) {
+      .history-overlay-box {
+        padding: 16px;
+      }
+      .history-date-card {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .history-date-card-view {
+        align-self: flex-end;
+      }
     }
   </style>
 </head>
@@ -1025,125 +1183,6 @@
     </div>
   </section>
 
-  <!-- ✅ NEW: ATTENDANCE HISTORY -->
-  <section class="table-container
-                   history-hidden"
-    id="historySection">
-
-    <div class="table-header">
-      <h2 data-t="historyTitle">
-        📜 Attendance History
-      </h2>
-    </div>
-
-    <p style="font-size:13px;
-              color:#64748b;
-              margin:-6px 0 14px 0;"
-      data-t="historyHint">
-      View attendance records from previous days.
-    </p>
-
-    <div style="display:flex;
-                gap:10px;
-                flex-wrap:wrap;
-                align-items:flex-end;
-                margin-bottom:14px;">
-
-      <div class="history-field">
-        <label data-t="historyDateLabel">
-          Date
-        </label>
-        <input type="date" id="historyDate">
-      </div>
-
-      <div class="history-field">
-        <label data-t="historyFromLabel">
-          From Date
-        </label>
-        <input type="date" id="historyFromDate">
-      </div>
-
-      <div class="history-field">
-        <label data-t="historyToLabel">
-          To Date
-        </label>
-        <input type="date" id="historyToDate">
-      </div>
-
-      <button id="historySearchDateBtn"
-        class="btn btn-blue">
-        <span data-t="historySearchBtn">
-          🔍 Search
-        </span>
-      </button>
-
-      <button id="historyExportBtn"
-        class="btn btn-green">
-        <span data-t="historyExportBtn">
-          ⬇️ Export Attendance
-        </span>
-      </button>
-    </div>
-
-    <div class="history-field"
-      style="max-width:320px;margin-bottom:14px;">
-      <label data-t="historySearchLabel">
-        Search
-      </label>
-      <input type="text"
-        id="historySearchInput"
-        data-t-placeholder="historySearchPlaceholder"
-        placeholder="Student ID, Name, or Class">
-    </div>
-
-    <div class="table-header"
-      style="margin-bottom:8px;">
-      <span></span>
-      <span id="historyResultCount"
-        style="color:#64748b;font-size:13px;">
-      </span>
-    </div>
-
-    <div class="table-scroll">
-      <table class="attendance-table">
-        <thead>
-          <tr>
-            <th data-t="labelStudentId">
-              Student ID
-            </th>
-            <th data-t="colName">
-              Student Name
-            </th>
-            <th data-t="colSex">Sex</th>
-            <th data-t="colGrade">
-              Grade / Class
-            </th>
-            <th data-t="colCheckIn">
-              ម៉ោងចូល
-            </th>
-            <th data-t="colCheckOut">
-              ម៉ោងចេញ
-            </th>
-            <th data-t="colStatus">
-              ស្ថានភាព
-            </th>
-            <th data-t="historyColDate">
-              Date
-            </th>
-          </tr>
-        </thead>
-        <tbody id="historyTableBody">
-        </tbody>
-      </table>
-    </div>
-
-    <p id="historyMsg"
-      style="font-size:13px;
-             color:#64748b;
-             margin-top:8px;
-             min-height:20px;"></p>
-  </section>
-
 </main>
 
 <!-- PROFILE MODAL -->
@@ -1380,6 +1419,96 @@
         Confirm
       </button>
     </div>
+  </div>
+</div>
+
+<!-- ✅ NEW: ATTENDANCE HISTORY — separate
+     full-screen panel. Shows ONLY past dates
+     and, when a date is opened, that day's
+     attendance. No QR / session / live
+     controls appear here. -->
+<div id="historyOverlay"
+  class="history-overlay history-hidden">
+  <div class="history-overlay-box">
+
+    <div class="history-overlay-header">
+      <h2 data-t="historyPanelTitle">
+        📚 Attendance History
+      </h2>
+      <button id="historyCloseBtn"
+        class="history-close-btn"
+        aria-label="Close">
+        ✕
+      </button>
+    </div>
+
+    <!-- DATE LIST VIEW -->
+    <div id="historyListView">
+      <p id="historyListMsg"
+        class="history-msg"></p>
+      <div id="historyDateCards"
+        class="history-date-cards"></div>
+    </div>
+
+    <!-- SINGLE DAY DETAIL VIEW -->
+    <div id="historyDetailView"
+      class="history-hidden">
+
+      <button id="historyBackBtn"
+        class="history-back-btn">
+        <span data-t="historyBackBtn">
+          ← Back
+        </span>
+      </button>
+
+      <h3 id="historyDetailDate"
+        class="history-detail-date"></h3>
+
+      <div class="history-detail-toolbar">
+        <input type="text"
+          id="historyDetailSearch"
+          class="history-search-input"
+          data-t-placeholder="historySearchPlaceholder"
+          placeholder="Student ID, Name, or Class">
+
+        <button id="historyDetailExportBtn"
+          class="btn btn-green">
+          <span data-t="historyExportBtn">
+            Export
+          </span>
+        </button>
+      </div>
+
+      <span id="historyDetailCount"
+        class="history-detail-count"></span>
+
+      <div class="history-detail-table-wrap">
+        <table class="attendance-table">
+          <thead>
+            <tr>
+              <th data-t="labelStudentId">
+                Student ID
+              </th>
+              <th data-t="colName">
+                Student Name
+              </th>
+              <th data-t="colSex">Sex</th>
+              <th data-t="colGrade">
+                Grade / Class
+              </th>
+              <th data-t="colStatus">
+                ស្ថានភាព
+              </th>
+            </tr>
+          </thead>
+          <tbody id="historyDetailBody"></tbody>
+        </table>
+      </div>
+
+      <p id="historyDetailMsg"
+        class="history-msg"></p>
+    </div>
+
   </div>
 </div>
 
@@ -1675,24 +1804,23 @@ const tt = {
     loading:     "Loading...",
     exportEmpty: "No records to export.",
 
-    // ✅ NEW: Attendance History
-    historyBtn:   "📜 Attendance History",
-    historyTitle: "📜 Attendance History",
-    historyHint:
-      "View attendance records from previous days.",
-    historyDateLabel: "Date",
-    historyFromLabel: "From Date",
-    historyToLabel:   "To Date",
+    // ✅ NEW: Attendance History (separate panel)
+    historyBtn: "📚 Attendance History",
+    historyPanelTitle: "📚 Attendance History",
     historySearchLabel: "Search",
     historySearchPlaceholder:
       "Student ID, Name, or Class",
-    historySearchBtn:  "🔍 Search",
-    historyExportBtn:  "⬇️ Export Attendance",
-    historyColDate:    "Date",
+    historyExportBtn: "Export",
+    historyBackBtn:   "← Back",
+    historyViewBtn:   "View →",
+    historyPresentLabel: "Present",
+    historyAbsentLabel:  "Absent",
+    historyPresentStatus: "Present",
+    historyAbsentStatus:  "Absent",
+    historyNoDates:
+      "No attendance history available yet.",
     historyNoData:
-      "No attendance records found for this date.",
-    historySelectDate:
-      "Please select a date, or a From/To date range."
+      "No attendance records found for this date."
   },
 
   km: {
@@ -1866,24 +1994,23 @@ const tt = {
     loading:     "កំពុងផ្ទុក…",
     exportEmpty: "មិនមានទិន្នន័យ។",
 
-    // ✅ NEW: Attendance History
-    historyBtn:   "📜 ប្រវត្តិវត្តមាន",
-    historyTitle: "📜 ប្រវត្តិវត្តមាន",
-    historyHint:
-      "មើលកំណត់ត្រាវត្តមានពីថ្ងៃមុនៗ។",
-    historyDateLabel: "កាលបរិច្ឆេទ",
-    historyFromLabel: "ពីថ្ងៃទី",
-    historyToLabel:   "ដល់ថ្ងៃទី",
+    // ✅ NEW: Attendance History (separate panel)
+    historyBtn: "📚 ប្រវត្តិវត្តមាន",
+    historyPanelTitle: "📚 ប្រវត្តិវត្តមាន",
     historySearchLabel: "ស្វែងរក",
     historySearchPlaceholder:
       "លេខសម្គាល់សិស្ស ឈ្មោះ ឬថ្នាក់",
-    historySearchBtn:  "🔍 ស្វែងរក",
-    historyExportBtn:  "⬇️ នាំចេញវត្តមាន",
-    historyColDate:    "កាលបរិច្ឆេទ",
+    historyExportBtn: "នាំចេញ",
+    historyBackBtn:   "← ត្រឡប់ក្រោយ",
+    historyViewBtn:   "មើល →",
+    historyPresentLabel: "សិស្សមានវត្តមាន",
+    historyAbsentLabel:  "សិស្សអវត្តមាន",
+    historyPresentStatus: "មានវត្តមាន",
+    historyAbsentStatus:  "អវត្តមាន",
+    historyNoDates:
+      "មិនទាន់មានប្រវត្តិវត្តមានទេ។",
     historyNoData:
-      "រកមិនឃើញទិន្នន័យវត្តមានសម្រាប់កាលបរិច្ឆេទនេះទេ។",
-    historySelectDate:
-      "សូមជ្រើសរើសកាលបរិច្ឆេទ ឬចន្លោះកាលបរិច្ឆេទ។"
+      "រកមិនឃើញទិន្នន័យវត្តមានសម្រាប់កាលបរិច្ឆេទនេះទេ។"
   }
 };
 
@@ -1912,8 +2039,9 @@ let elapsedInterval     = null;
 let attendanceMode      = "checkIn";
 
 // ✅ NEW: Attendance History state
-let historyRecords      = [];
-let historyLoaded       = false;
+let historyByDate        = {};  // { "2026-08-21": [records...] }
+let historyDatesLoaded   = false;
+let historyCurrentDate   = null;
 
 // ✅ NEW: Edit / Delete student modal state
 let editingStudentId    = null;
@@ -2212,7 +2340,7 @@ function applyTeacherLang(lang) {
   updateModeUI();
   renderStudentList();
   displayRecords(allRecords);
-  if (historyLoaded) renderHistoryTable();
+  refreshHistoryViewLang();
   updateSessionBadge(sessionIsOpen);
 }
 
@@ -3550,135 +3678,234 @@ document.getElementById("profileModal")
 
 // ============================================
 // ✅ NEW: ATTENDANCE HISTORY
-// Reads past sessionAttendance records using a
-// Firestore collection-group query on the
-// existing "records" subcollections — no new
-// collections or fields are created, and
-// nothing here writes/modifies any historical
-// document (read-only).
+// A separate, read-only panel. It reads the
+// existing sessionAttendance/{sessionId}/records
+// data via a Firestore collection-group query,
+// groups it by the "date" field that each
+// record already stores, and shows a list of
+// past dates. Opening a date only renders
+// cached data already fetched — nothing here
+// writes to Firestore, and today's live session
+// (QR, check-in/out, timers) is untouched and
+// never shown inside this panel.
 // ============================================
-function toggleHistorySection() {
-  const section =
-    document.getElementById("historySection");
-  if (!section) return;
 
-  const isHidden =
-    section.classList.contains("history-hidden");
+// Khmer month names for "21 សីហា 2026" style dates
+const KM_MONTHS = [
+  "មករា", "កុម្ភៈ", "មីនា", "មេសា",
+  "ឧសភា", "មិថុនា", "កក្កដា", "សីហា",
+  "កញ្ញា", "តុលា", "វិច្ឆិកា", "ធ្នូ"
+];
 
-  if (isHidden) {
-    section.classList.remove("history-hidden");
-    if (!historyLoaded) {
-      // Default the single-date picker to today
-      // so the panel isn't empty on first open.
-      const dateEl =
-        document.getElementById("historyDate");
-      if (dateEl && !dateEl.value) {
-        dateEl.value =
-          new Date().toLocaleDateString("en-CA");
-      }
-      loadAttendanceHistory();
-    }
+function formatHistoryDate(dateStr) {
+  // dateStr is "YYYY-MM-DD"
+  const parts = (dateStr || "").split("-");
+  if (parts.length !== 3) return dateStr || "";
+  const y = parseInt(parts[0], 10);
+  const m = parseInt(parts[1], 10);
+  const d = parseInt(parts[2], 10);
+  if (!y || !m || !d) return dateStr;
+
+  if (tLang === "km") {
+    return `${d} ${KM_MONTHS[m - 1]} ${y}`;
+  }
+  const dt = new Date(y, m - 1, d);
+  return dt.toLocaleDateString("en-US", {
+    day: "numeric", month: "long", year: "numeric"
+  });
+}
+
+function openHistoryOverlay() {
+  const overlay =
+    document.getElementById("historyOverlay");
+  if (!overlay) return;
+  overlay.classList.remove("history-hidden");
+  showHistoryListView();
+
+  if (!historyDatesLoaded) {
+    loadHistoryDates();
   } else {
-    section.classList.add("history-hidden");
+    renderHistoryDateList();
   }
 }
 
-async function loadAttendanceHistory() {
-  const dateEl = document.getElementById("historyDate");
-  const fromEl = document.getElementById("historyFromDate");
-  const toEl   = document.getElementById("historyToDate");
-  const msgEl  = document.getElementById("historyMsg");
-  const tbody  = document.getElementById("historyTableBody");
-  const countEl =
-    document.getElementById("historyResultCount");
+function closeHistoryOverlay() {
+  document.getElementById("historyOverlay")
+    ?.classList.add("history-hidden");
+}
 
-  const singleDate = dateEl?.value || "";
-  const fromDate   = fromEl?.value || "";
-  const toDate     = toEl?.value   || "";
+function showHistoryListView() {
+  document.getElementById("historyListView")
+    ?.classList.remove("history-hidden");
+  document.getElementById("historyDetailView")
+    ?.classList.add("history-hidden");
+  historyCurrentDate = null;
+}
 
-  let startDate, endDate;
+function showHistoryDetailView() {
+  document.getElementById("historyListView")
+    ?.classList.add("history-hidden");
+  document.getElementById("historyDetailView")
+    ?.classList.remove("history-hidden");
+}
 
-  if (fromDate && toDate) {
-    startDate = fromDate;
-    endDate   = toDate;
-  } else if (singleDate) {
-    startDate = singleDate;
-    endDate   = singleDate;
-  } else {
-    msgEl.style.color = "#dc2626";
-    msgEl.textContent = t("historySelectDate");
+// Re-render whichever history view is currently
+// visible so labels update instantly on a
+// language switch, without refetching Firestore.
+function refreshHistoryViewLang() {
+  const overlay =
+    document.getElementById("historyOverlay");
+  if (!overlay ||
+      overlay.classList.contains("history-hidden")) {
     return;
   }
+  if (historyCurrentDate) {
+    renderHistoryDetail(historyCurrentDate);
+  } else {
+    renderHistoryDateList();
+  }
+}
 
+async function loadHistoryDates() {
+  const msgEl =
+    document.getElementById("historyListMsg");
+  const cardsEl =
+    document.getElementById("historyDateCards");
+
+  cardsEl.innerHTML = "";
   msgEl.style.color = "#64748b";
-  msgEl.textContent = "";
-  if (countEl) countEl.textContent = "";
-  tbody.innerHTML = `
-    <tr><td colspan="8" class="table-loading">
-      ${esc(t("loading"))}
-    </td></tr>
-  `;
+  msgEl.textContent = t("loading");
 
   try {
-    // ✅ READ-ONLY: query the existing
-    // "records" subcollections (under
-    // sessionAttendance/{sessionId}/records)
-    // across every session, filtered by the
-    // "date" field that is already stored on
-    // each record. No data is modified.
+    // ✅ READ-ONLY: reads the existing "records"
+    // subcollections across every past session.
+    // No documents are created, changed, or moved.
     const recordsRef = collectionGroup(db, "records");
-    const q = query(
-      recordsRef,
-      where("date", ">=", startDate),
-      where("date", "<=", endDate)
-    );
-    const snap = await getDocs(q);
+    const snap = await getDocs(recordsRef);
 
-    historyRecords = [];
-    snap.forEach(d => historyRecords.push(d.data()));
-
-    historyRecords.sort((a, b) => {
-      const dateA = a.date || "";
-      const dateB = b.date || "";
-      if (dateA !== dateB) return dateA.localeCompare(dateB);
-      return (a.studentId || "")
-        .localeCompare(b.studentId || "");
+    const byDate = {};
+    snap.forEach(d => {
+      const r = d.data();
+      const date = r.date || "unknown";
+      if (!byDate[date]) byDate[date] = [];
+      byDate[date].push(r);
     });
 
-    historyLoaded = true;
-    renderHistoryTable();
+    historyByDate      = byDate;
+    historyDatesLoaded = true;
+    msgEl.textContent  = "";
+    renderHistoryDateList();
 
   } catch (err) {
-    console.error("Load attendance history:", err);
-    tbody.innerHTML = "";
+    console.error("Load history dates:", err);
     msgEl.style.color = "#dc2626";
     msgEl.textContent =
       t("sessionError") + " " + err.message;
   }
 }
 
-function renderHistoryTable() {
-  const tbody =
-    document.getElementById("historyTableBody");
-  const searchEl =
-    document.getElementById("historySearchInput");
-  const countEl =
-    document.getElementById("historyResultCount");
+function renderHistoryDateList() {
+  const cardsEl =
+    document.getElementById("historyDateCards");
   const msgEl =
-    document.getElementById("historyMsg");
-  if (!tbody) return;
+    document.getElementById("historyListMsg");
+  if (!cardsEl) return;
 
+  const dates = Object.keys(historyByDate)
+    .filter(d => d !== "unknown")
+    .sort((a, b) => b.localeCompare(a)); // newest first
+
+  if (dates.length === 0) {
+    cardsEl.innerHTML = "";
+    msgEl.style.color = "#64748b";
+    msgEl.textContent = t("historyNoDates");
+    return;
+  }
+  msgEl.textContent = "";
+
+  cardsEl.innerHTML = dates.map(date => {
+    const records  = historyByDate[date];
+    const present   = records.filter(
+      r => r.status === "present"
+    ).length;
+    const absent    = records.length - present;
+
+    return `
+      <div class="history-date-card"
+        onclick="window._openHistoryDate('${esc(date)}')">
+        <div class="history-date-card-main">
+          <div class="history-date-card-title">
+            📅 ${esc(formatHistoryDate(date))}
+          </div>
+          <div class="history-date-card-stats">
+            <span class="present">
+              ${esc(t("historyPresentLabel"))}: ${present}
+            </span>
+            <span class="absent">
+              ${esc(t("historyAbsentLabel"))}: ${absent}
+            </span>
+          </div>
+        </div>
+        <div class="history-date-card-view">
+          ${esc(t("historyViewBtn"))}
+        </div>
+      </div>`;
+  }).join("");
+}
+
+function openHistoryDate(date) {
+  historyCurrentDate = date;
+  const searchEl =
+    document.getElementById("historyDetailSearch");
+  if (searchEl) searchEl.value = "";
+
+  showHistoryDetailView();
+  renderHistoryDetail(date);
+}
+window._openHistoryDate = openHistoryDate;
+
+function backToHistoryList() {
+  showHistoryListView();
+}
+
+function getFilteredHistoryRecords(date) {
+  const records = historyByDate[date] || [];
+  const searchEl =
+    document.getElementById("historyDetailSearch");
   const q = (searchEl?.value || "")
     .trim().toLowerCase();
 
-  let filtered = historyRecords;
-  if (q) {
-    filtered = historyRecords.filter(r =>
-      (r.studentId || "").toLowerCase().includes(q) ||
-      (r.fullName  || "").toLowerCase().includes(q) ||
-      (r.grade     || "").toLowerCase().includes(q)
-    );
+  if (!q) return records;
+
+  return records.filter(r =>
+    (r.studentId || "").toLowerCase().includes(q) ||
+    (r.fullName  || "").toLowerCase().includes(q) ||
+    (r.grade     || "").toLowerCase().includes(q)
+  );
+}
+
+function renderHistoryDetail(date) {
+  const titleEl =
+    document.getElementById("historyDetailDate");
+  const bodyEl =
+    document.getElementById("historyDetailBody");
+  const countEl =
+    document.getElementById("historyDetailCount");
+  const msgEl =
+    document.getElementById("historyDetailMsg");
+  if (!bodyEl) return;
+
+  if (titleEl) {
+    titleEl.textContent =
+      "📅 " + formatHistoryDate(date);
   }
+
+  const filtered = getFilteredHistoryRecords(date);
+
+  // Sort by Student ID — the main identifier.
+  filtered.sort((a, b) =>
+    (a.studentId || "").localeCompare(b.studentId || "")
+  );
 
   if (countEl) {
     countEl.textContent =
@@ -3686,14 +3913,14 @@ function renderHistoryTable() {
   }
 
   if (filtered.length === 0) {
-    tbody.innerHTML = "";
+    bodyEl.innerHTML = "";
     msgEl.style.color = "#64748b";
     msgEl.textContent = t("historyNoData");
     return;
   }
   msgEl.textContent = "";
 
-  tbody.innerHTML = filtered.map(r => {
+  bodyEl.innerHTML = filtered.map(r => {
     let sexDisplay = r.sex || "—";
     if (r.sex === "Male") {
       sexDisplay = t("optMale");
@@ -3701,22 +3928,12 @@ function renderHistoryTable() {
       sexDisplay = t("optFemale");
     }
 
-    const isPresent    = r.status === "present";
-    const isCheckedOut = !!r.checkOutTime;
-
-    const checkInText = isPresent
-      ? (formatAttendanceTime12(r.checkInDisplay) || "--")
-      : t("notCheckedInYet");
-
-    const checkOutText = !isPresent
-      ? t("notCheckedInYet")
-      : isCheckedOut
-        ? (formatAttendanceTime12(r.checkOutDisplay) || "--")
-        : t("notCheckedOut");
-
+    const isPresent = r.status === "present";
     const statusText = isPresent
-      ? t("present")
-      : t("notCheckedInYet");
+      ? t("historyPresentStatus")
+      : t("historyAbsentStatus");
+    const statusColor = isPresent
+      ? "#16a34a" : "#dc2626";
 
     return `
       <tr>
@@ -3727,28 +3944,18 @@ function renderHistoryTable() {
         <td>${esc(r.fullName)}</td>
         <td>${esc(sexDisplay)}</td>
         <td>${esc(r.grade)}</td>
-        <td>${esc(checkInText)}</td>
-        <td>${esc(checkOutText)}</td>
-        <td>${esc(statusText)}</td>
-        <td>${esc(r.date)}</td>
+        <td style="color:${statusColor};
+                   font-weight:600;">
+          ${esc(statusText)}
+        </td>
       </tr>`;
   }).join("");
 }
 
-function exportHistoryCSV() {
-  const searchEl =
-    document.getElementById("historySearchInput");
-  const q = (searchEl?.value || "")
-    .trim().toLowerCase();
-
-  let filtered = historyRecords;
-  if (q) {
-    filtered = historyRecords.filter(r =>
-      (r.studentId || "").toLowerCase().includes(q) ||
-      (r.fullName  || "").toLowerCase().includes(q) ||
-      (r.grade     || "").toLowerCase().includes(q)
-    );
-  }
+function exportHistoryDetailCSV() {
+  if (!historyCurrentDate) return;
+  const filtered =
+    getFilteredHistoryRecords(historyCurrentDate);
 
   if (filtered.length === 0) {
     alert(t("exportEmpty"));
@@ -3763,42 +3970,36 @@ function exportHistoryCSV() {
     t("colName"),
     t("colSex"),
     t("colGrade"),
-    t("colCheckIn"),
-    t("colCheckOut"),
-    t("colStatus"),
-    t("historyColDate")
+    t("colStatus")
   ];
 
   let csv = headers.map(csv_val).join(",") + "\n";
 
-  filtered.forEach(r => {
-    let sexDisplay = r.sex || "";
-    if (r.sex === "Male") {
-      sexDisplay = t("optMale");
-    } else if (r.sex === "Female") {
-      sexDisplay = t("optFemale");
-    }
+  filtered
+    .slice()
+    .sort((a, b) =>
+      (a.studentId || "").localeCompare(b.studentId || "")
+    )
+    .forEach(r => {
+      let sexDisplay = r.sex || "";
+      if (r.sex === "Male") {
+        sexDisplay = t("optMale");
+      } else if (r.sex === "Female") {
+        sexDisplay = t("optFemale");
+      }
+      const isPresent = r.status === "present";
+      const statusText = isPresent
+        ? t("historyPresentStatus")
+        : t("historyAbsentStatus");
 
-    const isPresent    = r.status === "present";
-    const isCheckedOut = !!r.checkOutTime;
-
-    csv += [
-      r.studentId,
-      r.fullName,
-      sexDisplay,
-      r.grade,
-      isPresent
-        ? (formatAttendanceTime12(r.checkInDisplay) || "--")
-        : t("notCheckedInYet"),
-      !isPresent
-        ? t("notCheckedInYet")
-        : isCheckedOut
-          ? (formatAttendanceTime12(r.checkOutDisplay) || "--")
-          : t("notCheckedOut"),
-      isPresent ? t("present") : t("notCheckedInYet"),
-      r.date
-    ].map(csv_val).join(",") + "\n";
-  });
+      csv += [
+        r.studentId,
+        r.fullName,
+        sexDisplay,
+        r.grade,
+        statusText
+      ].map(csv_val).join(",") + "\n";
+    });
 
   const blob = new Blob(
     ["\uFEFF" + csv],
@@ -3807,10 +4008,7 @@ function exportHistoryCSV() {
   const url = URL.createObjectURL(blob);
   const a   = document.createElement("a");
   a.href     = url;
-  a.download =
-    `attendance-history-${
-      new Date().toLocaleDateString("en-CA")
-    }.csv`;
+  a.download = `attendance-history-${historyCurrentDate}.csv`;
   document.body.appendChild(a);
   a.click();
   a.remove();
@@ -3818,13 +4016,23 @@ function exportHistoryCSV() {
 }
 
 document.getElementById("historyToggleBtn")
-  ?.addEventListener("click", toggleHistorySection);
-document.getElementById("historySearchDateBtn")
-  ?.addEventListener("click", loadAttendanceHistory);
-document.getElementById("historySearchInput")
-  ?.addEventListener("input", renderHistoryTable);
-document.getElementById("historyExportBtn")
-  ?.addEventListener("click", exportHistoryCSV);
+  ?.addEventListener("click", openHistoryOverlay);
+document.getElementById("historyCloseBtn")
+  ?.addEventListener("click", closeHistoryOverlay);
+document.getElementById("historyOverlay")
+  ?.addEventListener("click", (e) => {
+    if (e.target.id === "historyOverlay") {
+      closeHistoryOverlay();
+    }
+  });
+document.getElementById("historyBackBtn")
+  ?.addEventListener("click", backToHistoryList);
+document.getElementById("historyDetailSearch")
+  ?.addEventListener("input", () => {
+    renderHistoryDetail(historyCurrentDate);
+  });
+document.getElementById("historyDetailExportBtn")
+  ?.addEventListener("click", exportHistoryDetailCSV);
 
 // ============================================
 // EXPORT CSV
