@@ -1473,6 +1473,15 @@ async function loadSession() {
     deviceToken = getOrCreateDeviceToken();
     startSessionListener();
 
+    // ✅ NEW: If this device already has a
+    // Firebase-verified attendance record for
+    // THIS exact session (e.g. the student
+    // refreshed the page after checking in),
+    // restore the success screen instead of
+    // showing the form again.
+    const restored = await tryRestoreAttendanceState();
+    if (restored) return;
+
     // Load students AND start location at same time
     await Promise.all([
       loadAllStudents(),
@@ -1684,6 +1693,117 @@ function showNotCheckedInCard() {
       msg.textContent = i("notCheckedInMsg");
     }
     card.style.display = "block";
+  }
+}
+
+// ================================================
+// ✅ NEW: LOCAL ATTENDANCE STATE (refresh fix)
+//
+// PURPOSE:
+// Only fixes the UI after an accidental page
+// refresh/reload. It does NOT create or prove
+// attendance by itself — Firebase Firestore is
+// still the real source of truth.
+//
+// The key is scoped to the current sessionId,
+// which already encodes today's date
+// (e.g. "2026-08-21-AB12X9" — see
+// generateSessionId() in teacher.html), so a
+// saved state can never be mistaken for a
+// different day's or a different session's
+// attendance.
+// ================================================
+function saveAttendanceState(state) {
+  try {
+    const key = "attendanceState_" + sessionId;
+    localStorage.setItem(key, JSON.stringify(state));
+  } catch (err) {
+    console.error(
+      "Save attendance state error:", err
+    );
+  }
+}
+
+// Reads the locally saved state (if any) for
+// THIS session, then verifies it against the
+// real Firestore attendance record before
+// trusting it. Only restores the success page
+// if Firebase confirms the student is actually
+// checked in. Returns true if it restored the
+// UI, false otherwise (caller should continue
+// with the normal form flow).
+async function tryRestoreAttendanceState() {
+  let saved = null;
+  try {
+    const raw = localStorage.getItem(
+      "attendanceState_" + sessionId
+    );
+    if (raw) saved = JSON.parse(raw);
+  } catch (err) {
+    saved = null;
+  }
+
+  if (
+    !saved ||
+    saved.sessionId !== sessionId ||
+    !saved.studentId
+  ) {
+    return false;
+  }
+
+  try {
+    const recordRef = doc(
+      db,
+      "sessionAttendance",
+      sessionId,
+      "records",
+      saved.studentId
+    );
+    const snap = await getDoc(recordRef);
+
+    // ✅ Firebase is the real source of truth.
+    // If the record doesn't exist, or was never
+    // actually marked present, do NOT restore —
+    // fall back to the normal attendance form.
+    if (!snap.exists()) return false;
+    const rd = snap.data();
+    if (rd.status !== "present" || !rd.checkInTime) {
+      return false;
+    }
+
+    currentStudentId  = saved.studentId;
+    studentCheckedIn  = true;
+    studentCheckedOut = !!rd.checkOutTime;
+
+    showCheckoutCard(
+      rd.fullName || saved.fullName || "",
+      rd.checkInDisplay  || "--",
+      rd.checkOutDisplay || null,
+      !!rd.checkOutTime
+    );
+
+    // Keep the local copy in sync with the
+    // verified Firebase values.
+    saveAttendanceState({
+      studentId:       saved.studentId,
+      sessionId:       sessionId,
+      date:
+        (sessionData && sessionData.date) ||
+        saved.date || null,
+      fullName:        rd.fullName || saved.fullName || "",
+      checkInDisplay:  rd.checkInDisplay  || null,
+      checkOutDisplay: rd.checkOutDisplay || null,
+      checkedIn:       true,
+      checkedOut:      !!rd.checkOutTime
+    });
+
+    return true;
+
+  } catch (err) {
+    console.error(
+      "Restore attendance state error:", err
+    );
+    return false;
   }
 }
 
@@ -1916,6 +2036,21 @@ async function handleCheckInSubmit(
       false
     );
 
+    // ✅ NEW: remember this so a page refresh
+    // restores this same success screen
+    saveAttendanceState({
+      studentId:       studentIdVal,
+      sessionId:       sessionId,
+      date:
+        (sessionData && sessionData.date) ||
+        new Date().toLocaleDateString("en-CA"),
+      fullName:        nameVal,
+      checkInDisplay:  formatTime(now),
+      checkOutDisplay: null,
+      checkedIn:       true,
+      checkedOut:      false
+    });
+
   } catch (err) {
     console.error("Check-in error:", err);
     if (overlay) overlay.style.display = "none";
@@ -1987,6 +2122,19 @@ async function handleCheckOutSubmit(
         rd.checkOutDisplay || "--",
         true
       );
+      // ✅ NEW: keep local state in sync
+      saveAttendanceState({
+        studentId:       studentIdVal,
+        sessionId:       sessionId,
+        date:
+          (sessionData && sessionData.date) ||
+          new Date().toLocaleDateString("en-CA"),
+        fullName:        rd.fullName || nameVal,
+        checkInDisplay:  rd.checkInDisplay  || "--",
+        checkOutDisplay: rd.checkOutDisplay || "--",
+        checkedIn:       true,
+        checkedOut:      true
+      });
       return;
     }
 
@@ -2036,6 +2184,21 @@ async function handleCheckOutSubmit(
             checkOutDisplay,
             true
           );
+
+          // ✅ NEW: remember the completed
+          // checkout so a refresh restores it
+          saveAttendanceState({
+            studentId:       studentIdVal,
+            sessionId:       sessionId,
+            date:
+              (sessionData && sessionData.date) ||
+              new Date().toLocaleDateString("en-CA"),
+            fullName:        rd.fullName || nameVal,
+            checkInDisplay:  rd.checkInDisplay || "--",
+            checkOutDisplay: checkOutDisplay,
+            checkedIn:       true,
+            checkedOut:      true
+          });
 
         } catch (err) {
           console.error(
@@ -2213,6 +2376,29 @@ async function handleCheckOut() {
           doneMsg.style.display = "block";
           doneMsg.style.color   = "#16a34a";
         }
+
+        // ✅ NEW: remember the completed
+        // checkout so a refresh restores it
+        const nameElNow = document.getElementById(
+          "checkoutStudentName"
+        );
+        const ciElNow = document.getElementById(
+          "displayCheckInTime"
+        );
+        saveAttendanceState({
+          studentId:       currentStudentId,
+          sessionId:       sessionId,
+          date:
+            (sessionData && sessionData.date) ||
+            new Date().toLocaleDateString("en-CA"),
+          fullName:
+            nameElNow?.textContent || "",
+          checkInDisplay:
+            ciElNow?.textContent || null,
+          checkOutDisplay: checkOutDisplay,
+          checkedIn:       true,
+          checkedOut:      true
+        });
 
       } catch (err) {
         console.error("Check-out error:", err);
