@@ -180,148 +180,170 @@
       color: #64748b;
     }
 
-    /* ============================================
-       ✅ NEW: HISTORY SECTION STYLES
-       (isolated to the History modal only)
-    ============================================= */
-    .history-content {
-      max-width: 720px;
-      width: 92vw;
-    }
-    .history-top-row {
-      display: flex;
+    /* ✅ NEW: Edit / Delete student modals */
+    .std-modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15,23,42,0.55);
       align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      flex-wrap: wrap;
-      padding: 0 24px 14px;
+      justify-content: center;
+      z-index: 9999;
+      padding: 16px;
     }
-    .history-export-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 8px 16px;
-      border-radius: 8px;
-      border: none;
-      background: #16a34a;
-      color: white;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      font-family: inherit;
-      white-space: nowrap;
-    }
-    .history-export-btn:hover {
-      background: #15803d;
-    }
-    .history-tabs {
+    .std-modal-overlay.open {
       display: flex;
-      gap: 4px;
-      background: #f1f5f9;
-      border-radius: 10px;
-      padding: 4px;
-      margin: 0 24px 16px;
     }
-    .history-tab-btn {
-      flex: 1;
-      padding: 9px 14px;
-      border: none;
-      border-radius: 8px;
-      background: transparent;
-      color: #64748b;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      font-family: inherit;
-      transition: all 0.2s ease;
-    }
-    .history-tab-btn.active {
-      background: white;
-      color: #1d4ed8;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.12);
-    }
-    .history-filter-row {
-      padding: 0 24px 14px;
-    }
-    .history-filter-row select {
+    .std-modal-box {
+      background: #ffffff;
+      border-radius: 14px;
+      padding: 24px;
       width: 100%;
-      padding: 10px 14px;
+      max-width: 420px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.25);
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    .std-modal-box h3 {
+      margin: 0 0 14px 0;
+      font-size: 18px;
+      color: #1e293b;
+    }
+    .std-modal-box > p {
+      font-size: 14px;
+      color: #374151;
+      margin: 0 0 4px 0;
+    }
+    .std-modal-field {
+      margin-bottom: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      position: relative;
+    }
+    .std-modal-field label {
+      font-size: 13px;
+      font-weight: 600;
+      color: #374151;
+    }
+    .std-modal-field input,
+    .std-modal-field select {
+      padding: 8px 34px 8px 12px;
       border: 1px solid #e2e8f0;
-      border-radius: 10px;
+      border-radius: 8px;
       font-size: 14px;
       font-family: inherit;
       background: white;
-      color: #1e293b;
-      cursor: pointer;
+      width: 100%;
+      box-sizing: border-box;
     }
-    .history-table-wrap {
-      max-height: 360px;
-      overflow-y: auto;
-      margin: 0 24px 20px;
+    .std-modal-field select {
+      padding-right: 12px;
+    }
+    .std-modal-field input:disabled {
+      background: #f1f5f9;
+      color: #64748b;
+      cursor: not-allowed;
+    }
+    .std-lock-icon {
+      position: absolute;
+      right: 12px;
+      top: 33px;
+      font-size: 14px;
+      pointer-events: none;
+    }
+    .std-modal-msg {
+      font-size: 13px;
+      color: #dc2626;
+      min-height: 18px;
+      margin: 4px 0 0 0;
+    }
+    .std-modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 18px;
+    }
+    .std-modal-actions .btn {
+      min-width: 110px;
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+    .std-btn-cancel {
+      background: #e2e8f0 !important;
+      color: #334155 !important;
+    }
+    .std-btn-cancel:hover {
+      background: #cbd5e1 !important;
+    }
+    .std-confirm-info {
+      background: #f8fafc;
       border: 1px solid #e2e8f0;
       border-radius: 10px;
+      padding: 12px 14px;
+      font-size: 14px;
+      color: #1e293b;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: 10px;
     }
-    .history-table {
+    .std-confirm-info strong {
+      color: #64748b;
+      font-weight: 600;
+      margin-right: 6px;
+    }
+    .std-modal-note {
+      font-size: 12px;
+      color: #94a3b8;
+      margin-top: 10px;
+      font-style: italic;
+    }
+
+    /* ✅ NEW: Compact column sizing for the
+       Student List Manager table — stops the
+       Sex/Grade columns from stretching with
+       empty space while keeping Name/Action
+       roomy enough to read/click. */
+    #studentListTable {
+      table-layout: fixed;
       width: 100%;
-      border-collapse: collapse;
+    }
+    #studentListTable th,
+    #studentListTable td {
+      padding: 6px 10px;
       font-size: 13px;
     }
-    .history-table th {
-      position: sticky;
-      top: 0;
-      background: #f8fafc;
-      color: #64748b;
-      text-align: left;
-      padding: 10px 12px;
-      font-weight: 600;
-      border-bottom: 1px solid #e2e8f0;
-    }
-    .history-table td {
-      padding: 10px 12px;
-      border-bottom: 1px solid #f1f5f9;
-      color: #1e293b;
-    }
-    .history-table tr:last-child td {
-      border-bottom: none;
-    }
-    .history-badge {
-      display: inline-block;
-      padding: 3px 10px;
-      border-radius: 20px;
-      font-size: 11px;
-      font-weight: 700;
+    #studentListTable td:nth-child(1),
+    #studentListTable td:nth-child(3),
+    #studentListTable td:nth-child(4) {
+      overflow: hidden;
+      text-overflow: ellipsis;
       white-space: nowrap;
     }
-    .history-badge.present {
-      background: #dcfce7;
-      color: #16a34a;
+    #studentListTable th:nth-child(1),
+    #studentListTable td:nth-child(1) {
+      width: 15%;
     }
-    .history-badge.absent {
-      background: #fef2f2;
-      color: #dc2626;
+    #studentListTable th:nth-child(2),
+    #studentListTable td:nth-child(2) {
+      width: 30%;
+      white-space: normal;
     }
-    .history-view-btn {
-      padding: 4px 10px;
-      font-size: 11px;
-      border-radius: 6px;
-      border: 1px solid #e2e8f0;
-      background: white;
-      color: #435065;
-      cursor: pointer;
-      font-family: inherit;
+    #studentListTable th:nth-child(3),
+    #studentListTable td:nth-child(3) {
+      width: 11%;
     }
-    .history-view-btn:hover {
-      background: #f1f5f9;
+    #studentListTable th:nth-child(4),
+    #studentListTable td:nth-child(4) {
+      width: 15%;
     }
-    .history-empty-state {
-      text-align: center;
-      padding: 40px 20px;
-      color: #94a3b8;
-      font-size: 13px;
-    }
-    .history-empty-state .icon {
-      font-size: 40px;
-      margin-bottom: 10px;
+    #studentListTable th:nth-child(5),
+    #studentListTable td:nth-child(5) {
+      width: 29%;
     }
   </style>
 </head>
@@ -376,13 +398,6 @@
     <button id="exportBtn"
       class="btn btn-green">
       <span data-t="export">Export CSV</span>
-    </button>
-
-    <button id="historyBtn"
-      class="btn btn-white">
-      <span data-t="historyBtn">
-        📜 History
-      </span>
     </button>
 
     <button id="logoutBtn"
@@ -499,14 +514,14 @@
              overflow-y:auto;
              border:1px solid #e2e8f0;
              border-radius:10px;">
-      <table class="attendance-table">
+      <table class="attendance-table"
+        id="studentListTable">
         <thead>
           <tr>
-            <th data-t="colNo">No.</th>
-            <th data-t="colName">Name</th>
             <th data-t="labelStudentId">
               Student ID
             </th>
+            <th data-t="colName">Name</th>
             <th data-t="colSex">Sex</th>
             <th data-t="colGrade">Grade</th>
             <th data-t="colAction">Action</th>
@@ -514,7 +529,7 @@
         </thead>
         <tbody id="studentListBody">
           <tr>
-            <td colspan="6"
+            <td colspan="5"
               class="table-loading">
               Loading...
             </td>
@@ -1065,200 +1080,90 @@
   </div>
 </div>
 
-<!-- ============================================
-     ✅ EDIT STUDENT MODAL
-     Teacher can edit Name, Sex, Grade only.
-     Student ID is shown as locked/read-only.
-============================================= -->
-<div id="editStudentModal" class="profile-modal">
-  <div class="profile-content">
-    <div class="profile-header">
-      <div class="profile-avatar">✏️</div>
-      <h2 data-t="editStudentTitle">
-        Edit Student
-      </h2>
-    </div>
-    <div class="profile-body">
+<!-- ✅ NEW: EDIT STUDENT MODAL -->
+<div id="editStudentModal" class="std-modal-overlay">
+  <div class="std-modal-box">
+    <h3 data-t="editStudentTitle">Edit Student</h3>
 
-      <!-- Student ID: LOCKED, cannot be edited -->
-      <div class="profile-row">
-        <span class="profile-row-label"
-          data-t="labelStudentId">
-          Student ID
-        </span>
-        <span class="profile-row-value">
-          <input type="text"
-            id="editStudentIdDisplay"
-            disabled
-            style="padding:6px 10px;
-                   border:1px solid #e2e8f0;
-                   border-radius:8px;
-                   font-size:13px;
-                   width:110px;
-                   background:#f1f5f9;
-                   color:#64748b;
-                   font-weight:700;
-                   cursor:not-allowed;
-                   text-align:center;">
-          🔒
-        </span>
-      </div>
-
-      <div class="profile-row">
-        <span class="profile-row-label"
-          data-t="labelStudentName">
-          Full Name
-        </span>
-        <span class="profile-row-value">
-          <input type="text"
-            id="editStudentName"
-            style="padding:6px 10px;
-                   border:1px solid #e2e8f0;
-                   border-radius:8px;
-                   font-size:13px;
-                   width:160px;">
-        </span>
-      </div>
-
-      <div class="profile-row">
-        <span class="profile-row-label"
-          data-t="labelStudentSex">
-          Sex
-        </span>
-        <span class="profile-row-value">
-          <select id="editStudentSex"
-            style="padding:6px 10px;
-                   border:1px solid #e2e8f0;
-                   border-radius:8px;
-                   font-size:13px;
-                   width:130px;
-                   background:white;">
-            <option value="Male"
-              data-t-opt="optMale">
-              Male
-            </option>
-            <option value="Female"
-              data-t-opt="optFemale">
-              Female
-            </option>
-          </select>
-        </span>
-      </div>
-
-      <div class="profile-row">
-        <span class="profile-row-label"
-          data-t="labelStudentGrade">
-          Grade / Class
-        </span>
-        <span class="profile-row-value">
-          <input type="text"
-            id="editStudentGrade"
-            style="padding:6px 10px;
-                   border:1px solid #e2e8f0;
-                   border-radius:8px;
-                   font-size:13px;
-                   width:150px;">
-        </span>
-      </div>
-
+    <div class="std-modal-field">
+      <label data-t="labelStudentId">Student ID</label>
+      <input type="text" id="editStudentIdDisplay" disabled>
+      <span class="std-lock-icon">🔒</span>
     </div>
 
-    <p id="editStudentMsg"
-      style="font-size:12px;
-             color:#dc2626;
-             text-align:center;
-             min-height:18px;
-             padding:0 20px;
-             margin:4px 0 0;"></p>
+    <div class="std-modal-field">
+      <label data-t="labelStudentName">Full Name</label>
+      <input type="text" id="editStudentName">
+    </div>
 
-    <div class="profile-footer"
-      style="gap:10px;">
-      <button id="cancelEditBtn"
-        class="close-modal-btn"
+    <div class="std-modal-field">
+      <label data-t="labelStudentSex">Sex</label>
+      <select id="editStudentSex">
+        <option value="Male" data-t-opt="optMale">Male</option>
+        <option value="Female" data-t-opt="optFemale">Female</option>
+      </select>
+    </div>
+
+    <div class="std-modal-field">
+      <label data-t="labelStudentGrade">Grade / Class</label>
+      <input type="text" id="editStudentGrade">
+    </div>
+
+    <p id="editStudentMsg" class="std-modal-msg"></p>
+
+    <div class="std-modal-actions">
+      <button id="editStudentCancelBtn"
+        class="btn std-btn-cancel"
         data-t="cancelBtn">
         Cancel
       </button>
-      <button id="saveEditBtn"
+      <button id="editStudentSaveBtn"
         class="btn btn-blue"
-        data-t="saveChangesBtn">
+        data-t="saveChanges">
         💾 Save Changes
       </button>
     </div>
   </div>
 </div>
 
-<!-- ============================================
-     ✅ EDIT CONFIRMATION MODAL
-     Shown before actually saving changes.
-============================================= -->
-<div id="editConfirmModal" class="profile-modal">
-  <div class="profile-content"
-    style="max-width:380px;">
-    <div class="profile-header">
-      <div class="profile-avatar">⚠️</div>
-      <h2 data-t="editConfirmTitle">
-        Confirm Update
-      </h2>
-    </div>
-    <div class="profile-body">
-      <p style="font-size:14px;
-                color:#374151;
-                text-align:center;
-                padding:0 10px 10px;"
-        data-t="editConfirmText">
-        Are you sure you want to update this
-        student's information?
-      </p>
+<!-- ✅ NEW: EDIT CONFIRMATION MODAL -->
+<div id="editConfirmModal" class="std-modal-overlay">
+  <div class="std-modal-box">
+    <h3 data-t="confirmEditTitle">Confirm Update</h3>
+    <p data-t="confirmEditMsg">
+      Are you sure you want to update this student's information?
+    </p>
 
-      <div class="profile-row">
-        <span class="profile-row-label"
-          data-t="labelStudentId">
-          Student ID
-        </span>
-        <span class="profile-row-value"
-          id="editConfirmId"></span>
+    <div class="std-confirm-info">
+      <div>
+        <strong data-t="labelStudentId">Student ID</strong>
+        <span id="editConfirmId"></span>
       </div>
-      <div class="profile-row">
-        <span class="profile-row-label"
-          data-t="newNameLabel">
-          New Name
-        </span>
-        <span class="profile-row-value"
-          id="editConfirmName"></span>
+      <div>
+        <strong data-t="confirmNewName">New Name</strong>
+        <span id="editConfirmName"></span>
       </div>
-      <div class="profile-row">
-        <span class="profile-row-label"
-          data-t="newSexLabel">
-          New Sex
-        </span>
-        <span class="profile-row-value"
-          id="editConfirmSex"></span>
+      <div>
+        <strong data-t="confirmNewSex">New Sex</strong>
+        <span id="editConfirmSex"></span>
       </div>
-      <div class="profile-row">
-        <span class="profile-row-label"
-          data-t="newClassLabel">
-          New Class
-        </span>
-        <span class="profile-row-value"
-          id="editConfirmGrade"></span>
+      <div>
+        <strong data-t="confirmNewClass">New Class</strong>
+        <span id="editConfirmGrade"></span>
       </div>
-
-      <p style="font-size:11px;
-                color:#94a3b8;
-                text-align:center;
-                margin-top:10px;"
-        data-t="studentIdLocked">
-        Student ID cannot be changed.
-      </p>
     </div>
-    <div class="profile-footer"
-      style="gap:10px;">
-      <button id="cancelEditConfirmBtn"
-        class="close-modal-btn"
+
+    <p class="std-modal-note" data-t="confirmEditNote">
+      Student ID cannot be changed.
+    </p>
+
+    <div class="std-modal-actions">
+      <button id="editConfirmCancelBtn"
+        class="btn std-btn-cancel"
         data-t="cancelBtn">
         Cancel
       </button>
-      <button id="confirmEditBtn"
+      <button id="editConfirmSaveBtn"
         class="btn btn-blue"
         data-t="confirmBtn">
         Confirm
@@ -1267,191 +1172,63 @@
   </div>
 </div>
 
-<!-- ============================================
-     ✅ DELETE CONFIRMATION MODAL
-     Shows the student's info so the teacher
-     can double-check before deleting.
-============================================= -->
-<div id="deleteStudentModal" class="profile-modal">
-  <div class="profile-content"
-    style="max-width:380px;">
-    <div class="profile-header">
-      <div class="profile-avatar">🗑</div>
-      <h2 data-t="deleteConfirmTitle">
-        Delete Student
-      </h2>
-    </div>
-    <div class="profile-body">
-      <p style="font-size:14px;
-                color:#dc2626;
-                font-weight:600;
-                text-align:center;
-                padding:0 10px 10px;"
-        data-t="deleteConfirmText">
-        Are you sure you want to delete this
-        student? This action cannot be undone.
-      </p>
+<!-- ✅ NEW: DELETE CONFIRMATION MODAL -->
+<div id="deleteStudentModal" class="std-modal-overlay">
+  <div class="std-modal-box">
+    <h3 data-t="confirmDeleteTitle">Confirm Delete</h3>
+    <p data-t="confirmDeleteMsg">
+      Are you sure you want to delete this student? This action cannot be undone.
+    </p>
 
-      <div class="profile-row">
-        <span class="profile-row-label"
-          data-t="labelStudentId">
-          Student ID
-        </span>
-        <span class="profile-row-value"
-          id="deleteConfirmId"></span>
+    <div class="std-confirm-info">
+      <div>
+        <strong data-t="labelStudentId">Student ID</strong>
+        <span id="deleteConfirmId"></span>
       </div>
-      <div class="profile-row">
-        <span class="profile-row-label"
-          data-t="labelStudentName">
-          Full Name
-        </span>
-        <span class="profile-row-value"
-          id="deleteConfirmName"></span>
+      <div>
+        <strong data-t="colName">Name</strong>
+        <span id="deleteConfirmName"></span>
       </div>
-      <div class="profile-row">
-        <span class="profile-row-label"
-          data-t="colSex">
-          Sex
-        </span>
-        <span class="profile-row-value"
-          id="deleteConfirmSex"></span>
+      <div>
+        <strong data-t="colSex">Sex</strong>
+        <span id="deleteConfirmSex"></span>
       </div>
-      <div class="profile-row">
-        <span class="profile-row-label"
-          data-t="labelStudentGrade">
-          Grade / Class
-        </span>
-        <span class="profile-row-value"
-          id="deleteConfirmGrade"></span>
+      <div>
+        <strong data-t="colGrade">Class</strong>
+        <span id="deleteConfirmGrade"></span>
       </div>
     </div>
-    <div class="profile-footer"
-      style="gap:10px;">
-      <button id="cancelDeleteBtn"
-        class="close-modal-btn"
+
+    <div class="std-modal-actions">
+      <button id="deleteCancelBtn"
+        class="btn std-btn-cancel"
         data-t="cancelBtn">
         Cancel
       </button>
-      <button id="confirmDeleteBtn"
+      <button id="deleteConfirmBtn"
         class="btn btn-red"
-        data-t="deleteBtnConfirm">
+        data-t="removeStudent">
         🗑 Delete
       </button>
     </div>
   </div>
 </div>
 
-<!-- ============================================
-     ✅ HISTORY MODAL
-     Shows past attendance, grouped either by
-     date (everyone that day) or by student
-     (one student across every day). Does NOT
-     touch the live session/current dashboard.
-============================================= -->
-<div id="historyModal" class="profile-modal">
-  <div class="profile-content history-content">
-    <div class="profile-header">
-      <div class="profile-avatar">📜</div>
-      <h2 data-t="historyTitle">
-        Attendance History
-      </h2>
-    </div>
-
-    <div class="history-top-row">
-      <span style="font-size:12px;color:#94a3b8;"
-        id="historyRecordCount"></span>
-      <button id="historyExportBtn"
-        class="history-export-btn">
-        <span data-t="historyExportBtn">
-          ⬇ Export History CSV
-        </span>
-      </button>
-    </div>
-
-    <div class="history-tabs">
-      <button type="button"
-        id="historyTabDate"
-        class="history-tab-btn active"
-        data-t="historyByDate">
-        By Date
-      </button>
-      <button type="button"
-        id="historyTabStudent"
-        class="history-tab-btn"
-        data-t="historyByStudent">
-        By Student
-      </button>
-    </div>
-
-    <!-- BY DATE FILTER -->
-    <div class="history-filter-row"
-      id="historyDateFilterRow">
-      <select id="historyDateSelect">
-        <option value=""
-          data-t-opt="historyDatePlaceholder">
-          -- Select a date --
-        </option>
-      </select>
-    </div>
-
-    <!-- BY STUDENT FILTER -->
-    <div class="history-filter-row"
-      id="historyStudentFilterRow"
-      style="display:none;">
-      <select id="historyStudentSelect">
-        <option value=""
-          data-t-opt="historyStudentPlaceholder">
-          -- Select a student --
-        </option>
-      </select>
-    </div>
-
-    <!-- BY DATE TABLE -->
-    <div class="history-table-wrap"
-      id="historyDateTableWrap">
-      <table class="history-table">
-        <thead>
-          <tr>
-            <th data-t="colNo">No.</th>
-            <th data-t="colName">Name</th>
-            <th data-t="labelStudentId">
-              Student ID
-            </th>
-            <th data-t="colGrade">Grade</th>
-            <th data-t="historyStatusCol">
-              Status
-            </th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody id="historyDateBody"></tbody>
-      </table>
-    </div>
-
-    <!-- BY STUDENT TABLE -->
-    <div class="history-table-wrap"
-      id="historyStudentTableWrap"
-      style="display:none;">
-      <table class="history-table">
-        <thead>
-          <tr>
-            <th data-t="colNo">No.</th>
-            <th data-t="historyDateCol">Date</th>
-            <th data-t="historyStatusCol">
-              Status
-            </th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody id="historyStudentBody"></tbody>
-      </table>
-    </div>
-
-    <div class="profile-footer">
-      <button id="closeHistoryBtn"
-        class="close-modal-btn"
-        data-t="historyCloseBtn">
-        Close
+<!-- ✅ NEW: DUPLICATE STUDENT ID POPUP -->
+<div id="duplicateIdModal" class="std-modal-overlay">
+  <div class="std-modal-box">
+    <p data-t="studentIdExists"
+      style="font-size:15px;
+             color:#1e293b;
+             margin:0;
+             line-height:1.5;">
+      A student with this ID already exists.
+    </p>
+    <div class="std-modal-actions">
+      <button id="duplicateIdOkBtn"
+        class="btn btn-blue"
+        data-t="confirmBtn">
+        Confirm
       </button>
     </div>
   </div>
@@ -1479,12 +1256,11 @@ import {
 import {
   getFirestore,
   collection,
-  collectionGroup,
   getDocs,
   doc,
   setDoc,
-  updateDoc,
   getDoc,
+  updateDoc,
   deleteDoc,
   onSnapshot,
   writeBatch
@@ -1608,56 +1384,23 @@ const tt = {
       "Remove this student?",
 
     // ✅ NEW: Edit / Delete student modals
-    editBtnLabel:      "✏️ Edit",
-    deleteBtnLabel:    "🗑 Delete",
-    editStudentTitle:  "Edit Student",
-    saveChangesBtn:    "💾 Save Changes",
-    cancelBtn:         "Cancel",
-    confirmBtn:        "Confirm",
-    deleteBtnConfirm:  "🗑 Delete",
-    editConfirmTitle:  "Confirm Update",
-    editConfirmText:
-      "Are you sure you want to update " +
-      "this student's information?",
-    deleteConfirmTitle: "Delete Student",
-    deleteConfirmText:
-      "Are you sure you want to delete this " +
-      "student? This action cannot be undone.",
-    newNameLabel:  "New Name",
-    newSexLabel:   "New Sex",
-    newClassLabel: "New Class",
-    studentUpdated: "Student updated.",
-    studentIdLocked:
+    editStudentBtn:   "✏️ Edit",
+    saveChanges:      "💾 Save Changes",
+    editStudentTitle: "Edit Student",
+    confirmNewName:   "New Name:",
+    confirmNewSex:    "New Sex:",
+    confirmNewClass:  "New Class:",
+    confirmEditTitle: "Confirm Update",
+    confirmEditMsg:
+      "Are you sure you want to update this student's information?",
+    confirmEditNote:
       "Student ID cannot be changed.",
-
-    // ✅ NEW: History modal
-    historyBtn:   "📜 History",
-    historyTitle: "Attendance History",
-    historyByDate:    "By Date",
-    historyByStudent: "By Student",
-    historyDatePlaceholder:
-      "-- Select a date --",
-    historyStudentPlaceholder:
-      "-- Select a student --",
-    historyExportBtn: "⬇ Export History CSV",
-    historyCloseBtn:  "Close",
-    historyDateCol:   "Date",
-    historyStatusCol: "Status",
-    historyViewBtn:   "👁 View",
-    historyPresent:   "✅ Present",
-    historyAbsent:    "❌ Absent",
-    historyNoData:
-      "No attendance history found.",
-    historyLoading:
-      "Loading history...",
-    historyPickDate:
-      "Select a date to see attendance.",
-    historyPickStudent:
-      "Select a student to see their history.",
-    historyRecordCountText:
-      "record(s)",
-    historyExportEmpty:
-      "No history to export.",
+    confirmDeleteTitle: "Confirm Delete",
+    confirmDeleteMsg:
+      "Are you sure you want to delete this student? This action cannot be undone.",
+    cancelBtn:  "Cancel",
+    confirmBtn: "Confirm",
+    editSuccessMsg: "Student information updated.",
 
     phStudentName:  "Student full name",
     phStudentId:    "e.g. IT01",
@@ -1815,55 +1558,23 @@ const tt = {
       "លុបសិស្សនេះ?",
 
     // ✅ NEW: Edit / Delete student modals
-    editBtnLabel:      "✏️ កែប្រែ",
-    deleteBtnLabel:    "🗑 លុប",
-    editStudentTitle:  "កែប្រែសិស្ស",
-    saveChangesBtn:    "💾 រក្សាទុកការកែប្រែ",
-    cancelBtn:         "បោះបង់",
-    confirmBtn:        "បញ្ជាក់",
-    deleteBtnConfirm:  "🗑 លុប",
-    editConfirmTitle:  "បញ្ជាក់ការកែប្រែ",
-    editConfirmText:
+    editStudentBtn:   "✏️ កែប្រែ",
+    saveChanges:      "💾 រក្សាទុកការកែប្រែ",
+    editStudentTitle: "កែប្រែសិស្ស",
+    confirmNewName:   "ឈ្មោះថ្មី៖",
+    confirmNewSex:    "ភេទថ្មី៖",
+    confirmNewClass:  "ថ្នាក់ថ្មី៖",
+    confirmEditTitle: "បញ្ជាក់ការកែប្រែ",
+    confirmEditMsg:
       "តើអ្នកប្រាកដថាចង់កែប្រែព័ត៌មានសិស្សនេះមែនទេ?",
-    deleteConfirmTitle: "លុបសិស្ស",
-    deleteConfirmText:
-      "តើអ្នកប្រាកដថាចង់លុបសិស្សនេះមែនទេ? " +
-      "សកម្មភាពនេះមិនអាចត្រឡប់វិញបានទេ។",
-    newNameLabel:  "ឈ្មោះថ្មី",
-    newSexLabel:   "ភេទថ្មី",
-    newClassLabel: "ថ្នាក់ថ្មី",
-    studentUpdated: "សិស្សត្រូវបានកែប្រែ។",
-    studentIdLocked:
+    confirmEditNote:
       "លេខសម្គាល់សិស្សមិនអាចផ្លាស់ប្តូរបានទេ។",
-
-    // ✅ NEW: History modal
-    historyBtn:   "📜 ប្រវត្តិ",
-    historyTitle: "ប្រវត្តិវត្តមាន",
-    historyByDate:    "តាមកាលបរិច្ឆេទ",
-    historyByStudent: "តាមសិស្ស",
-    historyDatePlaceholder:
-      "-- ជ្រើសរើសកាលបរិច្ឆេទ --",
-    historyStudentPlaceholder:
-      "-- ជ្រើសរើសសិស្ស --",
-    historyExportBtn: "⬇ នាំចេញប្រវត្តិ CSV",
-    historyCloseBtn:  "បិទ",
-    historyDateCol:   "កាលបរិច្ឆេទ",
-    historyStatusCol: "ស្ថានភាព",
-    historyViewBtn:   "👁 មើល",
-    historyPresent:   "✅ មានវត្តមាន",
-    historyAbsent:    "❌ អវត្តមាន",
-    historyNoData:
-      "រកមិនឃើញប្រវត្តិវត្តមាន។",
-    historyLoading:
-      "កំពុងផ្ទុកប្រវត្តិ...",
-    historyPickDate:
-      "ជ្រើសរើសកាលបរិច្ឆេទដើម្បីមើលវត្តមាន។",
-    historyPickStudent:
-      "ជ្រើសរើសសិស្សដើម្បីមើលប្រវត្តិ។",
-    historyRecordCountText:
-      "កំណត់ត្រា",
-    historyExportEmpty:
-      "មិនមានប្រវត្តិសម្រាប់នាំចេញទេ។",
+    confirmDeleteTitle: "បញ្ជាក់ការលុប",
+    confirmDeleteMsg:
+      "តើអ្នកប្រាកដថាចង់លុបសិស្សនេះមែនទេ? សកម្មភាពនេះមិនអាចត្រឡប់វិញបានទេ។",
+    cancelBtn:  "បោះបង់",
+    confirmBtn: "បញ្ជាក់",
+    editSuccessMsg: "កែប្រែព័ត៌មានសិស្សដោយជោគជ័យ។",
 
     phStudentName:  "ឈ្មោះពេញរបស់សិស្ស",
     phStudentId:    "ឧ. IT01",
@@ -2010,16 +1721,10 @@ let unsubscribeListener = null;
 let elapsedInterval     = null;
 let attendanceMode      = "checkIn";
 
-// ✅ NEW: currently selected student for
-// the Edit / Delete modals
-let editTargetStudent   = null;
-let deleteTargetStudent = null;
-
-// ✅ NEW: History modal state
-let historyLoaded      = false;
-let historyAllRecords  = [];       // every record ever, across all sessions
-let historyRecordMap   = {};       // "sessionId_studentId" -> record (for the View button)
-let historyView        = "date";   // "date" | "student"
+// ✅ NEW: Edit / Delete student modal state
+let editingStudentId    = null;
+let pendingEditValues   = null;
+let deletingStudentId   = null;
 
 // ============================================
 // SAFE HTML
@@ -2087,6 +1792,37 @@ function formatDisplay12(hhmm) {
   return p.hour + ":" +
     String(p.minute).padStart(2, "0") +
     " " + p.ampm;
+}
+
+// ✅ NEW: Convert a student's stored
+// check-in / check-out display value into
+// 12-hour AM/PM format, no matter how it was
+// originally saved (24-hour "HH:MM" like
+// "15:25", a full timestamp, or already in
+// 12-hour form). Display-only — never touches
+// what's stored in Firebase.
+function formatAttendanceTime12(value) {
+  if (!value || value === "--") return "--";
+
+  // Already has AM/PM — leave as-is.
+  if (/am|pm/i.test(value)) return value;
+
+  // Plain 24-hour "H:MM" or "HH:MM" (e.g. "15:25").
+  if (/^\d{1,2}:\d{2}$/.test(value.trim())) {
+    return formatDisplay12(value.trim());
+  }
+
+  // Fallback: try parsing as a full date/timestamp.
+  const d = new Date(value);
+  if (!isNaN(d.getTime())) {
+    return d.toLocaleTimeString([], {
+      hour:   "2-digit",
+      minute: "2-digit",
+      hour12: true
+    });
+  }
+
+  return value;
 }
 
 // Build the Hour / Minute / AM-PM dropdowns
@@ -2283,10 +2019,6 @@ function applyTeacherLang(lang) {
   renderStudentList();
   displayRecords(allRecords);
   updateSessionBadge(sessionIsOpen);
-
-  // ✅ NEW: keep History modal text/badges in
-  // sync if it has already been opened/loaded
-  refreshHistoryLanguage();
 }
 
 // ============================================
@@ -2512,7 +2244,11 @@ function startElapsedTimer(startedAtISO) {
   if (startedEl) {
     startedEl.textContent =
       new Date(startedAtISO).toLocaleTimeString(
-        [], { hour: "2-digit", minute: "2-digit" }
+        [], {
+          hour:   "2-digit",
+          minute: "2-digit",
+          hour12: true
+        }
       );
   }
   const elapsedEl =
@@ -2616,7 +2352,7 @@ async function loadStudents() {
       allStudents.push({ id: d.id, ...d.data() });
     });
     allStudents.sort((a, b) =>
-      a.fullName.localeCompare(b.fullName)
+      a.studentId.localeCompare(b.studentId)
     );
     renderStudentList();
   } catch (err) {
@@ -2634,7 +2370,7 @@ function renderStudentList() {
 
   if (allStudents.length === 0) {
     tbody.innerHTML = `
-      <tr><td colspan="6"
+      <tr><td colspan="5"
         style="padding:20px;text-align:center;
                color:#94a3b8;font-size:13px;">
         ${esc(t("noStudentsYet"))}
@@ -2653,35 +2389,49 @@ function renderStudentList() {
 
     return `
       <tr>
-        <td style="color:#94a3b8;">${i + 1}</td>
-        <td>
-          <strong>${esc(s.fullName)}</strong>
-        </td>
         <td style="color:#7c3aed;
                    font-weight:600;">
           ${esc(s.studentId)}
+        </td>
+        <td>
+          <strong>${esc(s.fullName)}</strong>
         </td>
         <td>${esc(sexDisplay)}</td>
         <td>${esc(s.grade)}</td>
         <td>
           <div style="display:flex;
-                      gap:6px;
-                      flex-wrap:wrap;">
+                      flex-wrap:nowrap;
+                      align-items:center;
+                      gap:6px;">
             <button class="btn btn-blue"
-              style="padding:4px 10px;
-                     font-size:12px;"
-              onclick="window._openEditModal(
+              style="padding:4px 8px;
+                     font-size:12px;
+                     white-space:nowrap;
+                     width:80px;
+                     box-sizing:border-box;
+                     display:flex;
+                     align-items:center;
+                     justify-content:center;
+                     text-align:center;"
+              onclick="window._editStudent(
                 '${esc(s.studentId)}'
               )">
-              ${t("editBtnLabel")}
+              ${t("editStudentBtn")}
             </button>
             <button class="btn btn-red"
-              style="padding:4px 10px;
-                     font-size:12px;"
-              onclick="window._openDeleteModal(
+              style="padding:4px 8px;
+                     font-size:12px;
+                     white-space:nowrap;
+                     width:80px;
+                     box-sizing:border-box;
+                     display:flex;
+                     align-items:center;
+                     justify-content:center;
+                     text-align:center;"
+              onclick="window._openDeleteStudent(
                 '${esc(s.studentId)}'
               )">
-              ${t("deleteBtnLabel")}
+              ${t("removeStudent")}
             </button>
           </div>
         </td>
@@ -2720,8 +2470,8 @@ async function addStudent() {
   if (allStudents.some(s =>
     s.studentId === studentId
   )) {
-    msgEl.style.color = "#dc2626";
-    msgEl.textContent = t("studentIdExists");
+    document.getElementById("duplicateIdModal")
+      .classList.add("open");
     return;
   }
 
@@ -2756,20 +2506,38 @@ async function addStudent() {
 }
 
 // ============================================
-// ✅ EDIT STUDENT MODAL
-// Teacher can only change Name, Sex, Grade.
-// Student ID is locked and never edited.
+// ✅ NEW: EDIT STUDENT (with locked ID + confirm)
 // ============================================
-function openEditModal(studentId) {
-  const student = allStudents.find(
-    s => s.studentId === studentId
+function openEditStudentModal(studentId) {
+  const s = allStudents.find(
+    st => st.studentId === studentId
   );
-  if (!student) return;
+  if (!s) return;
 
-  editTargetStudent = student;
+  editingStudentId = studentId;
 
-  const idEl =
-    document.getElementById("editStudentIdDisplay");
+  document.getElementById("editStudentIdDisplay")
+    .value = s.studentId;
+  document.getElementById("editStudentName")
+    .value = s.fullName || "";
+  document.getElementById("editStudentSex")
+    .value = s.sex || "";
+  document.getElementById("editStudentGrade")
+    .value = s.grade || "";
+  document.getElementById("editStudentMsg")
+    .textContent = "";
+
+  document.getElementById("editStudentModal")
+    .classList.add("open");
+}
+
+function closeEditStudentModal() {
+  document.getElementById("editStudentModal")
+    .classList.remove("open");
+  editingStudentId = null;
+}
+
+function openEditConfirmModal() {
   const nameEl =
     document.getElementById("editStudentName");
   const sexEl =
@@ -2779,701 +2547,191 @@ function openEditModal(studentId) {
   const msgEl =
     document.getElementById("editStudentMsg");
 
-  if (idEl)    idEl.value    = student.studentId;
-  if (nameEl)  nameEl.value  = student.fullName || "";
-  if (sexEl)   sexEl.value   = student.sex || "Male";
-  if (gradeEl) gradeEl.value = student.grade || "";
-  if (msgEl)   msgEl.textContent = "";
+  const fullName = nameEl.value.trim();
+  const sex      = sexEl.value;
+  const grade    = gradeEl.value.trim();
 
-  document.getElementById("editStudentModal")
-    ?.classList.add("show");
-}
-
-function closeEditModal() {
-  document.getElementById("editStudentModal")
-    ?.classList.remove("show");
-  editTargetStudent = null;
-}
-
-// Step 1 of saving: validate the form and
-// show a confirmation modal before writing
-// anything to Firebase.
-function openEditConfirm() {
-  if (!editTargetStudent) return;
-
-  const nameVal =
-    document.getElementById("editStudentName")
-      .value.trim();
-  const sexVal =
-    document.getElementById("editStudentSex")
-      .value;
-  const gradeVal =
-    document.getElementById("editStudentGrade")
-      .value.trim();
-
-  const msgEl =
-    document.getElementById("editStudentMsg");
-
-  if (!nameVal || !sexVal || !gradeVal) {
-    if (msgEl) msgEl.textContent = t("fillAllFields");
+  if (!fullName || !sex || !grade) {
+    msgEl.style.color = "#dc2626";
+    msgEl.textContent = t("fillAllFields");
     return;
   }
 
-  let sexDisplay = sexVal;
-  if (sexVal === "Male") {
-    sexDisplay = t("optMale");
-  } else if (sexVal === "Female") {
-    sexDisplay = t("optFemale");
-  }
+  pendingEditValues = { fullName, sex, grade };
+
+  let sexDisplay = sex;
+  if (sex === "Male") sexDisplay = t("optMale");
+  else if (sex === "Female") sexDisplay = t("optFemale");
 
   document.getElementById("editConfirmId")
-    .textContent = editTargetStudent.studentId;
+    .textContent = editingStudentId;
   document.getElementById("editConfirmName")
-    .textContent = nameVal;
+    .textContent = fullName;
   document.getElementById("editConfirmSex")
     .textContent = sexDisplay;
   document.getElementById("editConfirmGrade")
-    .textContent = gradeVal;
+    .textContent = grade;
 
   document.getElementById("editConfirmModal")
-    ?.classList.add("show");
+    .classList.add("open");
 }
 
-function closeEditConfirm() {
+function closeEditConfirmModal() {
   document.getElementById("editConfirmModal")
-    ?.classList.remove("show");
+    .classList.remove("open");
 }
 
-// Step 2: teacher clicked "Confirm" — now we
-// actually write to Firebase. Only fullName,
-// sex, and grade are updated. studentId is
-// the document ID and is never touched, so
-// the student's Firebase document (and every
-// attendance record that references this
-// Student ID) is completely unaffected.
-async function confirmEditSave() {
-  if (!editTargetStudent) return;
+async function confirmSaveEdit() {
+  if (!editingStudentId || !pendingEditValues) return;
 
-  const nameVal =
-    document.getElementById("editStudentName")
-      .value.trim();
-  const sexVal =
-    document.getElementById("editStudentSex")
-      .value;
-  const gradeVal =
-    document.getElementById("editStudentGrade")
-      .value.trim();
-
-  const studentId = editTargetStudent.studentId;
+  const idBeingEdited = editingStudentId;
+  const values        = pendingEditValues;
 
   try {
+    // ✅ Only fullName / sex / grade are updated.
+    // studentId (the document ID) is never touched,
+    // and no new document is created — this keeps
+    // attendance history and the Student ID intact.
     await updateDoc(
-      doc(db, "students", studentId),
+      doc(db, "students", idBeingEdited),
       {
-        fullName: nameVal,
-        sex:      sexVal,
-        grade:    gradeVal
+        fullName: values.fullName,
+        sex:      values.sex,
+        grade:    values.grade
       }
     );
 
-    closeEditConfirm();
-    closeEditModal();
+    closeEditConfirmModal();
+    closeEditStudentModal();
 
     const msg =
       document.getElementById("studentListMsg");
-    if (msg) {
-      msg.style.color = "#16a34a";
-      msg.textContent = t("studentUpdated");
-    }
+    msg.style.color = "#16a34a";
+    msg.textContent = t("editSuccessMsg");
     await loadStudents();
-    setTimeout(() => {
-      if (msg) msg.textContent = "";
-    }, 3000);
+    setTimeout(() => { msg.textContent = ""; },
+      3000);
 
   } catch (err) {
-    console.error("Update student:", err);
-    closeEditConfirm();
+    console.error("Edit student:", err);
+    closeEditConfirmModal();
     const msgEl =
       document.getElementById("editStudentMsg");
-    if (msgEl) {
-      msgEl.textContent =
-        t("sessionError") + " " + err.message;
-    }
-    // Re-open the edit form so the teacher
-    // can see the error and try again.
-    document.getElementById("editStudentModal")
-      ?.classList.add("show");
+    msgEl.style.color = "#dc2626";
+    msgEl.textContent =
+      t("sessionError") + " " + err.message;
   }
+
+  pendingEditValues = null;
 }
 
+window._editStudent = openEditStudentModal;
+
+document.getElementById("editStudentCancelBtn")
+  ?.addEventListener("click", closeEditStudentModal);
+document.getElementById("editStudentSaveBtn")
+  ?.addEventListener("click", openEditConfirmModal);
+document.getElementById("editStudentModal")
+  ?.addEventListener("click", (e) => {
+    if (e.target.id === "editStudentModal") {
+      closeEditStudentModal();
+    }
+  });
+
+document.getElementById("editConfirmCancelBtn")
+  ?.addEventListener("click", closeEditConfirmModal);
+document.getElementById("editConfirmSaveBtn")
+  ?.addEventListener("click", confirmSaveEdit);
+document.getElementById("editConfirmModal")
+  ?.addEventListener("click", (e) => {
+    if (e.target.id === "editConfirmModal") {
+      closeEditConfirmModal();
+    }
+  });
+
 // ============================================
-// ✅ DELETE STUDENT MODAL
-// Shows the student's info before deleting,
-// so the teacher does not delete the wrong
-// student by accident.
+// ✅ NEW: DELETE STUDENT (with confirm modal)
 // ============================================
-function openDeleteModal(studentId) {
-  const student = allStudents.find(
-    s => s.studentId === studentId
+function openDeleteStudentModal(studentId) {
+  const s = allStudents.find(
+    st => st.studentId === studentId
   );
-  if (!student) return;
+  if (!s) return;
 
-  deleteTargetStudent = student;
+  deletingStudentId = studentId;
 
-  let sexDisplay = student.sex || "—";
-  if (student.sex === "Male") {
-    sexDisplay = t("optMale");
-  } else if (student.sex === "Female") {
-    sexDisplay = t("optFemale");
-  }
+  let sexDisplay = s.sex || "—";
+  if (s.sex === "Male") sexDisplay = t("optMale");
+  else if (s.sex === "Female") sexDisplay = t("optFemale");
 
   document.getElementById("deleteConfirmId")
-    .textContent = student.studentId;
+    .textContent = s.studentId;
   document.getElementById("deleteConfirmName")
-    .textContent = student.fullName || "—";
+    .textContent = s.fullName;
   document.getElementById("deleteConfirmSex")
     .textContent = sexDisplay;
   document.getElementById("deleteConfirmGrade")
-    .textContent = student.grade || "—";
+    .textContent = s.grade;
 
   document.getElementById("deleteStudentModal")
-    ?.classList.add("show");
+    .classList.add("open");
 }
 
-function closeDeleteModal() {
+function closeDeleteStudentModal() {
   document.getElementById("deleteStudentModal")
-    ?.classList.remove("show");
-  deleteTargetStudent = null;
+    .classList.remove("open");
+  deletingStudentId = null;
 }
 
-async function confirmDeleteStudent() {
-  if (!deleteTargetStudent) return;
-  const studentId = deleteTargetStudent.studentId;
+async function confirmDeleteStudentAction() {
+  if (!deletingStudentId) return;
+  const idToDelete = deletingStudentId;
 
   try {
-    // Deletes only the student's entry in the
-    // "students" collection. Existing
-    // attendance records in
-    // sessionAttendance/{sessionId}/records
-    // are a separate collection and are
-    // never touched by this action.
     await deleteDoc(
-      doc(db, "students", studentId)
+      doc(db, "students", idToDelete)
     );
-
-    closeDeleteModal();
+    closeDeleteStudentModal();
 
     const msg =
       document.getElementById("studentListMsg");
-    if (msg) {
-      msg.style.color = "#16a34a";
-      msg.textContent = t("studentRemoved");
-    }
+    msg.style.color = "#16a34a";
+    msg.textContent = t("studentRemoved");
     await loadStudents();
-    setTimeout(() => {
-      if (msg) msg.textContent = "";
-    }, 3000);
-
+    setTimeout(() => { msg.textContent = ""; },
+      3000);
   } catch (err) {
-    console.error("Delete student:", err);
-    closeDeleteModal();
+    console.error("Remove student:", err);
+    closeDeleteStudentModal();
   }
 }
 
-window._openEditModal   = openEditModal;
-window._openDeleteModal = openDeleteModal;
+window._openDeleteStudent = openDeleteStudentModal;
 
-// ============================================
-// ✅ HISTORY MODAL
-//
-// Reads every attendance record ever created,
-// across every past session/day, using a
-// Firestore "collection group" query on
-// "records" — the same subcollection name used
-// under every sessionAttendance/{sessionId}/
-// records path. This is READ-ONLY: it never
-// writes anything, and it never touches the
-// live "session/current" dashboard above.
-//
-// Nothing needs to be manually "moved" into
-// history — once a session ends, its records
-// already sit permanently in Firestore. This
-// modal is simply a second way to read them.
-// ============================================
-
-async function loadHistoryData() {
-  if (historyLoaded) return;
-
-  const loadingRow = `
-    <tr><td colspan="6" class="history-empty-state">
-      ${esc(t("historyLoading"))}
-    </td></tr>`;
-  const tbody1 =
-    document.getElementById("historyDateBody");
-  const tbody2 =
-    document.getElementById("historyStudentBody");
-  if (tbody1) tbody1.innerHTML = loadingRow;
-  if (tbody2) tbody2.innerHTML = loadingRow;
-
-  historyAllRecords = [];
-  historyRecordMap  = {};
-
-  try {
-    const snap = await getDocs(
-      collectionGroup(db, "records")
-    );
-    snap.forEach(d => {
-      const data = d.data();
-      const record = {
-        id:        d.id,
-        fullName:  data.fullName  || "",
-        studentId: data.studentId || "",
-        sex:       data.sex       || "",
-        grade:     data.grade     || "",
-        sessionId: data.sessionId || "",
-        date:      data.date      || "",
-        status:
-          data.status || "notCheckedInYet",
-        checkInTime:
-          data.checkInTime     || null,
-        checkInDisplay:
-          data.checkInDisplay  || null,
-        checkOutTime:
-          data.checkOutTime    || null,
-        checkOutDisplay:
-          data.checkOutDisplay || null,
-        latitude:
-          data.latitude          ?? "",
-        longitude:
-          data.longitude         ?? "",
-        distanceFromSchool:
-          data.distanceFromSchool ?? ""
-      };
-      historyAllRecords.push(record);
-      historyRecordMap[
-        record.sessionId + "_" + record.studentId
-      ] = record;
-    });
-    historyLoaded = true;
-  } catch (err) {
-    console.error("Load history error:", err);
-  }
-}
-
-function getHistoryDates() {
-  const dates = new Set();
-  historyAllRecords.forEach(r => {
-    if (r.date) dates.add(r.date);
-  });
-  // Newest first
-  return Array.from(dates).sort().reverse();
-}
-
-function populateHistoryDateSelect() {
-  const sel =
-    document.getElementById("historyDateSelect");
-  if (!sel) return;
-
-  sel.innerHTML = "";
-  const placeholder =
-    document.createElement("option");
-  placeholder.value = "";
-  placeholder.setAttribute(
-    "data-t-opt", "historyDatePlaceholder"
-  );
-  placeholder.textContent =
-    t("historyDatePlaceholder");
-  sel.appendChild(placeholder);
-
-  getHistoryDates().forEach(dateStr => {
-    const opt = document.createElement("option");
-    opt.value = dateStr;
-    opt.textContent = dateStr;
-    sel.appendChild(opt);
-  });
-}
-
-function populateHistoryStudentSelect() {
-  const sel = document.getElementById(
-    "historyStudentSelect"
-  );
-  if (!sel) return;
-
-  sel.innerHTML = "";
-  const placeholder =
-    document.createElement("option");
-  placeholder.value = "";
-  placeholder.setAttribute(
-    "data-t-opt", "historyStudentPlaceholder"
-  );
-  placeholder.textContent =
-    t("historyStudentPlaceholder");
-  sel.appendChild(placeholder);
-
-  const sorted = [...allStudents].sort((a, b) =>
-    a.fullName.localeCompare(b.fullName)
-  );
-  sorted.forEach(s => {
-    const opt = document.createElement("option");
-    opt.value = s.studentId;
-    opt.textContent =
-      s.fullName + " (" + s.studentId + ")";
-    sel.appendChild(opt);
-  });
-}
-
-// Reuses the SAME profile modal already used
-// by the live attendance table, so the "View"
-// button opens an identical, familiar popup
-// with full check-in/out times, GPS, distance.
-function attachHistoryViewButtons(scopeEl) {
-  scopeEl.querySelectorAll(".history-view-btn")
-    .forEach(btn => {
-      btn.addEventListener("click", function () {
-        const key = btn.getAttribute("data-key");
-        const record = historyRecordMap[key];
-        if (record) openProfile(record);
-      });
-    });
-}
-
-function renderHistoryByDate(dateStr) {
-  const tbody =
-    document.getElementById("historyDateBody");
-  const countEl = document.getElementById(
-    "historyRecordCount"
-  );
-  if (!tbody) return;
-
-  if (!dateStr) {
-    tbody.innerHTML = `
-      <tr><td colspan="6" class="history-empty-state">
-        <div class="icon">📅</div>
-        ${esc(t("historyPickDate"))}
-      </td></tr>`;
-    if (countEl) countEl.textContent = "";
-    return;
-  }
-
-  const records = historyAllRecords
-    .filter(r => r.date === dateStr)
-    .sort((a, b) =>
-      a.fullName.localeCompare(b.fullName)
-    );
-
-  if (countEl) {
-    countEl.textContent =
-      records.length + " " +
-      t("historyRecordCountText");
-  }
-
-  if (records.length === 0) {
-    tbody.innerHTML = `
-      <tr><td colspan="6" class="history-empty-state">
-        <div class="icon">📭</div>
-        ${esc(t("historyNoData"))}
-      </td></tr>`;
-    return;
-  }
-
-  tbody.innerHTML = records.map((r, i) => {
-    const isPresent = r.status === "present";
-    const key = r.sessionId + "_" + r.studentId;
-    return `
-      <tr>
-        <td>${i + 1}</td>
-        <td>${esc(r.fullName)}</td>
-        <td style="color:#7c3aed;
-                   font-weight:600;">
-          ${esc(r.studentId)}
-        </td>
-        <td>${esc(r.grade)}</td>
-        <td>
-          <span class="history-badge ${
-            isPresent ? "present" : "absent"
-          }">
-            ${esc(isPresent
-              ? t("historyPresent")
-              : t("historyAbsent"))}
-          </span>
-        </td>
-        <td>
-          <button class="history-view-btn"
-            data-key="${esc(key)}">
-            ${t("historyViewBtn")}
-          </button>
-        </td>
-      </tr>
-    `;
-  }).join("");
-
-  attachHistoryViewButtons(tbody);
-}
-
-function renderHistoryByStudent(studentId) {
-  const tbody = document.getElementById(
-    "historyStudentBody"
-  );
-  const countEl = document.getElementById(
-    "historyRecordCount"
-  );
-  if (!tbody) return;
-
-  if (!studentId) {
-    tbody.innerHTML = `
-      <tr><td colspan="4" class="history-empty-state">
-        <div class="icon">🎓</div>
-        ${esc(t("historyPickStudent"))}
-      </td></tr>`;
-    if (countEl) countEl.textContent = "";
-    return;
-  }
-
-  const records = historyAllRecords
-    .filter(r => r.studentId === studentId)
-    .sort((a, b) => b.date.localeCompare(a.date));
-
-  if (countEl) {
-    countEl.textContent =
-      records.length + " " +
-      t("historyRecordCountText");
-  }
-
-  if (records.length === 0) {
-    tbody.innerHTML = `
-      <tr><td colspan="4" class="history-empty-state">
-        <div class="icon">📭</div>
-        ${esc(t("historyNoData"))}
-      </td></tr>`;
-    return;
-  }
-
-  tbody.innerHTML = records.map((r, i) => {
-    const isPresent = r.status === "present";
-    const key = r.sessionId + "_" + r.studentId;
-    return `
-      <tr>
-        <td>${i + 1}</td>
-        <td>${esc(r.date)}</td>
-        <td>
-          <span class="history-badge ${
-            isPresent ? "present" : "absent"
-          }">
-            ${esc(isPresent
-              ? t("historyPresent")
-              : t("historyAbsent"))}
-          </span>
-        </td>
-        <td>
-          <button class="history-view-btn"
-            data-key="${esc(key)}">
-            ${t("historyViewBtn")}
-          </button>
-        </td>
-      </tr>
-    `;
-  }).join("");
-
-  attachHistoryViewButtons(tbody);
-}
-
-function switchHistoryTab(view) {
-  historyView = view;
-
-  const tabDate =
-    document.getElementById("historyTabDate");
-  const tabStudent = document.getElementById(
-    "historyTabStudent"
-  );
-  const dateFilterRow = document.getElementById(
-    "historyDateFilterRow"
-  );
-  const studentFilterRow = document.getElementById(
-    "historyStudentFilterRow"
-  );
-  const dateTableWrap = document.getElementById(
-    "historyDateTableWrap"
-  );
-  const studentTableWrap = document.getElementById(
-    "historyStudentTableWrap"
-  );
-
-  if (view === "date") {
-    tabDate?.classList.add("active");
-    tabStudent?.classList.remove("active");
-    if (dateFilterRow) {
-      dateFilterRow.style.display = "block";
+document.getElementById("deleteCancelBtn")
+  ?.addEventListener("click", closeDeleteStudentModal);
+document.getElementById("deleteConfirmBtn")
+  ?.addEventListener("click", confirmDeleteStudentAction);
+document.getElementById("deleteStudentModal")
+  ?.addEventListener("click", (e) => {
+    if (e.target.id === "deleteStudentModal") {
+      closeDeleteStudentModal();
     }
-    if (studentFilterRow) {
-      studentFilterRow.style.display = "none";
-    }
-    if (dateTableWrap) {
-      dateTableWrap.style.display = "block";
-    }
-    if (studentTableWrap) {
-      studentTableWrap.style.display = "none";
-    }
-    const dateSel = document.getElementById(
-      "historyDateSelect"
-    );
-    renderHistoryByDate(dateSel ? dateSel.value : "");
-  } else {
-    tabStudent?.classList.add("active");
-    tabDate?.classList.remove("active");
-    if (dateFilterRow) {
-      dateFilterRow.style.display = "none";
-    }
-    if (studentFilterRow) {
-      studentFilterRow.style.display = "block";
-    }
-    if (dateTableWrap) {
-      dateTableWrap.style.display = "none";
-    }
-    if (studentTableWrap) {
-      studentTableWrap.style.display = "block";
-    }
-    const studentSel = document.getElementById(
-      "historyStudentSelect"
-    );
-    renderHistoryByStudent(
-      studentSel ? studentSel.value : ""
-    );
-  }
-}
-
-async function openHistoryModal() {
-  const modal =
-    document.getElementById("historyModal");
-  if (!modal) return;
-  modal.classList.add("show");
-
-  await loadHistoryData();
-
-  populateHistoryDateSelect();
-  populateHistoryStudentSelect();
-
-  // Default to the most recent date, "By Date" tab
-  const dateSel = document.getElementById(
-    "historyDateSelect"
-  );
-  const dates = getHistoryDates();
-  if (dateSel && dates.length > 0) {
-    dateSel.value = dates[0];
-  }
-
-  switchHistoryTab("date");
-}
-
-function closeHistoryModal() {
-  document.getElementById("historyModal")
-    ?.classList.remove("show");
-}
-
-// Keeps the History modal's dynamic content
-// (badges, buttons, dropdown labels) in sync
-// when the teacher switches language while it
-// is open or already loaded.
-function refreshHistoryLanguage() {
-  if (!historyLoaded) return;
-
-  const dateSel = document.getElementById(
-    "historyDateSelect"
-  );
-  const studentSel = document.getElementById(
-    "historyStudentSelect"
-  );
-  const savedDate    = dateSel    ? dateSel.value    : "";
-  const savedStudent = studentSel ? studentSel.value : "";
-
-  populateHistoryDateSelect();
-  populateHistoryStudentSelect();
-
-  if (dateSel)    dateSel.value    = savedDate;
-  if (studentSel) studentSel.value = savedStudent;
-
-  if (historyView === "date") {
-    renderHistoryByDate(
-      dateSel ? dateSel.value : ""
-    );
-  } else {
-    renderHistoryByStudent(
-      studentSel ? studentSel.value : ""
-    );
-  }
-}
-
-// ============================================
-// EXPORT HISTORY CSV
-// Exports every historical record (every date,
-// every student) fetched above into one file.
-// ============================================
-function exportHistoryCSV() {
-  if (historyAllRecords.length === 0) {
-    alert(t("historyExportEmpty"));
-    return;
-  }
-
-  const csv_val = v =>
-    `"${String(v ?? "").replace(/"/g, '""')}"`;
-
-  const headers = [
-    t("historyDateCol"),
-    t("colName"),
-    t("labelStudentId"),
-    t("colSex"),
-    t("colGrade"),
-    t("historyStatusCol"),
-    t("colCheckIn"),
-    t("colCheckOut")
-  ];
-
-  let csv = headers.map(csv_val).join(",") + "\n";
-
-  const sorted = [...historyAllRecords].sort(
-    (a, b) => {
-      const dc = a.date.localeCompare(b.date);
-      if (dc !== 0) return dc;
-      return a.fullName.localeCompare(b.fullName);
-    }
-  );
-
-  sorted.forEach(r => {
-    const isPresent = r.status === "present";
-
-    let sexDisplay = r.sex || "";
-    if (r.sex === "Male") {
-      sexDisplay = t("optMale");
-    } else if (r.sex === "Female") {
-      sexDisplay = t("optFemale");
-    }
-
-    csv += [
-      r.date,
-      r.fullName,
-      r.studentId,
-      sexDisplay,
-      r.grade,
-      isPresent
-        ? t("historyPresent")
-        : t("historyAbsent"),
-      r.checkInDisplay  || "--",
-      r.checkOutDisplay || "--"
-    ].map(csv_val).join(",") + "\n";
   });
 
-  const blob = new Blob(
-    ["\uFEFF" + csv],
-    { type: "text/csv;charset=utf-8;" }
-  );
-  const url = URL.createObjectURL(blob);
-  const a   = document.createElement("a");
-  a.href     = url;
-  a.download = "attendance-history.csv";
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  URL.revokeObjectURL(url);
+// ✅ NEW: Duplicate Student ID popup
+function closeDuplicateIdModal() {
+  document.getElementById("duplicateIdModal")
+    .classList.remove("open");
 }
+document.getElementById("duplicateIdOkBtn")
+  ?.addEventListener("click", closeDuplicateIdModal);
+document.getElementById("duplicateIdModal")
+  ?.addEventListener("click", (e) => {
+    if (e.target.id === "duplicateIdModal") {
+      closeDuplicateIdModal();
+    }
+  });
 
 // ============================================
 // ✅ START SESSION
@@ -3810,7 +3068,8 @@ function startRealtimeListener(sid) {
         .textContent =
           new Date().toLocaleTimeString([], {
             hour:   "2-digit",
-            minute: "2-digit"
+            minute: "2-digit",
+            hour12: true
           });
     },
     err => console.error("Snapshot:", err)
@@ -3885,7 +3144,7 @@ function displayRecords(records) {
     const checkInDisplay = isPresent
       ? `<span style="color:#16a34a;
                       font-weight:600;">
-           ${esc(r.checkInDisplay || "--")}
+           ${esc(formatAttendanceTime12(r.checkInDisplay) || "--")}
          </span>`
       : `<span style="color:#94a3b8;
                       font-style:italic;
@@ -3905,7 +3164,7 @@ function displayRecords(records) {
       checkOutDisplay = `
         <span style="color:#16a34a;
                      font-weight:600;">
-          ${esc(r.checkOutDisplay || "--")}
+          ${esc(formatAttendanceTime12(r.checkOutDisplay) || "--")}
         </span>`;
     } else {
       checkOutDisplay = `
@@ -4039,7 +3298,7 @@ function openProfile(r) {
     document.getElementById("profileCheckIn");
   if (ciEl) {
     ciEl.textContent = isPresent
-      ? (r.checkInDisplay || "--")
+      ? (formatAttendanceTime12(r.checkInDisplay) || "--")
       : t("notCheckedInYet");
   }
 
@@ -4049,7 +3308,8 @@ function openProfile(r) {
     if (!isPresent) {
       coEl.textContent = t("notCheckedInYet");
     } else if (isCheckedOut) {
-      coEl.textContent = r.checkOutDisplay || "--";
+      coEl.textContent =
+        formatAttendanceTime12(r.checkOutDisplay) || "--";
     } else {
       coEl.textContent = t("notCheckedOut");
     }
@@ -4140,12 +3400,12 @@ function exportToCSV() {
       sexDisplay,
       r.grade,
       isPresent
-        ? (r.checkInDisplay || "--")
+        ? (formatAttendanceTime12(r.checkInDisplay) || "--")
         : t("notCheckedInYet"),
       !isPresent
         ? t("notCheckedInYet")
         : isCheckedOut
-          ? (r.checkOutDisplay || "--")
+          ? (formatAttendanceTime12(r.checkOutDisplay) || "--")
           : t("notCheckedOut"),
       isPresent
         ? t("present")
@@ -4227,72 +3487,6 @@ document.getElementById("modeCheckOutBtn")
   ?.addEventListener("click", function () {
     switchMode("checkOut");
   });
-
-// ✅ NEW: Edit Student modal buttons
-document.getElementById("cancelEditBtn")
-  ?.addEventListener("click", closeEditModal);
-document.getElementById("saveEditBtn")
-  ?.addEventListener("click", openEditConfirm);
-document.getElementById("editStudentModal")
-  ?.addEventListener("click", function (e) {
-    if (e.target.id === "editStudentModal") {
-      closeEditModal();
-    }
-  });
-
-// ✅ NEW: Edit Confirmation modal buttons
-document.getElementById("cancelEditConfirmBtn")
-  ?.addEventListener("click", closeEditConfirm);
-document.getElementById("confirmEditBtn")
-  ?.addEventListener("click", confirmEditSave);
-document.getElementById("editConfirmModal")
-  ?.addEventListener("click", function (e) {
-    if (e.target.id === "editConfirmModal") {
-      closeEditConfirm();
-    }
-  });
-
-// ✅ NEW: Delete Confirmation modal buttons
-document.getElementById("cancelDeleteBtn")
-  ?.addEventListener("click", closeDeleteModal);
-document.getElementById("confirmDeleteBtn")
-  ?.addEventListener("click", confirmDeleteStudent);
-document.getElementById("deleteStudentModal")
-  ?.addEventListener("click", function (e) {
-    if (e.target.id === "deleteStudentModal") {
-      closeDeleteModal();
-    }
-  });
-
-// ✅ NEW: History modal
-document.getElementById("historyBtn")
-  ?.addEventListener("click", openHistoryModal);
-document.getElementById("closeHistoryBtn")
-  ?.addEventListener("click", closeHistoryModal);
-document.getElementById("historyModal")
-  ?.addEventListener("click", function (e) {
-    if (e.target.id === "historyModal") {
-      closeHistoryModal();
-    }
-  });
-document.getElementById("historyTabDate")
-  ?.addEventListener("click", function () {
-    switchHistoryTab("date");
-  });
-document.getElementById("historyTabStudent")
-  ?.addEventListener("click", function () {
-    switchHistoryTab("student");
-  });
-document.getElementById("historyDateSelect")
-  ?.addEventListener("change", function () {
-    renderHistoryByDate(this.value);
-  });
-document.getElementById("historyStudentSelect")
-  ?.addEventListener("change", function () {
-    renderHistoryByStudent(this.value);
-  });
-document.getElementById("historyExportBtn")
-  ?.addEventListener("click", exportHistoryCSV);
 
 // ✅ Live validation when teacher changes times
 [
