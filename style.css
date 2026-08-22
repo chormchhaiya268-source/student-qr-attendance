@@ -62,29 +62,6 @@ body.khmer {
     Arial, sans-serif;
 }
 
-/* ============================================
-   ✅ NEW: SECTION TITLE TYPOGRAPHY
-   Gives the main section headers (👥 ​Student
-   List Manager, 🎛️ Session Control, 📱 QR
-   Code, 🔍 Find a Student, 📋 Attendance List,
-   and the main dashboard title) a proper
-   Khmer display font when Khmer is selected.
-   "Moul" is the standard web-embeddable Khmer
-   display typeface (same visual family as
-   "Khmer OS Muol" used for headers) — it only
-   has Khmer glyphs, so it's scoped to Khmer
-   mode only and never applied to English text.
-============================================= */
-body.khmer .teacher-header-left h1,
-body.khmer .session-panel-title,
-body.khmer .qr-panel-title,
-body.khmer .search-bar-container h3,
-body.khmer .table-header h2 {
-  font-family: "Moul", "Battambang",
-    "Kantumruy Pro", sans-serif;
-  letter-spacing: 0.2px;
-}
-
 /* =========================================
    STUDENT PAGE WRAPPER
 ========================================= */
@@ -774,24 +751,9 @@ body.khmer .table-header h2 {
 }
 
 .teacher-header-left h1 {
-  font-size: 35px;
+  font-size: 35px !important;
   font-weight: 700;
   line-height: 1.3;
-  overflow-wrap: break-word;
-  word-break: normal;
-  hyphens: none;
-}
-
-/* ✅ NEW: English translation is longer than
-   the Khmer phrase, so it gets its own fitted
-   size (Khmer's 35px above is untouched).
-   This is MORE specific than the plain
-   ".teacher-header-left h1" rule above, so it
-   wins automatically without needing
-   !important, and it also correctly overrides
-   the mobile rule below for English specifically. */
-html:lang(en) .teacher-header-left h1 {
-  font-size: clamp(20px, 3vw, 28px);
 }
 
 .teacher-header-left p {
@@ -873,7 +835,7 @@ html:lang(en) .teacher-header-left h1 {
 }
 
 .session-panel-title {
-  font-size: 19px;
+  font-size: 16px;
   font-weight: 700;
   color: var(--text);
   margin-bottom: 16px;
@@ -1071,7 +1033,7 @@ html:lang(en) .teacher-header-left h1 {
 }
 
 .qr-panel-title {
-  font-size: 19px;
+  font-size: 16px;
   font-weight: 700;
   color: var(--text);
   margin-bottom: 16px;
@@ -1166,8 +1128,7 @@ html:lang(en) .teacher-header-left h1 {
 }
 
 .search-bar-container h3 {
-  font-size: 18px;
-  font-weight: 700;
+  font-size: 15px;
   color: var(--text);
   margin-bottom: 11px;
 }
@@ -1221,8 +1182,7 @@ html:lang(en) .teacher-header-left h1 {
 }
 
 .table-header h2 {
-  font-size: 19px;
-  font-weight: 700;
+  font-size: 16px;
   color: var(--text);
 }
 
