@@ -35,13 +35,24 @@ html { scroll-behavior: smooth; }
   --radius-sm:     10px;
   --radius-md:     16px;
   --radius-lg:     22px;
+
+  /* =========================================
+     FONT VARIABLES
+     --font-body   : used for all body text
+     --font-heading: used for section titles
+                     and dashboard title
+     --font-khmer  : Moul — only applied
+                     when body has .khmer
+  ========================================= */
+  --font-body:    "Kantumruy Pro", Arial, sans-serif;
+  --font-heading: "Kantumruy Pro", Arial, sans-serif;
+  --font-khmer:   "Moul", "Kantumruy Pro",
+                  Arial, sans-serif;
 }
 
 /* =========================================
-   BODY
-   Font: Kantumruy Pro for both English
-   and Khmer — clean, modern, professional.
-   Works perfectly for dashboard UI.
+   BODY — English mode
+   Uses Kantumruy Pro for everything
 ========================================= */
 
 body {
@@ -53,24 +64,43 @@ body {
     #e0f2fe 100%
   );
   color: var(--text);
-  font-family:
-    "Kantumruy Pro",
-    "Noto Sans Khmer",
-    Arial,
-    sans-serif;
+  font-family: var(--font-body);
   font-size: 15px;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
 }
 
-/* Khmer mode — same font, just ensures
-   Khmer Unicode renders correctly */
+/* =========================================
+   BODY — Khmer mode
+   Body text stays Kantumruy Pro.
+   Only headings switch to Moul.
+========================================= */
+
 body.khmer {
-  font-family:
-    "Kantumruy Pro",
-    "Noto Sans Khmer",
-    Arial,
-    sans-serif;
+  font-family: var(--font-body);
+}
+
+/* =========================================
+   KHMER HEADING HELPER CLASS
+   Apply Moul font only to titles/headings
+   when in Khmer mode.
+   This targets:
+   - Teacher header h1
+   - All session-panel-title
+   - QR panel title
+   - Search bar title
+   - Table header title
+========================================= */
+
+body.khmer .teacher-header-left h1,
+body.khmer .session-panel-title,
+body.khmer .qr-panel-title,
+body.khmer .search-bar-container h3,
+body.khmer .table-header h2 {
+  font-family: var(--font-khmer);
+  font-weight: 400;
+  /* Moul only has weight 400 —
+     no need to set 700 or 800 */
 }
 
 /* =========================================
@@ -748,10 +778,29 @@ body.khmer {
   );
 }
 
+/* =========================================
+   TEACHER HEADER TITLE
+   English mode: Kantumruy Pro 22px bold
+   Khmer mode:   Moul font, bigger (26px)
+                 so ផ្ទាំងគ្រប់គ្រងវត្តមានសិស្ស
+                 is clearly the largest text
+                 on the entire dashboard
+========================================= */
+
 .teacher-header-left h1 {
   font-size: 22px;
   font-weight: 700;
   line-height: 1.3;
+  color: var(--white);
+}
+
+body.khmer .teacher-header-left h1 {
+  font-family: var(--font-khmer);
+  font-weight: 400;
+  font-size: 26px;
+  line-height: 1.6;
+  /* Moul is naturally bold-looking so
+     weight 400 is already strong enough */
 }
 
 .teacher-header-left p {
@@ -759,6 +808,15 @@ body.khmer {
   font-size: 12px;
   opacity: 0.65;
   line-height: 1.4;
+  color: var(--white);
+}
+
+/* Subtitle stays small in Khmer too
+   so it is clearly smaller than the title */
+body.khmer .teacher-header-left p {
+  font-size: 12px;
+  font-family: var(--font-body);
+  opacity: 0.65;
 }
 
 .teacher-header-right {
@@ -837,7 +895,6 @@ body.khmer {
 
 /* =========================================
    SESSION PANEL
-   The white card that wraps each section
 ========================================= */
 
 .session-panel {
@@ -852,17 +909,9 @@ body.khmer {
 
 /* =========================================
    SESSION PANEL TITLE
-   This is the main section heading —
-   "Student List Manager", "Session Control"
-   etc. Made clearly bigger and bolder than
-   everything inside the panel.
-
-   Design:
-   - Larger font (20px English / 22px Khmer)
-   - Bold weight 800
-   - Dark background strip so it stands out
-   - Clear bottom border separating it from
-     the content below
+   English: Kantumruy Pro 20px weight 800
+   Khmer:   Moul 22px weight 400
+            (Moul looks bold at weight 400)
 ========================================= */
 
 .session-panel-title {
@@ -881,16 +930,16 @@ body.khmer {
   line-height: 1.4;
 }
 
-/* Khmer panel title — slightly larger
-   because Khmer characters are taller */
 body.khmer .session-panel-title {
+  font-family: var(--font-khmer);
+  font-weight: 400;
   font-size: 22px;
-  line-height: 1.7;
+  line-height: 1.9;
+  /* Extra line height because Moul
+     has tall Khmer characters */
 }
 
-/* The content area inside each panel
-   gets its own padding now that the
-   title handles its own padding */
+/* Panel content padding */
 .session-panel > *:not(
   .session-panel-title
 ) {
@@ -898,21 +947,17 @@ body.khmer .session-panel-title {
   padding-right: 22px;
 }
 
-/* First non-title element gets top padding */
 .session-panel > *:nth-child(2) {
   padding-top: 18px;
 }
 
-/* Last element gets bottom padding */
 .session-panel > *:last-child {
   padding-bottom: 22px;
 }
 
 /* =========================================
    CONTENT TEXT UNDER PANEL TITLE
-   The hint text / description under titles
-   is kept smaller and lighter so the
-   hierarchy is clear
+   Stays small and light — clear hierarchy
 ========================================= */
 
 .session-panel > p {
@@ -1087,6 +1132,7 @@ body.khmer .session-panel-title {
   color: #16a34a;
   font-size: 13px;
 }
+
 .status-qr-inactive {
   color: #dc2626;
   font-size: 13px;
@@ -1122,8 +1168,6 @@ body.khmer .session-panel-title {
   border: 1px solid var(--border);
 }
 
-/* QR panel title uses same style as
-   session-panel-title for consistency */
 .qr-panel-title {
   font-size: 20px;
   font-weight: 800;
@@ -1137,8 +1181,10 @@ body.khmer .session-panel-title {
 }
 
 body.khmer .qr-panel-title {
+  font-family: var(--font-khmer);
+  font-weight: 400;
   font-size: 22px;
-  line-height: 1.7;
+  line-height: 1.9;
 }
 
 .qr-panel > *:not(.qr-panel-title) {
@@ -1244,7 +1290,6 @@ body.khmer .qr-panel-title {
   border: 1px solid var(--border);
 }
 
-/* Search title matches panel title style */
 .search-bar-container h3 {
   font-size: 20px;
   font-weight: 800;
@@ -1258,8 +1303,10 @@ body.khmer .qr-panel-title {
 }
 
 body.khmer .search-bar-container h3 {
+  font-family: var(--font-khmer);
+  font-weight: 400;
   font-size: 22px;
-  line-height: 1.7;
+  line-height: 1.9;
 }
 
 .search-bar-container > *:not(h3) {
@@ -1325,8 +1372,6 @@ body.khmer .search-bar-container h3 {
   background: #f8fafc;
 }
 
-/* Attendance table title also matches
-   the panel title hierarchy */
 .table-header h2 {
   font-size: 20px;
   font-weight: 800;
@@ -1336,8 +1381,10 @@ body.khmer .search-bar-container h3 {
 }
 
 body.khmer .table-header h2 {
+  font-family: var(--font-khmer);
+  font-weight: 400;
   font-size: 22px;
-  line-height: 1.7;
+  line-height: 1.9;
 }
 
 .table-scroll { overflow-x: auto; }
@@ -1504,7 +1551,9 @@ tbody tr:last-child td {
   font-size: 14px;
 }
 
-.profile-row:last-child { border-bottom: none; }
+.profile-row:last-child {
+  border-bottom: none;
+}
 
 .profile-row-label {
   color: var(--muted);
@@ -1866,6 +1915,10 @@ tbody tr:last-child td {
 
   .teacher-header-left h1 {
     font-size: 17px;
+  }
+
+  body.khmer .teacher-header-left h1 {
+    font-size: 20px;
   }
 
   .teacher-header-right { width: 100%; }
