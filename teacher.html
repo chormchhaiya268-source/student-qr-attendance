@@ -14,7 +14,7 @@
     href="https://fonts.gstatic.com"
     crossorigin>
   <link
-    href="https://fonts.googleapis.com/css2?family=Battambang:wght@400;700&family=Kantumruy+Pro:ital,wght@0,100..700;1,100..700&family=Moul&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Battambang:wght@400;700&family=Kantumruy+Pro:ital,wght@0,100..700;1,100..700&display=swap"
     rel="stylesheet">
 
   <style>
@@ -180,6 +180,149 @@
       color: #64748b;
     }
 
+    /* ============================================
+       ✅ NEW: HISTORY SECTION STYLES
+       (isolated to the History modal only)
+    ============================================= */
+    .history-content {
+      max-width: 720px;
+      width: 92vw;
+    }
+    .history-top-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+      padding: 0 24px 14px;
+    }
+    .history-export-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: 8px;
+      border: none;
+      background: #16a34a;
+      color: white;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      white-space: nowrap;
+    }
+    .history-export-btn:hover {
+      background: #15803d;
+    }
+    .history-tabs {
+      display: flex;
+      gap: 4px;
+      background: #f1f5f9;
+      border-radius: 10px;
+      padding: 4px;
+      margin: 0 24px 16px;
+    }
+    .history-tab-btn {
+      flex: 1;
+      padding: 9px 14px;
+      border: none;
+      border-radius: 8px;
+      background: transparent;
+      color: #64748b;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.2s ease;
+    }
+    .history-tab-btn.active {
+      background: white;
+      color: #1d4ed8;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+    }
+    .history-filter-row {
+      padding: 0 24px 14px;
+    }
+    .history-filter-row select {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      font-size: 14px;
+      font-family: inherit;
+      background: white;
+      color: #1e293b;
+      cursor: pointer;
+    }
+    .history-table-wrap {
+      max-height: 360px;
+      overflow-y: auto;
+      margin: 0 24px 20px;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+    }
+    .history-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    .history-table th {
+      position: sticky;
+      top: 0;
+      background: #f8fafc;
+      color: #64748b;
+      text-align: left;
+      padding: 10px 12px;
+      font-weight: 600;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .history-table td {
+      padding: 10px 12px;
+      border-bottom: 1px solid #f1f5f9;
+      color: #1e293b;
+    }
+    .history-table tr:last-child td {
+      border-bottom: none;
+    }
+    .history-badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .history-badge.present {
+      background: #dcfce7;
+      color: #16a34a;
+    }
+    .history-badge.absent {
+      background: #fef2f2;
+      color: #dc2626;
+    }
+    .history-view-btn {
+      padding: 4px 10px;
+      font-size: 11px;
+      border-radius: 6px;
+      border: 1px solid #e2e8f0;
+      background: white;
+      color: #435065;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .history-view-btn:hover {
+      background: #f1f5f9;
+    }
+    .history-empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: #94a3b8;
+      font-size: 13px;
+    }
+    .history-empty-state .icon {
+      font-size: 40px;
+      margin-bottom: 10px;
+    }
   </style>
 </head>
 
@@ -233,6 +376,13 @@
     <button id="exportBtn"
       class="btn btn-green">
       <span data-t="export">Export CSV</span>
+    </button>
+
+    <button id="historyBtn"
+      class="btn btn-white">
+      <span data-t="historyBtn">
+        📜 History
+      </span>
     </button>
 
     <button id="logoutBtn"
@@ -1191,6 +1341,122 @@
   </div>
 </div>
 
+<!-- ============================================
+     ✅ HISTORY MODAL
+     Shows past attendance, grouped either by
+     date (everyone that day) or by student
+     (one student across every day). Does NOT
+     touch the live session/current dashboard.
+============================================= -->
+<div id="historyModal" class="profile-modal">
+  <div class="profile-content history-content">
+    <div class="profile-header">
+      <div class="profile-avatar">📜</div>
+      <h2 data-t="historyTitle">
+        Attendance History
+      </h2>
+    </div>
+
+    <div class="history-top-row">
+      <span style="font-size:12px;color:#94a3b8;"
+        id="historyRecordCount"></span>
+      <button id="historyExportBtn"
+        class="history-export-btn">
+        <span data-t="historyExportBtn">
+          ⬇ Export History CSV
+        </span>
+      </button>
+    </div>
+
+    <div class="history-tabs">
+      <button type="button"
+        id="historyTabDate"
+        class="history-tab-btn active"
+        data-t="historyByDate">
+        By Date
+      </button>
+      <button type="button"
+        id="historyTabStudent"
+        class="history-tab-btn"
+        data-t="historyByStudent">
+        By Student
+      </button>
+    </div>
+
+    <!-- BY DATE FILTER -->
+    <div class="history-filter-row"
+      id="historyDateFilterRow">
+      <select id="historyDateSelect">
+        <option value=""
+          data-t-opt="historyDatePlaceholder">
+          -- Select a date --
+        </option>
+      </select>
+    </div>
+
+    <!-- BY STUDENT FILTER -->
+    <div class="history-filter-row"
+      id="historyStudentFilterRow"
+      style="display:none;">
+      <select id="historyStudentSelect">
+        <option value=""
+          data-t-opt="historyStudentPlaceholder">
+          -- Select a student --
+        </option>
+      </select>
+    </div>
+
+    <!-- BY DATE TABLE -->
+    <div class="history-table-wrap"
+      id="historyDateTableWrap">
+      <table class="history-table">
+        <thead>
+          <tr>
+            <th data-t="colNo">No.</th>
+            <th data-t="colName">Name</th>
+            <th data-t="labelStudentId">
+              Student ID
+            </th>
+            <th data-t="colGrade">Grade</th>
+            <th data-t="historyStatusCol">
+              Status
+            </th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="historyDateBody"></tbody>
+      </table>
+    </div>
+
+    <!-- BY STUDENT TABLE -->
+    <div class="history-table-wrap"
+      id="historyStudentTableWrap"
+      style="display:none;">
+      <table class="history-table">
+        <thead>
+          <tr>
+            <th data-t="colNo">No.</th>
+            <th data-t="historyDateCol">Date</th>
+            <th data-t="historyStatusCol">
+              Status
+            </th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="historyStudentBody"></tbody>
+      </table>
+    </div>
+
+    <div class="profile-footer">
+      <button id="closeHistoryBtn"
+        class="close-modal-btn"
+        data-t="historyCloseBtn">
+        Close
+      </button>
+    </div>
+  </div>
+</div>
+
 <!-- AUTH LOADING OVERLAY -->
 <div id="authOverlay"
   class="loading-overlay"
@@ -1213,6 +1479,7 @@ import {
 import {
   getFirestore,
   collection,
+  collectionGroup,
   getDocs,
   doc,
   setDoc,
@@ -1362,6 +1629,35 @@ const tt = {
     studentUpdated: "Student updated.",
     studentIdLocked:
       "Student ID cannot be changed.",
+
+    // ✅ NEW: History modal
+    historyBtn:   "📜 History",
+    historyTitle: "Attendance History",
+    historyByDate:    "By Date",
+    historyByStudent: "By Student",
+    historyDatePlaceholder:
+      "-- Select a date --",
+    historyStudentPlaceholder:
+      "-- Select a student --",
+    historyExportBtn: "⬇ Export History CSV",
+    historyCloseBtn:  "Close",
+    historyDateCol:   "Date",
+    historyStatusCol: "Status",
+    historyViewBtn:   "👁 View",
+    historyPresent:   "✅ Present",
+    historyAbsent:    "❌ Absent",
+    historyNoData:
+      "No attendance history found.",
+    historyLoading:
+      "Loading history...",
+    historyPickDate:
+      "Select a date to see attendance.",
+    historyPickStudent:
+      "Select a student to see their history.",
+    historyRecordCountText:
+      "record(s)",
+    historyExportEmpty:
+      "No history to export.",
 
     phStudentName:  "Student full name",
     phStudentId:    "e.g. IT01",
@@ -1540,6 +1836,35 @@ const tt = {
     studentIdLocked:
       "លេខសម្គាល់សិស្សមិនអាចផ្លាស់ប្តូរបានទេ។",
 
+    // ✅ NEW: History modal
+    historyBtn:   "📜 ប្រវត្តិ",
+    historyTitle: "ប្រវត្តិវត្តមាន",
+    historyByDate:    "តាមកាលបរិច្ឆេទ",
+    historyByStudent: "តាមសិស្ស",
+    historyDatePlaceholder:
+      "-- ជ្រើសរើសកាលបរិច្ឆេទ --",
+    historyStudentPlaceholder:
+      "-- ជ្រើសរើសសិស្ស --",
+    historyExportBtn: "⬇ នាំចេញប្រវត្តិ CSV",
+    historyCloseBtn:  "បិទ",
+    historyDateCol:   "កាលបរិច្ឆេទ",
+    historyStatusCol: "ស្ថានភាព",
+    historyViewBtn:   "👁 មើល",
+    historyPresent:   "✅ មានវត្តមាន",
+    historyAbsent:    "❌ អវត្តមាន",
+    historyNoData:
+      "រកមិនឃើញប្រវត្តិវត្តមាន។",
+    historyLoading:
+      "កំពុងផ្ទុកប្រវត្តិ...",
+    historyPickDate:
+      "ជ្រើសរើសកាលបរិច្ឆេទដើម្បីមើលវត្តមាន។",
+    historyPickStudent:
+      "ជ្រើសរើសសិស្សដើម្បីមើលប្រវត្តិ។",
+    historyRecordCountText:
+      "កំណត់ត្រា",
+    historyExportEmpty:
+      "មិនមានប្រវត្តិសម្រាប់នាំចេញទេ។",
+
     phStudentName:  "ឈ្មោះពេញរបស់សិស្ស",
     phStudentId:    "ឧ. IT01",
     phStudentGrade: "ឧ. ថ្នាក់ទី ១០A",
@@ -1689,6 +2014,12 @@ let attendanceMode      = "checkIn";
 // the Edit / Delete modals
 let editTargetStudent   = null;
 let deleteTargetStudent = null;
+
+// ✅ NEW: History modal state
+let historyLoaded      = false;
+let historyAllRecords  = [];       // every record ever, across all sessions
+let historyRecordMap   = {};       // "sessionId_studentId" -> record (for the View button)
+let historyView        = "date";   // "date" | "student"
 
 // ============================================
 // SAFE HTML
@@ -1952,6 +2283,10 @@ function applyTeacherLang(lang) {
   renderStudentList();
   displayRecords(allRecords);
   updateSessionBadge(sessionIsOpen);
+
+  // ✅ NEW: keep History modal text/badges in
+  // sync if it has already been opened/loaded
+  refreshHistoryLanguage();
 }
 
 // ============================================
@@ -2647,6 +2982,498 @@ async function confirmDeleteStudent() {
 
 window._openEditModal   = openEditModal;
 window._openDeleteModal = openDeleteModal;
+
+// ============================================
+// ✅ HISTORY MODAL
+//
+// Reads every attendance record ever created,
+// across every past session/day, using a
+// Firestore "collection group" query on
+// "records" — the same subcollection name used
+// under every sessionAttendance/{sessionId}/
+// records path. This is READ-ONLY: it never
+// writes anything, and it never touches the
+// live "session/current" dashboard above.
+//
+// Nothing needs to be manually "moved" into
+// history — once a session ends, its records
+// already sit permanently in Firestore. This
+// modal is simply a second way to read them.
+// ============================================
+
+async function loadHistoryData() {
+  if (historyLoaded) return;
+
+  const loadingRow = `
+    <tr><td colspan="6" class="history-empty-state">
+      ${esc(t("historyLoading"))}
+    </td></tr>`;
+  const tbody1 =
+    document.getElementById("historyDateBody");
+  const tbody2 =
+    document.getElementById("historyStudentBody");
+  if (tbody1) tbody1.innerHTML = loadingRow;
+  if (tbody2) tbody2.innerHTML = loadingRow;
+
+  historyAllRecords = [];
+  historyRecordMap  = {};
+
+  try {
+    const snap = await getDocs(
+      collectionGroup(db, "records")
+    );
+    snap.forEach(d => {
+      const data = d.data();
+      const record = {
+        id:        d.id,
+        fullName:  data.fullName  || "",
+        studentId: data.studentId || "",
+        sex:       data.sex       || "",
+        grade:     data.grade     || "",
+        sessionId: data.sessionId || "",
+        date:      data.date      || "",
+        status:
+          data.status || "notCheckedInYet",
+        checkInTime:
+          data.checkInTime     || null,
+        checkInDisplay:
+          data.checkInDisplay  || null,
+        checkOutTime:
+          data.checkOutTime    || null,
+        checkOutDisplay:
+          data.checkOutDisplay || null,
+        latitude:
+          data.latitude          ?? "",
+        longitude:
+          data.longitude         ?? "",
+        distanceFromSchool:
+          data.distanceFromSchool ?? ""
+      };
+      historyAllRecords.push(record);
+      historyRecordMap[
+        record.sessionId + "_" + record.studentId
+      ] = record;
+    });
+    historyLoaded = true;
+  } catch (err) {
+    console.error("Load history error:", err);
+  }
+}
+
+function getHistoryDates() {
+  const dates = new Set();
+  historyAllRecords.forEach(r => {
+    if (r.date) dates.add(r.date);
+  });
+  // Newest first
+  return Array.from(dates).sort().reverse();
+}
+
+function populateHistoryDateSelect() {
+  const sel =
+    document.getElementById("historyDateSelect");
+  if (!sel) return;
+
+  sel.innerHTML = "";
+  const placeholder =
+    document.createElement("option");
+  placeholder.value = "";
+  placeholder.setAttribute(
+    "data-t-opt", "historyDatePlaceholder"
+  );
+  placeholder.textContent =
+    t("historyDatePlaceholder");
+  sel.appendChild(placeholder);
+
+  getHistoryDates().forEach(dateStr => {
+    const opt = document.createElement("option");
+    opt.value = dateStr;
+    opt.textContent = dateStr;
+    sel.appendChild(opt);
+  });
+}
+
+function populateHistoryStudentSelect() {
+  const sel = document.getElementById(
+    "historyStudentSelect"
+  );
+  if (!sel) return;
+
+  sel.innerHTML = "";
+  const placeholder =
+    document.createElement("option");
+  placeholder.value = "";
+  placeholder.setAttribute(
+    "data-t-opt", "historyStudentPlaceholder"
+  );
+  placeholder.textContent =
+    t("historyStudentPlaceholder");
+  sel.appendChild(placeholder);
+
+  const sorted = [...allStudents].sort((a, b) =>
+    a.fullName.localeCompare(b.fullName)
+  );
+  sorted.forEach(s => {
+    const opt = document.createElement("option");
+    opt.value = s.studentId;
+    opt.textContent =
+      s.fullName + " (" + s.studentId + ")";
+    sel.appendChild(opt);
+  });
+}
+
+// Reuses the SAME profile modal already used
+// by the live attendance table, so the "View"
+// button opens an identical, familiar popup
+// with full check-in/out times, GPS, distance.
+function attachHistoryViewButtons(scopeEl) {
+  scopeEl.querySelectorAll(".history-view-btn")
+    .forEach(btn => {
+      btn.addEventListener("click", function () {
+        const key = btn.getAttribute("data-key");
+        const record = historyRecordMap[key];
+        if (record) openProfile(record);
+      });
+    });
+}
+
+function renderHistoryByDate(dateStr) {
+  const tbody =
+    document.getElementById("historyDateBody");
+  const countEl = document.getElementById(
+    "historyRecordCount"
+  );
+  if (!tbody) return;
+
+  if (!dateStr) {
+    tbody.innerHTML = `
+      <tr><td colspan="6" class="history-empty-state">
+        <div class="icon">📅</div>
+        ${esc(t("historyPickDate"))}
+      </td></tr>`;
+    if (countEl) countEl.textContent = "";
+    return;
+  }
+
+  const records = historyAllRecords
+    .filter(r => r.date === dateStr)
+    .sort((a, b) =>
+      a.fullName.localeCompare(b.fullName)
+    );
+
+  if (countEl) {
+    countEl.textContent =
+      records.length + " " +
+      t("historyRecordCountText");
+  }
+
+  if (records.length === 0) {
+    tbody.innerHTML = `
+      <tr><td colspan="6" class="history-empty-state">
+        <div class="icon">📭</div>
+        ${esc(t("historyNoData"))}
+      </td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = records.map((r, i) => {
+    const isPresent = r.status === "present";
+    const key = r.sessionId + "_" + r.studentId;
+    return `
+      <tr>
+        <td>${i + 1}</td>
+        <td>${esc(r.fullName)}</td>
+        <td style="color:#7c3aed;
+                   font-weight:600;">
+          ${esc(r.studentId)}
+        </td>
+        <td>${esc(r.grade)}</td>
+        <td>
+          <span class="history-badge ${
+            isPresent ? "present" : "absent"
+          }">
+            ${esc(isPresent
+              ? t("historyPresent")
+              : t("historyAbsent"))}
+          </span>
+        </td>
+        <td>
+          <button class="history-view-btn"
+            data-key="${esc(key)}">
+            ${t("historyViewBtn")}
+          </button>
+        </td>
+      </tr>
+    `;
+  }).join("");
+
+  attachHistoryViewButtons(tbody);
+}
+
+function renderHistoryByStudent(studentId) {
+  const tbody = document.getElementById(
+    "historyStudentBody"
+  );
+  const countEl = document.getElementById(
+    "historyRecordCount"
+  );
+  if (!tbody) return;
+
+  if (!studentId) {
+    tbody.innerHTML = `
+      <tr><td colspan="4" class="history-empty-state">
+        <div class="icon">🎓</div>
+        ${esc(t("historyPickStudent"))}
+      </td></tr>`;
+    if (countEl) countEl.textContent = "";
+    return;
+  }
+
+  const records = historyAllRecords
+    .filter(r => r.studentId === studentId)
+    .sort((a, b) => b.date.localeCompare(a.date));
+
+  if (countEl) {
+    countEl.textContent =
+      records.length + " " +
+      t("historyRecordCountText");
+  }
+
+  if (records.length === 0) {
+    tbody.innerHTML = `
+      <tr><td colspan="4" class="history-empty-state">
+        <div class="icon">📭</div>
+        ${esc(t("historyNoData"))}
+      </td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = records.map((r, i) => {
+    const isPresent = r.status === "present";
+    const key = r.sessionId + "_" + r.studentId;
+    return `
+      <tr>
+        <td>${i + 1}</td>
+        <td>${esc(r.date)}</td>
+        <td>
+          <span class="history-badge ${
+            isPresent ? "present" : "absent"
+          }">
+            ${esc(isPresent
+              ? t("historyPresent")
+              : t("historyAbsent"))}
+          </span>
+        </td>
+        <td>
+          <button class="history-view-btn"
+            data-key="${esc(key)}">
+            ${t("historyViewBtn")}
+          </button>
+        </td>
+      </tr>
+    `;
+  }).join("");
+
+  attachHistoryViewButtons(tbody);
+}
+
+function switchHistoryTab(view) {
+  historyView = view;
+
+  const tabDate =
+    document.getElementById("historyTabDate");
+  const tabStudent = document.getElementById(
+    "historyTabStudent"
+  );
+  const dateFilterRow = document.getElementById(
+    "historyDateFilterRow"
+  );
+  const studentFilterRow = document.getElementById(
+    "historyStudentFilterRow"
+  );
+  const dateTableWrap = document.getElementById(
+    "historyDateTableWrap"
+  );
+  const studentTableWrap = document.getElementById(
+    "historyStudentTableWrap"
+  );
+
+  if (view === "date") {
+    tabDate?.classList.add("active");
+    tabStudent?.classList.remove("active");
+    if (dateFilterRow) {
+      dateFilterRow.style.display = "block";
+    }
+    if (studentFilterRow) {
+      studentFilterRow.style.display = "none";
+    }
+    if (dateTableWrap) {
+      dateTableWrap.style.display = "block";
+    }
+    if (studentTableWrap) {
+      studentTableWrap.style.display = "none";
+    }
+    const dateSel = document.getElementById(
+      "historyDateSelect"
+    );
+    renderHistoryByDate(dateSel ? dateSel.value : "");
+  } else {
+    tabStudent?.classList.add("active");
+    tabDate?.classList.remove("active");
+    if (dateFilterRow) {
+      dateFilterRow.style.display = "none";
+    }
+    if (studentFilterRow) {
+      studentFilterRow.style.display = "block";
+    }
+    if (dateTableWrap) {
+      dateTableWrap.style.display = "none";
+    }
+    if (studentTableWrap) {
+      studentTableWrap.style.display = "block";
+    }
+    const studentSel = document.getElementById(
+      "historyStudentSelect"
+    );
+    renderHistoryByStudent(
+      studentSel ? studentSel.value : ""
+    );
+  }
+}
+
+async function openHistoryModal() {
+  const modal =
+    document.getElementById("historyModal");
+  if (!modal) return;
+  modal.classList.add("show");
+
+  await loadHistoryData();
+
+  populateHistoryDateSelect();
+  populateHistoryStudentSelect();
+
+  // Default to the most recent date, "By Date" tab
+  const dateSel = document.getElementById(
+    "historyDateSelect"
+  );
+  const dates = getHistoryDates();
+  if (dateSel && dates.length > 0) {
+    dateSel.value = dates[0];
+  }
+
+  switchHistoryTab("date");
+}
+
+function closeHistoryModal() {
+  document.getElementById("historyModal")
+    ?.classList.remove("show");
+}
+
+// Keeps the History modal's dynamic content
+// (badges, buttons, dropdown labels) in sync
+// when the teacher switches language while it
+// is open or already loaded.
+function refreshHistoryLanguage() {
+  if (!historyLoaded) return;
+
+  const dateSel = document.getElementById(
+    "historyDateSelect"
+  );
+  const studentSel = document.getElementById(
+    "historyStudentSelect"
+  );
+  const savedDate    = dateSel    ? dateSel.value    : "";
+  const savedStudent = studentSel ? studentSel.value : "";
+
+  populateHistoryDateSelect();
+  populateHistoryStudentSelect();
+
+  if (dateSel)    dateSel.value    = savedDate;
+  if (studentSel) studentSel.value = savedStudent;
+
+  if (historyView === "date") {
+    renderHistoryByDate(
+      dateSel ? dateSel.value : ""
+    );
+  } else {
+    renderHistoryByStudent(
+      studentSel ? studentSel.value : ""
+    );
+  }
+}
+
+// ============================================
+// EXPORT HISTORY CSV
+// Exports every historical record (every date,
+// every student) fetched above into one file.
+// ============================================
+function exportHistoryCSV() {
+  if (historyAllRecords.length === 0) {
+    alert(t("historyExportEmpty"));
+    return;
+  }
+
+  const csv_val = v =>
+    `"${String(v ?? "").replace(/"/g, '""')}"`;
+
+  const headers = [
+    t("historyDateCol"),
+    t("colName"),
+    t("labelStudentId"),
+    t("colSex"),
+    t("colGrade"),
+    t("historyStatusCol"),
+    t("colCheckIn"),
+    t("colCheckOut")
+  ];
+
+  let csv = headers.map(csv_val).join(",") + "\n";
+
+  const sorted = [...historyAllRecords].sort(
+    (a, b) => {
+      const dc = a.date.localeCompare(b.date);
+      if (dc !== 0) return dc;
+      return a.fullName.localeCompare(b.fullName);
+    }
+  );
+
+  sorted.forEach(r => {
+    const isPresent = r.status === "present";
+
+    let sexDisplay = r.sex || "";
+    if (r.sex === "Male") {
+      sexDisplay = t("optMale");
+    } else if (r.sex === "Female") {
+      sexDisplay = t("optFemale");
+    }
+
+    csv += [
+      r.date,
+      r.fullName,
+      r.studentId,
+      sexDisplay,
+      r.grade,
+      isPresent
+        ? t("historyPresent")
+        : t("historyAbsent"),
+      r.checkInDisplay  || "--",
+      r.checkOutDisplay || "--"
+    ].map(csv_val).join(",") + "\n";
+  });
+
+  const blob = new Blob(
+    ["\uFEFF" + csv],
+    { type: "text/csv;charset=utf-8;" }
+  );
+  const url = URL.createObjectURL(blob);
+  const a   = document.createElement("a");
+  a.href     = url;
+  a.download = "attendance-history.csv";
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
 
 // ============================================
 // ✅ START SESSION
@@ -3436,6 +4263,36 @@ document.getElementById("deleteStudentModal")
       closeDeleteModal();
     }
   });
+
+// ✅ NEW: History modal
+document.getElementById("historyBtn")
+  ?.addEventListener("click", openHistoryModal);
+document.getElementById("closeHistoryBtn")
+  ?.addEventListener("click", closeHistoryModal);
+document.getElementById("historyModal")
+  ?.addEventListener("click", function (e) {
+    if (e.target.id === "historyModal") {
+      closeHistoryModal();
+    }
+  });
+document.getElementById("historyTabDate")
+  ?.addEventListener("click", function () {
+    switchHistoryTab("date");
+  });
+document.getElementById("historyTabStudent")
+  ?.addEventListener("click", function () {
+    switchHistoryTab("student");
+  });
+document.getElementById("historyDateSelect")
+  ?.addEventListener("change", function () {
+    renderHistoryByDate(this.value);
+  });
+document.getElementById("historyStudentSelect")
+  ?.addEventListener("change", function () {
+    renderHistoryByStudent(this.value);
+  });
+document.getElementById("historyExportBtn")
+  ?.addEventListener("click", exportHistoryCSV);
 
 // ✅ Live validation when teacher changes times
 [
