@@ -352,11 +352,10 @@
       <table class="attendance-table">
         <thead>
           <tr>
-            <th data-t="colNo">No.</th>
-            <th data-t="colName">Name</th>
             <th data-t="labelStudentId">
               Student ID
             </th>
+            <th data-t="colName">Name</th>
             <th data-t="colSex">Sex</th>
             <th data-t="colGrade">Grade</th>
             <th data-t="colAction">Action</th>
@@ -364,7 +363,7 @@
         </thead>
         <tbody id="studentListBody">
           <tr>
-            <td colspan="6"
+            <td colspan="5"
               class="table-loading">
               Loading...
             </td>
@@ -793,12 +792,11 @@
       <table class="attendance-table">
         <thead>
           <tr>
-            <th data-t="colNo">No.</th>
-            <th data-t="colName">
-              Student Name
-            </th>
             <th data-t="labelStudentId">
               Student ID
+            </th>
+            <th data-t="colName">
+              Student Name
             </th>
             <th data-t="colSex">Sex</th>
             <th data-t="colGrade">
@@ -820,7 +818,7 @@
         </thead>
         <tbody id="attendanceTableBody">
           <tr>
-            <td colspan="9"
+            <td colspan="8"
               class="table-loading">
               Loading...
             </td>
@@ -1495,7 +1493,6 @@ const tt = {
     results: "result(s)",
 
     tableTitle:  "📋 Attendance List",
-    colNo:       "No.",
     colName:     "Student Name",
     colSex:      "Sex",
     colGrade:    "Grade / Class",
@@ -1673,7 +1670,6 @@ const tt = {
     results: "លទ្ធផល",
 
     tableTitle:  "📋 បញ្ជីវត្តមាន",
-    colNo:       "លរ",
     colName:     "ឈ្មោះសិស្ស",
     colSex:      "ភេទ",
     colGrade:    "ថ្នាក់រៀន",
@@ -2341,7 +2337,7 @@ function renderStudentList() {
 
   if (allStudents.length === 0) {
     tbody.innerHTML = `
-      <tr><td colspan="6"
+      <tr><td colspan="5"
         style="padding:20px;text-align:center;
                color:#94a3b8;font-size:13px;">
         ${esc(t("noStudentsYet"))}
@@ -2360,13 +2356,12 @@ function renderStudentList() {
 
     return `
       <tr>
-        <td style="color:#94a3b8;">${i + 1}</td>
-        <td>
-          <strong>${esc(s.fullName)}</strong>
-        </td>
         <td style="color:#7c3aed;
                    font-weight:600;">
           ${esc(s.studentId)}
+        </td>
+        <td>
+          <strong>${esc(s.fullName)}</strong>
         </td>
         <td>${esc(sexDisplay)}</td>
         <td>${esc(s.grade)}</td>
@@ -3073,7 +3068,7 @@ function displayRecords(records) {
   if (records.length === 0) {
     tbody.innerHTML = `
       <tr>
-        <td colspan="9"
+        <td colspan="8"
           style="padding:55px 20px;
                  text-align:center;
                  color:#64748b;">
@@ -3161,18 +3156,15 @@ function displayRecords(records) {
     return `
       <tr style="${isPresent ? "" :
         "background:#fffbeb;"}">
-        <td style="color:#94a3b8;">
-          ${idx + 1}
+        <td style="color:#7c3aed;
+                   font-weight:600;
+                   font-size:12px;">
+          ${esc(r.studentId)}
         </td>
         <td>
           <span class="teacher-name">
             ${esc(r.fullName)}
           </span>
-        </td>
-        <td style="color:#7c3aed;
-                   font-weight:600;
-                   font-size:12px;">
-          ${esc(r.studentId)}
         </td>
         <td>${esc(sexDisplay)}</td>
         <td>${esc(r.grade)}</td>
@@ -3348,9 +3340,8 @@ function exportToCSV() {
     `"${String(v ?? "").replace(/"/g, '""')}"`;
 
   const headers = [
-    t("colNo"),
-    t("colName"),
     t("labelStudentId"),
+    t("colName"),
     t("colSex"),
     t("colGrade"),
     t("colCheckIn"),
@@ -3376,9 +3367,8 @@ function exportToCSV() {
     }
 
     csv += [
-      i + 1,
-      r.fullName,
       r.studentId,
+      r.fullName,
       sexDisplay,
       r.grade,
       isPresent
