@@ -82,7 +82,6 @@
       border: 1px solid #fcd34d;
     }
 
-    /* ✅ NEW: Time range row style */
     .mode-time-row {
       display: flex;
       align-items: center;
@@ -126,7 +125,6 @@
       color: #64748b;
       font-weight: 700;
     }
-    /* Small label under each time input */
     .time-input-wrap {
       display: flex;
       flex-direction: column;
@@ -138,7 +136,6 @@
       color: #94a3b8;
       font-weight: 500;
     }
-    /* Time window error message */
     .time-range-error {
       font-size: 12px;
       color: #dc2626;
@@ -147,10 +144,6 @@
       font-weight: 500;
     }
 
-    /* ✅ NEW: 12-hour AM/PM time selector
-       (replaces native <input type="time">,
-       which cannot reliably show AM/PM
-       across all browsers) */
     .time12-selects {
       display: flex;
       align-items: center;
@@ -178,6 +171,200 @@
       font-size: 14px;
       font-weight: 700;
       color: #64748b;
+    }
+
+    /* ============================================
+       ✅ EDIT BUTTON — safe/normal action
+       Blue, clean, standard appearance
+    ============================================ */
+    .btn-edit-student {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 6px 14px;
+      background: #2563eb;
+      color: #ffffff;
+      border: none;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      white-space: nowrap;
+      min-height: 34px;
+      transition: background 0.18s ease,
+                  box-shadow 0.18s ease;
+      text-decoration: none;
+    }
+    .btn-edit-student:hover {
+      background: #1d4ed8;
+      box-shadow: 0 2px 8px rgba(37,99,235,0.25);
+    }
+    .btn-edit-student:active {
+      background: #1e40af;
+    }
+
+    /* ============================================
+       ✅ DELETE BUTTON — destructive/dangerous
+       Red, strong visual warning, different shape
+       so teacher cannot confuse it with Edit
+    ============================================ */
+    .btn-delete-student {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 6px 14px;
+      background: #ffffff;
+      color: #dc2626;
+      border: 2px solid #dc2626;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      white-space: nowrap;
+      min-height: 34px;
+      transition: background 0.18s ease,
+                  color 0.18s ease,
+                  box-shadow 0.18s ease;
+      text-decoration: none;
+    }
+    .btn-delete-student:hover {
+      background: #dc2626;
+      color: #ffffff;
+      box-shadow: 0 2px 10px rgba(220,38,38,0.30);
+    }
+    .btn-delete-student:active {
+      background: #b91c1c;
+      border-color: #b91c1c;
+      color: #ffffff;
+    }
+
+    /* ============================================
+       ✅ DELETE MODAL — danger header styling
+    ============================================ */
+    .delete-modal-avatar {
+      font-size: 40px;
+      margin-bottom: 6px;
+    }
+    .delete-modal-header-danger {
+      background: linear-gradient(
+        135deg, #fef2f2 0%, #fee2e2 100%
+      );
+      border-bottom: 2px solid #fca5a5;
+      padding: 20px 24px 16px;
+      text-align: center;
+      border-radius: 14px 14px 0 0;
+    }
+    .delete-modal-header-danger h2 {
+      color: #b91c1c;
+      font-size: 18px;
+      margin: 4px 0 0;
+      font-weight: 700;
+    }
+    .delete-warning-text {
+      font-size: 13px;
+      color: #b91c1c;
+      font-weight: 600;
+      text-align: center;
+      background: #fef2f2;
+      border: 1px solid #fca5a5;
+      border-radius: 8px;
+      padding: 10px 14px;
+      margin: 0 0 12px;
+      line-height: 1.5;
+    }
+    .delete-student-info-box {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 12px 16px;
+      margin-bottom: 10px;
+    }
+    .delete-info-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 0;
+      border-bottom: 1px solid #f1f5f9;
+      font-size: 13px;
+    }
+    .delete-info-row:last-child {
+      border-bottom: none;
+    }
+    .delete-info-label {
+      color: #64748b;
+      font-weight: 600;
+      min-width: 100px;
+    }
+    .delete-info-value {
+      color: #1e293b;
+      font-weight: 700;
+      text-align: right;
+    }
+    .delete-info-value.student-id-value {
+      color: #7c3aed;
+      font-size: 14px;
+      letter-spacing: 0.5px;
+    }
+    .delete-cannot-undo {
+      font-size: 11px;
+      color: #94a3b8;
+      text-align: center;
+      margin: 8px 0 0;
+      font-style: italic;
+    }
+
+    /* ============================================
+       ✅ CONFIRM DELETE BUTTON — full red fill
+       inside the modal footer
+    ============================================ */
+    .btn-confirm-delete {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 9px 20px;
+      background: #dc2626;
+      color: #ffffff;
+      border: none;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      min-height: 38px;
+      transition: background 0.18s ease,
+                  box-shadow 0.18s ease;
+    }
+    .btn-confirm-delete:hover {
+      background: #b91c1c;
+      box-shadow: 0 3px 12px rgba(220,38,38,0.35);
+    }
+    .btn-confirm-delete:active {
+      background: #991b1b;
+    }
+
+    /* ============================================
+       ✅ CANCEL BUTTON inside delete modal
+    ============================================ */
+    .btn-cancel-delete {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 9px 20px;
+      background: #f1f5f9;
+      color: #475569;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      min-height: 38px;
+      transition: background 0.18s ease;
+    }
+    .btn-cancel-delete:hover {
+      background: #e2e8f0;
     }
 
   </style>
@@ -426,11 +613,6 @@
       </span>
     </div>
 
-    <!-- =============================================
-         ✅ CHECK-IN TIME RANGE ROW
-         Shown when mode = checkIn
-         Has TWO inputs: Start → End
-    ============================================= -->
     <div class="mode-time-row"
       id="checkInTimeRow">
 
@@ -439,7 +621,6 @@
       </label>
 
       <div class="time-range-group">
-        <!-- Start time -->
         <div class="time-input-wrap">
           <div class="time12-selects"
             id="checkInStartTimeSelects"></div>
@@ -453,10 +634,8 @@
           </span>
         </div>
 
-        <!-- Arrow separator -->
         <span class="time-arrow">→</span>
 
-        <!-- End time -->
         <div class="time-input-wrap">
           <div class="time12-selects"
             id="checkInEndTimeSelects"></div>
@@ -471,18 +650,11 @@
         </div>
       </div>
 
-      <!-- Validation error for check-in times -->
       <p class="time-range-error"
         id="checkInTimeError"></p>
 
     </div>
 
-    <!-- =============================================
-         ✅ CHECK-OUT TIME RANGE ROW
-         Shown when mode = checkOut
-         Has TWO inputs: Start → End
-         Hidden by default
-    ============================================= -->
     <div class="mode-time-row"
       id="checkOutTimeRow"
       style="display:none;">
@@ -492,7 +664,6 @@
       </label>
 
       <div class="time-range-group">
-        <!-- Start time -->
         <div class="time-input-wrap">
           <div class="time12-selects"
             id="checkOutStartTimeSelects"></div>
@@ -506,10 +677,8 @@
           </span>
         </div>
 
-        <!-- Arrow separator -->
         <span class="time-arrow">→</span>
 
-        <!-- End time -->
         <div class="time-input-wrap">
           <div class="time12-selects"
             id="checkOutEndTimeSelects"></div>
@@ -524,15 +693,11 @@
         </div>
       </div>
 
-      <!-- Validation error for check-out times -->
       <p class="time-range-error"
         id="checkOutTimeError"></p>
 
     </div>
 
-    <!-- SESSION OPEN/CLOSE CONTROLS
-         These remain exactly as before.
-         Hidden time inputs kept for compatibility -->
     <div class="session-controls"
       style="margin-top:14px;">
       <input type="hidden"
@@ -630,7 +795,6 @@
             data-t="qrActive">Active</div>
         </div>
 
-        <!-- ✅ NEW: Check-In Window Card -->
         <div class="status-card">
           <div class="status-card-icon">📥</div>
           <div class="status-card-label"
@@ -643,7 +807,6 @@
                    color:#16a34a;">—</div>
         </div>
 
-        <!-- ✅ NEW: Check-Out Window Card -->
         <div class="status-card">
           <div class="status-card-icon">📤</div>
           <div class="status-card-label"
@@ -913,11 +1076,7 @@
   </div>
 </div>
 
-<!-- ============================================
-     ✅ EDIT STUDENT MODAL
-     Teacher can edit Name, Sex, Grade only.
-     Student ID is shown as locked/read-only.
-============================================= -->
+<!-- EDIT STUDENT MODAL -->
 <div id="editStudentModal" class="profile-modal">
   <div class="profile-content">
     <div class="profile-header">
@@ -928,7 +1087,6 @@
     </div>
     <div class="profile-body">
 
-      <!-- Student ID: LOCKED, cannot be edited -->
       <div class="profile-row">
         <span class="profile-row-label">
           🔒 <span data-t="labelStudentId">
@@ -1045,10 +1203,7 @@
   </div>
 </div>
 
-<!-- ============================================
-     ✅ EDIT CONFIRMATION MODAL
-     Shown before actually saving changes.
-============================================= -->
+<!-- EDIT CONFIRMATION MODAL -->
 <div id="editConfirmModal" class="profile-modal">
   <div class="profile-content"
     style="max-width:380px;">
@@ -1127,84 +1282,104 @@
 
 <!-- ============================================
      ✅ DELETE CONFIRMATION MODAL
-     Shows the student's info so the teacher
-     can double-check before deleting.
+     IMPROVED: danger header, student info box,
+     clear Cancel vs Delete buttons
 ============================================= -->
 <div id="deleteStudentModal" class="profile-modal">
   <div class="profile-content"
-    style="max-width:380px;">
-    <div class="profile-header">
-      <div class="profile-avatar">🗑</div>
+    style="max-width:400px;padding:0;
+           overflow:hidden;">
+
+    <!-- ⚠️ Danger header — red background -->
+    <div class="delete-modal-header-danger">
+      <div class="delete-modal-avatar">🗑️</div>
       <h2 data-t="deleteConfirmTitle">
-        Delete Student
+        ⚠️ Delete Student
       </h2>
     </div>
-    <div class="profile-body">
-      <p style="font-size:14px;
-                color:#dc2626;
-                font-weight:600;
-                text-align:center;
-                padding:0 10px 10px;"
+
+    <!-- Body -->
+    <div class="profile-body"
+      style="padding:20px 24px 10px;">
+
+      <!-- Warning text -->
+      <p class="delete-warning-text"
         data-t="deleteConfirmText">
-        Are you sure you want to delete this
-        student? This action cannot be undone.
+        Are you sure you want to delete
+        this student? This action cannot
+        be undone.
       </p>
 
-      <div class="profile-row">
-        <span class="profile-row-label"
-          data-t="labelStudentId">
-          Student ID
-        </span>
-        <span class="profile-row-value"
-          id="deleteConfirmId"></span>
+      <!-- Student info box -->
+      <div class="delete-student-info-box">
+        <div class="delete-info-row">
+          <span class="delete-info-label"
+            data-t="labelStudentId">
+            Student ID
+          </span>
+          <span class="delete-info-value
+                        student-id-value"
+            id="deleteConfirmId">—</span>
+        </div>
+        <div class="delete-info-row">
+          <span class="delete-info-label"
+            data-t="labelStudentName">
+            Full Name
+          </span>
+          <span class="delete-info-value"
+            id="deleteConfirmName">—</span>
+        </div>
+        <div class="delete-info-row">
+          <span class="delete-info-label"
+            data-t="colSex">
+            Sex
+          </span>
+          <span class="delete-info-value"
+            id="deleteConfirmSex">—</span>
+        </div>
+        <div class="delete-info-row">
+          <span class="delete-info-label"
+            data-t="labelStudentGrade">
+            Grade / Class
+          </span>
+          <span class="delete-info-value"
+            id="deleteConfirmGrade">—</span>
+        </div>
       </div>
-      <div class="profile-row">
-        <span class="profile-row-label"
-          data-t="labelStudentName">
-          Full Name
-        </span>
-        <span class="profile-row-value"
-          id="deleteConfirmName"></span>
-      </div>
-      <div class="profile-row">
-        <span class="profile-row-label"
-          data-t="colSex">
-          Sex
-        </span>
-        <span class="profile-row-value"
-          id="deleteConfirmSex"></span>
-      </div>
-      <div class="profile-row">
-        <span class="profile-row-label"
-          data-t="labelStudentGrade">
-          Grade / Class
-        </span>
-        <span class="profile-row-value"
-          id="deleteConfirmGrade"></span>
-      </div>
+
+      <!-- Cannot undo note -->
+      <p class="delete-cannot-undo"
+        data-t="cannotUndoNote">
+        ⚠️ This action cannot be undone.
+      </p>
+
     </div>
+
+    <!-- Footer buttons -->
     <div class="profile-footer"
-      style="gap:10px;">
+      style="gap:10px;
+             padding:14px 24px 20px;
+             justify-content:center;">
+
+      <!-- Cancel — safe, neutral -->
       <button id="cancelDeleteBtn"
-        class="close-modal-btn"
+        class="btn-cancel-delete"
         data-t="cancelBtn">
-        Cancel
+        ✖ Cancel
       </button>
+
+      <!-- Confirm Delete — red, dangerous -->
       <button id="confirmDeleteBtn"
-        class="btn btn-red"
+        class="btn-confirm-delete"
         data-t="deleteBtnConfirm">
-        🗑 Delete
+        🗑️ Delete Student
       </button>
+
     </div>
   </div>
 </div>
 
-<!-- ============================================
-     ✅ DUPLICATE STUDENT ID POPUP
-     Shown instead of the old inline red error
-     when the teacher tries to add a Student ID
-     that already exists in Firebase.
-============================================= -->
+<!-- DUPLICATE STUDENT ID POPUP -->
 <div id="duplicateIdModal" class="profile-modal">
   <div class="profile-content"
     style="max-width:380px;">
@@ -1234,8 +1409,9 @@
   </div>
 </div>
 
-<!-- ✅ NEW: toast notification for Edit Student save success -->
-<div id="toastNotification" class="toast-notification"></div>
+<!-- Toast notification -->
+<div id="toastNotification"
+  class="toast-notification"></div>
 
 <!-- AUTH LOADING OVERLAY -->
 <div id="authOverlay"
@@ -1347,10 +1523,8 @@ onAuthStateChanged(auth, function (user) {
 
 // ============================================
 // TRANSLATIONS
-// ✅ New keys: startTimeLabel, endTimeLabel,
-//    timeRangeError, checkInWindowLabel,
-//    checkOutWindowLabel, errCheckInClosed,
-//    errCheckOutClosed
+// ✅ Added: studentDeleted, cannotUndoNote,
+//    deleteBtnConfirm updated for both languages
 // ============================================
 const tt = {
   en: {
@@ -1375,9 +1549,13 @@ const tt = {
     labelStudentGrade: "Grade / Class",
     colAction:         "Action",
     addStudent:        "➕ Add Student",
-    removeStudent:     "🗑 Remove",
+    removeStudent:     "🗑️ Delete",
     studentAdded:      "Student added.",
-    studentRemoved:    "Student removed.",
+
+    // ✅ UPDATED: delete success uses toast
+    studentRemoved:
+      "✅ Student deleted successfully!",
+
     fillAllFields:
       "Please fill in all fields.",
     studentIdExists:
@@ -1390,16 +1568,20 @@ const tt = {
     confirmRemove:
       "Remove this student?",
 
-    // ✅ NEW: Edit / Delete student modals
+    // Edit / Delete labels
     editBtnLabel:      "✏️ Edit",
-    deleteBtnLabel:    "🗑 Delete",
+    deleteBtnLabel:    "🗑️ Delete",
+
     editStudentTitle:  "✏️ Edit Student",
     saveChangesBtn:    "💾 Save Changes",
     cancelBtn:         "Cancel",
     cancelEditBtnLabel: "✖ Cancel",
     confirmBtn:        "Confirm",
     saveBtnConfirm:    "Save",
-    deleteBtnConfirm:  "🗑 Delete",
+
+    // ✅ UPDATED delete modal button text
+    deleteBtnConfirm:  "🗑️ Delete Student",
+
     editConfirmTitle:  "Confirm Save",
     editConfirmText:
       "Are you sure you want to save " +
@@ -1407,10 +1589,15 @@ const tt = {
     cancelEditConfirmText:
       "Are you sure you want to cancel?\n" +
       "Your unsaved changes will be lost.",
-    deleteConfirmTitle: "Delete Student",
+
+    // ✅ UPDATED delete modal texts
+    deleteConfirmTitle: "⚠️ Delete Student",
     deleteConfirmText:
-      "Are you sure you want to delete this " +
-      "student? This action cannot be undone.",
+      "Are you sure you want to delete " +
+      "this student?",
+    cannotUndoNote:
+      "⚠️ This action cannot be undone.",
+
     newNameLabel:  "New Name",
     newSexLabel:   "New Sex",
     newClassLabel: "New Class",
@@ -1419,6 +1606,10 @@ const tt = {
       "successfully!",
     studentIdLocked:
       "Student ID cannot be changed.",
+
+    // ✅ NEW: delete success toast
+    studentDeleted:
+      "✅ Student deleted successfully!",
 
     phStudentName:  "Student full name",
     phStudentId:    "e.g. IT01",
@@ -1452,34 +1643,21 @@ const tt = {
     noStudentsError:
       "Please add students before starting.",
 
-    // ✅ NEW translation keys for time range
-    startTimeLabel:
-      "Start",
-    endTimeLabel:
-      "End",
+    startTimeLabel:    "Start",
+    endTimeLabel:      "End",
     timeRangeError:
       "End time must be later than start time.",
-    checkInWindowLabel:
-      "Check-In Window",
-    checkOutWindowLabel:
-      "Check-Out Window",
+    checkInWindowLabel:  "Check-In Window",
+    checkOutWindowLabel: "Check-Out Window",
 
-    attModeLabel:
-      "Attendance Mode:",
-    modeCheckIn:
-      "ម៉ោងចូល",
-    modeCheckOut:
-      "ម៉ោងចេញ",
-    checkInTimeLabel:
-      "ម៉ោងចូល:",
-    checkOutTimeLabel:
-      "ម៉ោងចេញ:",
-    currentModeLabel:
-      "Current Mode",
-    modeIndicatorCheckIn:
-      "📥 Check-In Mode",
-    modeIndicatorCheckOut:
-      "📤 Check-Out Mode",
+    attModeLabel:    "Attendance Mode:",
+    modeCheckIn:     "ម៉ោងចូល",
+    modeCheckOut:    "ម៉ោងចេញ",
+    checkInTimeLabel:  "ម៉ោងចូល:",
+    checkOutTimeLabel: "ម៉ោងចេញ:",
+    currentModeLabel:  "Current Mode",
+    modeIndicatorCheckIn:  "📥 Check-In Mode",
+    modeIndicatorCheckOut: "📤 Check-Out Mode",
     qrBadgeCheckIn:
       "✅ QR សម្រាប់ម៉ោងចូល (Check-In QR)",
     qrBadgeCheckOut:
@@ -1508,9 +1686,8 @@ const tt = {
     absentLabel:  "Not Checked In",
     updatedLabel: "Last Updated",
 
-    searchTitle:
-      "🔍 Find a Student",
-    results: "result(s)",
+    searchTitle:  "🔍 Find a Student",
+    results:      "result(s)",
 
     tableTitle:  "📋 Attendance List",
     colName:     "Student Name",
@@ -1563,9 +1740,13 @@ const tt = {
     labelStudentGrade: "ថ្នាក់រៀន",
     colAction:         "សកម្មភាព",
     addStudent:        "➕ បន្ថែមសិស្ស",
-    removeStudent:     "🗑 លុប",
-    studentAdded:      "បន្ថែមសិស្សដោយជោគជ័យ។",
-    studentRemoved:    "សិស្សត្រូវបានលុប។",
+    removeStudent:     "🗑️ លុប",
+
+    // ✅ UPDATED: delete success in Khmer
+    studentRemoved:
+      "✅ បានលុបសិស្សដោយជោគជ័យ!",
+
+    studentAdded:    "បន្ថែមសិស្សដោយជោគជ័យ។",
     fillAllFields:
       "សូមបំពេញព័ត៌មានទាំងអស់។",
     studentIdExists:
@@ -1577,16 +1758,20 @@ const tt = {
     confirmRemove:
       "លុបសិស្សនេះ?",
 
-    // ✅ NEW: Edit / Delete student modals
+    // Edit / Delete labels — Khmer
     editBtnLabel:      "✏️ កែប្រែ",
-    deleteBtnLabel:    "🗑 លុប",
+    deleteBtnLabel:    "🗑️ លុប",
+
     editStudentTitle:  "✏️ កែប្រែព័ត៌មានសិស្ស",
     saveChangesBtn:    "💾 រក្សាទុកការកែប្រែ",
     cancelBtn:         "បោះបង់",
     cancelEditBtnLabel: "✖ បោះបង់",
     confirmBtn:        "បញ្ជាក់",
     saveBtnConfirm:    "រក្សាទុក",
-    deleteBtnConfirm:  "🗑 លុប",
+
+    // ✅ UPDATED delete modal button — Khmer
+    deleteBtnConfirm:  "🗑️ លុបសិស្ស",
+
     editConfirmTitle:  "បញ្ជាក់ការរក្សាទុក",
     editConfirmText:
       "តើអ្នកប្រាកដថាចង់រក្សាទុកការកែប្រែ" +
@@ -1594,10 +1779,14 @@ const tt = {
     cancelEditConfirmText:
       "តើអ្នកប្រាកដថាចង់បោះបង់ការកែប្រែទេ?\n" +
       "ការកែប្រែដែលមិនទាន់រក្សាទុកនឹងបាត់បង់។",
-    deleteConfirmTitle: "លុបសិស្ស",
+
+    // ✅ UPDATED delete modal texts — Khmer
+    deleteConfirmTitle: "⚠️ លុបសិស្ស",
     deleteConfirmText:
-      "តើអ្នកប្រាកដថាចង់លុបសិស្សនេះមែនទេ? " +
-      "សកម្មភាពនេះមិនអាចត្រឡប់វិញបានទេ។",
+      "តើអ្នកប្រាកដថាចង់លុបសិស្សនេះមែនទេ?",
+    cannotUndoNote:
+      "⚠️ ការលុបនេះមិនអាចត្រឡប់វិញបានទេ។",
+
     newNameLabel:  "ឈ្មោះថ្មី",
     newSexLabel:   "ភេទថ្មី",
     newClassLabel: "ថ្នាក់ថ្មី",
@@ -1605,6 +1794,10 @@ const tt = {
       "✅ កែប្រែព័ត៌មានសិស្សបានជោគជ័យ!",
     studentIdLocked:
       "លេខសម្គាល់សិស្សមិនអាចកែប្រែបានទេ",
+
+    // ✅ NEW: delete success toast — Khmer
+    studentDeleted:
+      "✅ បានលុបសិស្សដោយជោគជ័យ!",
 
     phStudentName:  "ឈ្មោះពេញរបស់សិស្ស",
     phStudentId:    "ឧ. IT01",
@@ -1638,34 +1831,21 @@ const tt = {
     noStudentsError:
       "សូមបន្ថែមសិស្សមុន។",
 
-    // ✅ NEW translation keys (Khmer)
-    startTimeLabel:
-      "ចាប់ផ្ដើម",
-    endTimeLabel:
-      "បញ្ចប់",
+    startTimeLabel:    "ចាប់ផ្ដើម",
+    endTimeLabel:      "បញ្ចប់",
     timeRangeError:
       "ម៉ោងបញ្ចប់ត្រូវតែយឺតជាងម៉ោងចាប់ផ្ដើម។",
-    checkInWindowLabel:
-      "ម៉ោងអនុញ្ញាតចូល",
-    checkOutWindowLabel:
-      "ម៉ោងអនុញ្ញាតចេញ",
+    checkInWindowLabel:  "ម៉ោងអនុញ្ញាតចូល",
+    checkOutWindowLabel: "ម៉ោងអនុញ្ញាតចេញ",
 
-    attModeLabel:
-      "របៀបវត្តមាន:",
-    modeCheckIn:
-      "ម៉ោងចូល",
-    modeCheckOut:
-      "ម៉ោងចេញ",
-    checkInTimeLabel:
-      "ម៉ោងចូល:",
-    checkOutTimeLabel:
-      "ម៉ោងចេញ:",
-    currentModeLabel:
-      "របៀបបច្ចុប្បន្ន",
-    modeIndicatorCheckIn:
-      "📥 របៀបម៉ោងចូល",
-    modeIndicatorCheckOut:
-      "📤 របៀបម៉ោងចេញ",
+    attModeLabel:    "របៀបវត្តមាន:",
+    modeCheckIn:     "ម៉ោងចូល",
+    modeCheckOut:    "ម៉ោងចេញ",
+    checkInTimeLabel:  "ម៉ោងចូល:",
+    checkOutTimeLabel: "ម៉ោងចេញ:",
+    currentModeLabel:  "របៀបបច្ចុប្បន្ន",
+    modeIndicatorCheckIn:  "📥 របៀបម៉ោងចូល",
+    modeIndicatorCheckOut: "📤 របៀបម៉ោងចេញ",
     qrBadgeCheckIn:
       "✅ QR សម្រាប់ម៉ោងចូល",
     qrBadgeCheckOut:
@@ -1692,9 +1872,8 @@ const tt = {
     absentLabel:  "មិនទាន់ចុះ",
     updatedLabel: "ធ្វើបច្ចុប្បន្នចុងក្រោយ",
 
-    searchTitle:
-      "🔍 ស្វែងរកសិស្ស",
-    results: "លទ្ធផល",
+    searchTitle:  "🔍 ស្វែងរកសិស្ស",
+    results:      "លទ្ធផល",
 
     tableTitle:  "📋 បញ្ជីវត្តមាន",
     colName:     "ឈ្មោះសិស្ស",
@@ -1717,12 +1896,11 @@ const tt = {
     present:         "✅ មានវត្តមាន",
     notCheckedOut:   "មិនទាន់ចេញ",
 
-    noRecords:
-      "រកមិនឃើញកំណត់ត្រា។",
+    noRecords:    "រកមិនឃើញកំណត់ត្រា។",
     noRecordsSub:
       "ចាប់ផ្ដើមវត្តមានដើម្បីបង្កើតកំណត់ត្រា។",
-    loading:     "កំពុងផ្ទុក…",
-    exportEmpty: "មិនមានទិន្នន័យ។"
+    loading:      "កំពុងផ្ទុក…",
+    exportEmpty:  "មិនមានទិន្នន័យ។"
   }
 };
 
@@ -1750,8 +1928,6 @@ let unsubscribeListener = null;
 let elapsedInterval     = null;
 let attendanceMode      = "checkIn";
 
-// ✅ NEW: currently selected student for
-// the Edit / Delete modals
 let editTargetStudent   = null;
 let editOriginalValues  = null;
 let deleteTargetStudent = null;
@@ -1769,9 +1945,7 @@ function esc(v) {
 }
 
 // ============================================
-// ✅ NEW: TOAST NOTIFICATION
-// Simple auto-dismissing success message.
-// Used by the Edit Student "Save" flow.
+// TOAST NOTIFICATION
 // ============================================
 let toastTimeout = null;
 function showToast(message) {
@@ -1787,21 +1961,8 @@ function showToast(message) {
 }
 
 // ============================================
-// ✅ 12-HOUR <-> 24-HOUR TIME HELPERS
-//
-// The teacher UI shows time as 12-hour AM/PM
-// (7:00 AM, 1:00 PM, etc).
-//
-// Internally, and in Firebase, time is still
-// stored as a 24-hour "HH:MM" string
-// (e.g. "07:00", "13:00") exactly like before,
-// so all existing comparison logic
-// (checkInStartTime, checkInEndTime, etc.)
-// keeps working without any changes.
+// 12-HOUR <-> 24-HOUR TIME HELPERS
 // ============================================
-
-// Convert a 24-hour "HH:MM" string into
-// { hour: 1-12, minute: 0-59, ampm: "AM"|"PM" }
 function to12Parts(hhmm) {
   const safe = (hhmm && hhmm.includes(":"))
     ? hhmm : "07:00";
@@ -1813,27 +1974,20 @@ function to12Parts(hhmm) {
 
   const ampm = h >= 12 ? "PM" : "AM";
   let h12 = h % 12;
-  if (h12 === 0) h12 = 12; // 0 (midnight) and 12 (noon) both show as 12
+  if (h12 === 0) h12 = 12;
 
   return { hour: h12, minute: m, ampm: ampm };
 }
 
-// Convert 12-hour parts back into a reliable
-// 24-hour "HH:MM" string for storage/compare.
-// Handles midnight (12 AM = 00) and
-// noon (12 PM = 12) correctly.
 function to24(hour12, minute, ampm) {
-  let h = parseInt(hour12, 10) % 12; // 12 -> 0
-  if (ampm === "PM") h += 12;        // PM adds 12 (except 12 PM handled above)
+  let h = parseInt(hour12, 10) % 12;
+  if (ampm === "PM") h += 12;
   const hh = String(h).padStart(2, "0");
   const mm = String(parseInt(minute, 10))
     .padStart(2, "0");
   return hh + ":" + mm;
 }
 
-// Format a 24-hour "HH:MM" string as a
-// display string like "7:00 AM" for read-only
-// displays (e.g. the status window cards).
 function formatDisplay12(hhmm) {
   if (!hhmm || hhmm === "--") return "--";
   const p = to12Parts(hhmm);
@@ -1842,10 +1996,6 @@ function formatDisplay12(hhmm) {
     " " + p.ampm;
 }
 
-// Build the Hour / Minute / AM-PM dropdowns
-// inside `containerId`, keeping them in sync
-// with the 24-hour value stored in the
-// hidden input `hiddenId`.
 function buildTimeSelector(containerId, hiddenId) {
   const container =
     document.getElementById(containerId);
@@ -1896,17 +2046,11 @@ function buildTimeSelector(containerId, hiddenId) {
   container.appendChild(minSel);
   container.appendChild(ampmSel);
 
-  // Initialize dropdowns from the hidden
-  // input's current 24-hour value
   setSelectorFrom24(hiddenId);
 
   function syncHiddenFromSelector() {
     hidden.value =
       to24(hourSel.value, minSel.value, ampmSel.value);
-    // Fire a "change" event on the hidden input
-    // so all existing listeners
-    // (validateTimeRange, updateWindowCards, etc.)
-    // keep working exactly as before.
     hidden.dispatchEvent(
       new Event("change", { bubbles: true })
     );
@@ -1923,13 +2067,6 @@ function buildTimeSelector(containerId, hiddenId) {
   );
 }
 
-// Re-sync the visible Hour/Minute/AM-PM
-// dropdowns from whatever 24-hour value is
-// currently sitting in the hidden input.
-// Call this any time the hidden input's
-// .value is set directly from code
-// (e.g. after loading session data from
-// Firebase).
 function setSelectorFrom24(hiddenId) {
   const hidden =
     document.getElementById(hiddenId);
@@ -1950,9 +2087,7 @@ function setSelectorFrom24(hiddenId) {
 }
 
 // ============================================
-// ✅ VALIDATE TIME RANGE FOR ONE MODE
-// Returns true if valid, false if invalid.
-// Also shows/clears the error message.
+// VALIDATE TIME RANGE
 // ============================================
 function validateTimeRange(
   startId, endId, errorId
@@ -1966,7 +2101,7 @@ function validateTimeRange(
 
   if (!startVal || !endVal) {
     if (errEl) errEl.textContent = "";
-    return true; // empty means not set yet
+    return true;
   }
 
   if (endVal <= startVal) {
@@ -2130,8 +2265,7 @@ function generateQRCode(sid) {
 }
 
 // ============================================
-// ✅ UPDATE STATUS PANEL WINDOW CARDS
-// Shows the time windows in the status panel
+// UPDATE WINDOW CARDS
 // ============================================
 function updateWindowCards() {
   const ciStart =
@@ -2172,7 +2306,6 @@ function updateWindowCards() {
 
 // ============================================
 // UPDATE MODE UI
-// ✅ Now shows two time inputs per mode
 // ============================================
 function updateModeUI() {
   const ciBtn =
@@ -2230,7 +2363,6 @@ function updateModeUI() {
     }
   }
 
-  // Update window cards in status panel
   updateWindowCards();
 
   if (sessionIsOpen && currentSessionId) {
@@ -2330,9 +2462,7 @@ function showStatusPanel(sid, startedAt) {
     }
   }
 
-  // Update window cards
   updateWindowCards();
-
   startElapsedTimer(startedAt);
 }
 
@@ -2375,6 +2505,9 @@ async function loadStudents() {
 
 // ============================================
 // RENDER STUDENT LIST
+// ✅ CHANGED: Edit uses btn-edit-student class
+//            Delete uses btn-delete-student class
+//            They look visually different now
 // ============================================
 function renderStudentList() {
   const tbody =
@@ -2392,7 +2525,7 @@ function renderStudentList() {
     return;
   }
 
-  tbody.innerHTML = allStudents.map((s, i) => {
+  tbody.innerHTML = allStudents.map((s) => {
     let sexDisplay = s.sex || "—";
     if (s.sex === "Male") {
       sexDisplay = t("optMale");
@@ -2413,24 +2546,40 @@ function renderStudentList() {
         <td>${esc(s.grade)}</td>
         <td>
           <div style="display:flex;
-                      gap:6px;
-                      flex-wrap:wrap;">
-            <button class="btn btn-blue"
-              style="padding:4px 10px;
-                     font-size:12px;"
+                      gap:8px;
+                      flex-wrap:wrap;
+                      align-items:center;">
+
+            <!-- ✏️ EDIT — blue, normal action -->
+            <button
+              class="btn-edit-student"
+              title="${esc(t("editBtnLabel"))}"
               onclick="window._openEditModal(
                 '${esc(s.studentId)}'
               )">
-              ${t("editBtnLabel")}
+              ✏️ <span data-t="editBtnLabel">
+                ${esc(t("editBtnLabel")
+                  .replace("✏️ ", "")
+                  .replace("✏️", "")
+                  .trim())}
+              </span>
             </button>
-            <button class="btn btn-red"
-              style="padding:4px 10px;
-                     font-size:12px;"
+
+            <!-- 🗑️ DELETE — red outline, danger -->
+            <button
+              class="btn-delete-student"
+              title="${esc(t("deleteBtnLabel"))}"
               onclick="window._openDeleteModal(
                 '${esc(s.studentId)}'
               )">
-              ${t("deleteBtnLabel")}
+              🗑️ <span data-t="deleteBtnLabel">
+                ${esc(t("deleteBtnLabel")
+                  .replace("🗑️ ", "")
+                  .replace("🗑️", "")
+                  .trim())}
+              </span>
             </button>
+
           </div>
         </td>
       </tr>
@@ -2465,8 +2614,6 @@ async function addStudent() {
     return;
   }
 
-  // ✅ Fast local check first (instant feedback,
-  // no network round-trip for the common case)
   if (allStudents.some(s =>
     s.studentId === studentId
   )) {
@@ -2475,11 +2622,6 @@ async function addStudent() {
   }
 
   try {
-    // ✅ NEW: Authoritative check directly
-    // against Firebase right before writing —
-    // catches the case where another device
-    // already added this Student ID since this
-    // page's local student list was last loaded.
     const existingSnap = await getDoc(
       doc(db, "students", studentId)
     );
@@ -2518,7 +2660,7 @@ async function addStudent() {
 }
 
 // ============================================
-// ✅ DUPLICATE STUDENT ID POPUP
+// DUPLICATE STUDENT ID POPUP
 // ============================================
 function openDuplicateIdModal() {
   document.getElementById("duplicateIdModal")
@@ -2531,9 +2673,8 @@ function closeDuplicateIdModal() {
 }
 
 // ============================================
-// ✅ EDIT STUDENT MODAL
-// Teacher can only change Name, Sex, Grade.
-// Student ID is locked and never edited.
+// EDIT STUDENT MODAL
+// (unchanged — all existing logic preserved)
 // ============================================
 function openEditModal(studentId) {
   const student = allStudents.find(
@@ -2560,8 +2701,6 @@ function openEditModal(studentId) {
   if (gradeEl) gradeEl.value = student.grade || "";
   if (msgEl)   msgEl.textContent = "";
 
-  // ✅ NEW: remember the starting values so
-  // Cancel can detect unsaved changes
   editOriginalValues = {
     fullName: student.fullName || "",
     sex:      student.sex || "Male",
@@ -2572,8 +2711,6 @@ function openEditModal(studentId) {
     ?.classList.add("show");
 }
 
-// ✅ NEW: true if the teacher has typed/changed
-// something that hasn't been saved yet
 function hasUnsavedEditChanges() {
   if (!editOriginalValues) return false;
 
@@ -2594,10 +2731,6 @@ function hasUnsavedEditChanges() {
   );
 }
 
-// ✅ NEW: what the Cancel button and the
-// backdrop click both call. Only asks for
-// confirmation if something was actually
-// changed, so it doesn't nag unnecessarily.
 function attemptCloseEditModal() {
   if (hasUnsavedEditChanges()) {
     if (!confirm(t("cancelEditConfirmText"))) {
@@ -2614,9 +2747,6 @@ function closeEditModal() {
   editOriginalValues = null;
 }
 
-// Step 1 of saving: validate the form and
-// show a confirmation modal before writing
-// anything to Firebase.
 function openEditConfirm() {
   if (!editTargetStudent) return;
 
@@ -2663,13 +2793,6 @@ function closeEditConfirm() {
     ?.classList.remove("show");
 }
 
-// Step 2: teacher clicked "Confirm" — now we
-// actually write to Firebase. Only fullName,
-// sex, and grade are updated. studentId is
-// the document ID and is never touched, so
-// the student's Firebase document (and every
-// attendance record that references this
-// Student ID) is completely unaffected.
 async function confirmEditSave() {
   if (!editTargetStudent) return;
 
@@ -2697,11 +2820,7 @@ async function confirmEditSave() {
 
     closeEditConfirm();
     closeEditModal();
-
-    // ✅ NEW: show a success toast instead of
-    // a small inline message
     showToast(t("studentUpdated"));
-
     await loadStudents();
 
   } catch (err) {
@@ -2713,8 +2832,6 @@ async function confirmEditSave() {
       msgEl.textContent =
         t("sessionError") + " " + err.message;
     }
-    // Re-open the edit form so the teacher
-    // can see the error and try again.
     document.getElementById("editStudentModal")
       ?.classList.add("show");
   }
@@ -2722,11 +2839,14 @@ async function confirmEditSave() {
 
 // ============================================
 // ✅ DELETE STUDENT MODAL
-// Shows the student's info before deleting,
-// so the teacher does not delete the wrong
-// student by accident.
+// IMPROVED:
+// - Uses Student ID as unique identifier
+// - Shows full student info in popup
+// - Uses showToast() for success message
+// - Existing Firebase deleteDoc() preserved
 // ============================================
 function openDeleteModal(studentId) {
+  // Find student by Student ID (unique key)
   const student = allStudents.find(
     s => s.studentId === studentId
   );
@@ -2741,6 +2861,7 @@ function openDeleteModal(studentId) {
     sexDisplay = t("optFemale");
   }
 
+  // Populate modal with student info
   document.getElementById("deleteConfirmId")
     .textContent = student.studentId;
   document.getElementById("deleteConfirmName")
@@ -2750,6 +2871,7 @@ function openDeleteModal(studentId) {
   document.getElementById("deleteConfirmGrade")
     .textContent = student.grade || "—";
 
+  // Show the modal
   document.getElementById("deleteStudentModal")
     ?.classList.add("show");
 }
@@ -2760,33 +2882,39 @@ function closeDeleteModal() {
   deleteTargetStudent = null;
 }
 
+// ✅ Existing Firebase deleteDoc() logic
+// preserved exactly — only toast is new
 async function confirmDeleteStudent() {
   if (!deleteTargetStudent) return;
+
+  // Use Student ID as the unique identifier
   const studentId = deleteTargetStudent.studentId;
 
   try {
-    // Deletes only the student's entry in the
-    // "students" collection. Existing
-    // attendance records in
-    // sessionAttendance/{sessionId}/records
-    // are a separate collection and are
-    // never touched by this action.
     await deleteDoc(
       doc(db, "students", studentId)
     );
 
     closeDeleteModal();
 
+    // ✅ IMPROVED: use toast instead of
+    // inline studentListMsg only
+    showToast(t("studentDeleted"));
+
+    // Also set inline message for visibility
     const msg =
       document.getElementById("studentListMsg");
     if (msg) {
       msg.style.color = "#16a34a";
       msg.textContent = t("studentRemoved");
+      setTimeout(() => {
+        msg.textContent = "";
+      }, 3000);
     }
+
+    // Reload student list so deleted student
+    // disappears immediately
     await loadStudents();
-    setTimeout(() => {
-      if (msg) msg.textContent = "";
-    }, 3000);
 
   } catch (err) {
     console.error("Delete student:", err);
@@ -2794,17 +2922,15 @@ async function confirmDeleteStudent() {
   }
 }
 
+// Expose to onclick handlers in HTML
 window._openEditModal   = openEditModal;
 window._openDeleteModal = openDeleteModal;
 
 // ============================================
-// ✅ START SESSION
-// Now reads FOUR time values and stores them
-// all separately in Firebase
+// START SESSION
 // ============================================
 async function startSession() {
 
-  // Read all 4 time values
   const ciStart =
     document.getElementById(
       "checkInStartTime"
@@ -2822,12 +2948,10 @@ async function startSession() {
       "checkOutEndTime"
     ).value;
 
-  // Check all 4 are filled
   if (!ciStart || !ciEnd || !coStart || !coEnd) {
     alert(t("setTimesAlert")); return;
   }
 
-  // Validate check-in range
   if (ciEnd <= ciStart) {
     document.getElementById(
       "checkInTimeError"
@@ -2836,7 +2960,6 @@ async function startSession() {
     return;
   }
 
-  // Validate check-out range
   if (coEnd <= coStart) {
     document.getElementById(
       "checkOutTimeError"
@@ -2849,9 +2972,6 @@ async function startSession() {
     alert(t("noStudentsError")); return;
   }
 
-  // Keep hidden inputs in sync
-  // openTime = earliest time (check-in start)
-  // closeTime = latest time (check-out end)
   document.getElementById("openTime").value =
     ciStart;
   document.getElementById("closeTime").value =
@@ -2863,23 +2983,20 @@ async function startSession() {
   const now   = new Date();
 
   try {
-    // ✅ Store all 4 time windows in Firebase
     await setDoc(
       doc(db, "session", "current"),
       {
-        isOpen:           true,
-        sessionId:        sid,
-        date:             today,
-        // Keep openTime/closeTime for compatibility
-        openTime:         ciStart,
-        closeTime:        coEnd,
-        // ✅ NEW: four separate time windows
-        checkInStartTime: ciStart,
-        checkInEndTime:   ciEnd,
-        checkOutStartTime:coStart,
-        checkOutEndTime:  coEnd,
-        startedAt:        now.toISOString(),
-        attendanceMode:   attendanceMode
+        isOpen:            true,
+        sessionId:         sid,
+        date:              today,
+        openTime:          ciStart,
+        closeTime:         coEnd,
+        checkInStartTime:  ciStart,
+        checkInEndTime:    ciEnd,
+        checkOutStartTime: coStart,
+        checkOutEndTime:   coEnd,
+        startedAt:         now.toISOString(),
+        attendanceMode:    attendanceMode
       }
     );
 
@@ -2977,8 +3094,7 @@ async function endSession() {
 }
 
 // ============================================
-// ✅ LOAD SESSION STATUS
-// Now restores all 4 time values
+// LOAD SESSION STATUS
 // ============================================
 async function loadSessionStatus() {
   try {
@@ -3001,7 +3117,6 @@ async function loadSessionStatus() {
       currentCloseTime = data.closeTime;
       sessionStartedAt = data.startedAt || null;
 
-      // ✅ Restore all 4 time inputs
       const ciStartEl =
         document.getElementById("checkInStartTime");
       const ciEndEl =
@@ -3032,8 +3147,6 @@ async function loadSessionStatus() {
           data.closeTime || "12:59";
       }
 
-      // ✅ Re-sync the visible AM/PM dropdowns
-      // to match the values just restored above
       setSelectorFrom24("checkInStartTime");
       setSelectorFrom24("checkInEndTime");
       setSelectorFrom24("checkOutStartTime");
@@ -3174,7 +3287,7 @@ function displayRecords(records) {
     return;
   }
 
-  tbody.innerHTML = records.map((r, idx) => {
+  tbody.innerHTML = records.map((r) => {
     const isPresent    = r.status === "present";
     const isCheckedOut = !!r.checkOutTime;
 
@@ -3440,7 +3553,7 @@ function exportToCSV() {
   let csv =
     headers.map(csv_val).join(",") + "\n";
 
-  allRecords.forEach((r, i) => {
+  allRecords.forEach((r) => {
     const isPresent    = r.status === "present";
     const isCheckedOut = !!r.checkOutTime;
 
@@ -3545,7 +3658,7 @@ document.getElementById("modeCheckOutBtn")
     switchMode("checkOut");
   });
 
-// ✅ NEW: Edit Student modal buttons
+// Edit Student modal buttons
 document.getElementById("cancelEditBtn")
   ?.addEventListener("click", attemptCloseEditModal);
 document.getElementById("saveEditBtn")
@@ -3557,7 +3670,7 @@ document.getElementById("editStudentModal")
     }
   });
 
-// ✅ NEW: Edit Confirmation modal buttons
+// Edit Confirmation modal buttons
 document.getElementById("cancelEditConfirmBtn")
   ?.addEventListener("click", closeEditConfirm);
 document.getElementById("confirmEditBtn")
@@ -3569,11 +3682,13 @@ document.getElementById("editConfirmModal")
     }
   });
 
-// ✅ NEW: Delete Confirmation modal buttons
+// ✅ Delete Confirmation modal buttons
 document.getElementById("cancelDeleteBtn")
   ?.addEventListener("click", closeDeleteModal);
 document.getElementById("confirmDeleteBtn")
-  ?.addEventListener("click", confirmDeleteStudent);
+  ?.addEventListener(
+    "click", confirmDeleteStudent
+  );
 document.getElementById("deleteStudentModal")
   ?.addEventListener("click", function (e) {
     if (e.target.id === "deleteStudentModal") {
@@ -3581,7 +3696,7 @@ document.getElementById("deleteStudentModal")
     }
   });
 
-// ✅ NEW: Duplicate Student ID popup
+// Duplicate Student ID popup
 document.getElementById("duplicateIdOkBtn")
   ?.addEventListener(
     "click", closeDuplicateIdModal
@@ -3593,7 +3708,7 @@ document.getElementById("duplicateIdModal")
     }
   });
 
-// ✅ Live validation when teacher changes times
+// Live validation for time inputs
 [
   "checkInStartTime",
   "checkInEndTime"
@@ -3625,12 +3740,8 @@ document.getElementById("duplicateIdModal")
 });
 
 // ============================================
-// INIT
+// INIT — build 12-hour time selectors
 // ============================================
-
-// ✅ Build the 12-hour AM/PM dropdowns for
-// all 4 time fields (reads their default
-// 24-hour value from the hidden inputs above)
 buildTimeSelector(
   "checkInStartTimeSelects", "checkInStartTime"
 );
