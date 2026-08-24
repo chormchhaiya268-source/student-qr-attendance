@@ -1191,6 +1191,41 @@
   </div>
 </div>
 
+<!-- ============================================
+     ✅ DUPLICATE STUDENT ID POPUP
+     Shown instead of the old inline red error
+     when the teacher tries to add a Student ID
+     that already exists in Firebase.
+============================================= -->
+<div id="duplicateIdModal" class="profile-modal">
+  <div class="profile-content"
+    style="max-width:380px;">
+    <div class="profile-header">
+      <div class="profile-avatar">⚠️</div>
+      <h2 data-t="duplicateIdTitle">
+        Duplicate Student ID
+      </h2>
+    </div>
+    <div class="profile-body">
+      <p style="font-size:14px;
+                color:#374151;
+                text-align:center;
+                padding:0 10px 6px;"
+        data-t="studentIdExists">
+        A student with this Student ID
+        already exists.
+      </p>
+    </div>
+    <div class="profile-footer">
+      <button id="duplicateIdOkBtn"
+        class="btn btn-blue"
+        data-t="okBtn">
+        OK
+      </button>
+    </div>
+  </div>
+</div>
+
 <!-- AUTH LOADING OVERLAY -->
 <div id="authOverlay"
   class="loading-overlay"
@@ -1335,7 +1370,11 @@ const tt = {
     fillAllFields:
       "Please fill in all fields.",
     studentIdExists:
-      "A student with this ID already exists.",
+      "A student with this Student ID " +
+      "already exists.",
+    duplicateIdTitle:
+      "Duplicate Student ID",
+    okBtn: "OK",
     noStudentsYet:     "No students yet.",
     confirmRemove:
       "Remove this student?",
@@ -1514,6 +1553,9 @@ const tt = {
       "សូមបំពេញព័ត៌មានទាំងអស់។",
     studentIdExists:
       "មានសិស្សដែលមានលេខសម្គាល់នេះហើយ។",
+    duplicateIdTitle:
+      "លេខសម្គាល់ស្ទួន",
+    okBtn: "យល់ព្រម",
     noStudentsYet:  "មិនទាន់មានសិស្សទេ។",
     confirmRemove:
       "លុបសិស្សនេះ?",
@@ -2382,15 +2424,29 @@ async function addStudent() {
     return;
   }
 
+  // ✅ Fast local check first (instant feedback,
+  // no network round-trip for the common case)
   if (allStudents.some(s =>
     s.studentId === studentId
   )) {
-    msgEl.style.color = "#dc2626";
-    msgEl.textContent = t("studentIdExists");
+    openDuplicateIdModal();
     return;
   }
 
   try {
+    // ✅ NEW: Authoritative check directly
+    // against Firebase right before writing —
+    // catches the case where another device
+    // already added this Student ID since this
+    // page's local student list was last loaded.
+    const existingSnap = await getDoc(
+      doc(db, "students", studentId)
+    );
+    if (existingSnap.exists()) {
+      openDuplicateIdModal();
+      return;
+    }
+
     await setDoc(
       doc(db, "students", studentId),
       {
@@ -2418,6 +2474,19 @@ async function addStudent() {
     msgEl.textContent =
       t("sessionError") + " " + err.message;
   }
+}
+
+// ============================================
+// ✅ DUPLICATE STUDENT ID POPUP
+// ============================================
+function openDuplicateIdModal() {
+  document.getElementById("duplicateIdModal")
+    ?.classList.add("show");
+}
+
+function closeDuplicateIdModal() {
+  document.getElementById("duplicateIdModal")
+    ?.classList.remove("show");
 }
 
 // ============================================
@@ -3434,6 +3503,18 @@ document.getElementById("deleteStudentModal")
   ?.addEventListener("click", function (e) {
     if (e.target.id === "deleteStudentModal") {
       closeDeleteModal();
+    }
+  });
+
+// ✅ NEW: Duplicate Student ID popup
+document.getElementById("duplicateIdOkBtn")
+  ?.addEventListener(
+    "click", closeDuplicateIdModal
+  );
+document.getElementById("duplicateIdModal")
+  ?.addEventListener("click", function (e) {
+    if (e.target.id === "duplicateIdModal") {
+      closeDuplicateIdModal();
     }
   });
 
