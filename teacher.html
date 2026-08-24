@@ -930,9 +930,10 @@
 
       <!-- Student ID: LOCKED, cannot be edited -->
       <div class="profile-row">
-        <span class="profile-row-label"
-          data-t="labelStudentId">
-          Student ID
+        <span class="profile-row-label">
+          🔒 <span data-t="labelStudentId">
+            Student ID
+          </span>
         </span>
         <span class="profile-row-value">
           <input type="text"
@@ -951,11 +952,19 @@
           🔒
         </span>
       </div>
+      <p style="font-size:11px;
+                color:#94a3b8;
+                text-align:right;
+                margin:-6px 0 4px;"
+        data-t="studentIdLocked">
+        Student ID cannot be changed.
+      </p>
 
       <div class="profile-row">
-        <span class="profile-row-label"
-          data-t="labelStudentName">
-          Full Name
+        <span class="profile-row-label">
+          ✏️ <span data-t="labelStudentName">
+            Full Name
+          </span>
         </span>
         <span class="profile-row-value">
           <input type="text"
@@ -969,9 +978,10 @@
       </div>
 
       <div class="profile-row">
-        <span class="profile-row-label"
-          data-t="labelStudentSex">
-          Sex
+        <span class="profile-row-label">
+          ✏️ <span data-t="labelStudentSex">
+            Sex
+          </span>
         </span>
         <span class="profile-row-value">
           <select id="editStudentSex"
@@ -994,9 +1004,10 @@
       </div>
 
       <div class="profile-row">
-        <span class="profile-row-label"
-          data-t="labelStudentGrade">
-          Grade / Class
+        <span class="profile-row-label">
+          ✏️ <span data-t="labelStudentGrade">
+            Grade / Class
+          </span>
         </span>
         <span class="profile-row-value">
           <input type="text"
@@ -1019,17 +1030,16 @@
              padding:0 20px;
              margin:4px 0 0;"></p>
 
-    <div class="profile-footer"
-      style="gap:10px;">
-      <button id="cancelEditBtn"
-        class="close-modal-btn"
-        data-t="cancelBtn">
-        Cancel
-      </button>
+    <div class="profile-footer edit-actions">
       <button id="saveEditBtn"
         class="btn btn-blue"
         data-t="saveChangesBtn">
         💾 Save Changes
+      </button>
+      <button id="cancelEditBtn"
+        class="close-modal-btn"
+        data-t="cancelEditBtnLabel">
+        ✖ Cancel
       </button>
     </div>
   </div>
@@ -1108,8 +1118,8 @@
       </button>
       <button id="confirmEditBtn"
         class="btn btn-blue"
-        data-t="confirmBtn">
-        Confirm
+        data-t="saveBtnConfirm">
+        Save
       </button>
     </div>
   </div>
@@ -1223,6 +1233,9 @@
     </div>
   </div>
 </div>
+
+<!-- ✅ NEW: toast notification for Edit Student save success -->
+<div id="toastNotification" class="toast-notification"></div>
 
 <!-- AUTH LOADING OVERLAY -->
 <div id="authOverlay"
@@ -1380,15 +1393,20 @@ const tt = {
     // ✅ NEW: Edit / Delete student modals
     editBtnLabel:      "✏️ Edit",
     deleteBtnLabel:    "🗑 Delete",
-    editStudentTitle:  "Edit Student",
+    editStudentTitle:  "✏️ Edit Student",
     saveChangesBtn:    "💾 Save Changes",
     cancelBtn:         "Cancel",
+    cancelEditBtnLabel: "✖ Cancel",
     confirmBtn:        "Confirm",
+    saveBtnConfirm:    "Save",
     deleteBtnConfirm:  "🗑 Delete",
-    editConfirmTitle:  "Confirm Update",
+    editConfirmTitle:  "Confirm Save",
     editConfirmText:
-      "Are you sure you want to update " +
-      "this student's information?",
+      "Are you sure you want to save " +
+      "these changes?",
+    cancelEditConfirmText:
+      "Are you sure you want to cancel?\n" +
+      "Your unsaved changes will be lost.",
     deleteConfirmTitle: "Delete Student",
     deleteConfirmText:
       "Are you sure you want to delete this " +
@@ -1396,7 +1414,9 @@ const tt = {
     newNameLabel:  "New Name",
     newSexLabel:   "New Sex",
     newClassLabel: "New Class",
-    studentUpdated: "Student updated.",
+    studentUpdated:
+      "✅ Student information updated " +
+      "successfully!",
     studentIdLocked:
       "Student ID cannot be changed.",
 
@@ -1560,14 +1580,20 @@ const tt = {
     // ✅ NEW: Edit / Delete student modals
     editBtnLabel:      "✏️ កែប្រែ",
     deleteBtnLabel:    "🗑 លុប",
-    editStudentTitle:  "កែប្រែសិស្ស",
+    editStudentTitle:  "✏️ កែប្រែព័ត៌មានសិស្ស",
     saveChangesBtn:    "💾 រក្សាទុកការកែប្រែ",
     cancelBtn:         "បោះបង់",
+    cancelEditBtnLabel: "✖ បោះបង់",
     confirmBtn:        "បញ្ជាក់",
+    saveBtnConfirm:    "រក្សាទុក",
     deleteBtnConfirm:  "🗑 លុប",
-    editConfirmTitle:  "បញ្ជាក់ការកែប្រែ",
+    editConfirmTitle:  "បញ្ជាក់ការរក្សាទុក",
     editConfirmText:
-      "តើអ្នកប្រាកដថាចង់កែប្រែព័ត៌មានសិស្សនេះមែនទេ?",
+      "តើអ្នកប្រាកដថាចង់រក្សាទុកការកែប្រែ" +
+      "ទាំងនេះមែនទេ?",
+    cancelEditConfirmText:
+      "តើអ្នកប្រាកដថាចង់បោះបង់ការកែប្រែទេ?\n" +
+      "ការកែប្រែដែលមិនទាន់រក្សាទុកនឹងបាត់បង់។",
     deleteConfirmTitle: "លុបសិស្ស",
     deleteConfirmText:
       "តើអ្នកប្រាកដថាចង់លុបសិស្សនេះមែនទេ? " +
@@ -1575,9 +1601,10 @@ const tt = {
     newNameLabel:  "ឈ្មោះថ្មី",
     newSexLabel:   "ភេទថ្មី",
     newClassLabel: "ថ្នាក់ថ្មី",
-    studentUpdated: "សិស្សត្រូវបានកែប្រែ។",
+    studentUpdated:
+      "✅ កែប្រែព័ត៌មានសិស្សបានជោគជ័យ!",
     studentIdLocked:
-      "លេខសម្គាល់សិស្សមិនអាចផ្លាស់ប្តូរបានទេ។",
+      "លេខសម្គាល់សិស្សមិនអាចកែប្រែបានទេ",
 
     phStudentName:  "ឈ្មោះពេញរបស់សិស្ស",
     phStudentId:    "ឧ. IT01",
@@ -1726,6 +1753,7 @@ let attendanceMode      = "checkIn";
 // ✅ NEW: currently selected student for
 // the Edit / Delete modals
 let editTargetStudent   = null;
+let editOriginalValues  = null;
 let deleteTargetStudent = null;
 
 // ============================================
@@ -1738,6 +1766,24 @@ function esc(v) {
     .replace(/>/g,  "&gt;")
     .replace(/"/g,  "&quot;")
     .replace(/'/g,  "&#039;");
+}
+
+// ============================================
+// ✅ NEW: TOAST NOTIFICATION
+// Simple auto-dismissing success message.
+// Used by the Edit Student "Save" flow.
+// ============================================
+let toastTimeout = null;
+function showToast(message) {
+  const el =
+    document.getElementById("toastNotification");
+  if (!el) return;
+  el.textContent = message;
+  el.classList.add("show");
+  if (toastTimeout) clearTimeout(toastTimeout);
+  toastTimeout = setTimeout(() => {
+    el.classList.remove("show");
+  }, 2600);
 }
 
 // ============================================
@@ -2514,14 +2560,58 @@ function openEditModal(studentId) {
   if (gradeEl) gradeEl.value = student.grade || "";
   if (msgEl)   msgEl.textContent = "";
 
+  // ✅ NEW: remember the starting values so
+  // Cancel can detect unsaved changes
+  editOriginalValues = {
+    fullName: student.fullName || "",
+    sex:      student.sex || "Male",
+    grade:    student.grade || ""
+  };
+
   document.getElementById("editStudentModal")
     ?.classList.add("show");
+}
+
+// ✅ NEW: true if the teacher has typed/changed
+// something that hasn't been saved yet
+function hasUnsavedEditChanges() {
+  if (!editOriginalValues) return false;
+
+  const nameVal =
+    document.getElementById("editStudentName")
+      ?.value.trim() ?? "";
+  const sexVal =
+    document.getElementById("editStudentSex")
+      ?.value ?? "";
+  const gradeVal =
+    document.getElementById("editStudentGrade")
+      ?.value.trim() ?? "";
+
+  return (
+    nameVal  !== editOriginalValues.fullName ||
+    sexVal   !== editOriginalValues.sex ||
+    gradeVal !== editOriginalValues.grade
+  );
+}
+
+// ✅ NEW: what the Cancel button and the
+// backdrop click both call. Only asks for
+// confirmation if something was actually
+// changed, so it doesn't nag unnecessarily.
+function attemptCloseEditModal() {
+  if (hasUnsavedEditChanges()) {
+    if (!confirm(t("cancelEditConfirmText"))) {
+      return;
+    }
+  }
+  closeEditModal();
 }
 
 function closeEditModal() {
   document.getElementById("editStudentModal")
     ?.classList.remove("show");
-  editTargetStudent = null;
+  editTargetStudent  = null;
+  editOriginalValues = null;
 }
 
 // Step 1 of saving: validate the form and
@@ -2608,16 +2698,11 @@ async function confirmEditSave() {
     closeEditConfirm();
     closeEditModal();
 
-    const msg =
-      document.getElementById("studentListMsg");
-    if (msg) {
-      msg.style.color = "#16a34a";
-      msg.textContent = t("studentUpdated");
-    }
+    // ✅ NEW: show a success toast instead of
+    // a small inline message
+    showToast(t("studentUpdated"));
+
     await loadStudents();
-    setTimeout(() => {
-      if (msg) msg.textContent = "";
-    }, 3000);
 
   } catch (err) {
     console.error("Update student:", err);
@@ -3462,13 +3547,13 @@ document.getElementById("modeCheckOutBtn")
 
 // ✅ NEW: Edit Student modal buttons
 document.getElementById("cancelEditBtn")
-  ?.addEventListener("click", closeEditModal);
+  ?.addEventListener("click", attemptCloseEditModal);
 document.getElementById("saveEditBtn")
   ?.addEventListener("click", openEditConfirm);
 document.getElementById("editStudentModal")
   ?.addEventListener("click", function (e) {
     if (e.target.id === "editStudentModal") {
-      closeEditModal();
+      attemptCloseEditModal();
     }
   });
 
