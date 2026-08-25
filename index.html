@@ -17,9 +17,356 @@
     href="https://fonts.googleapis.com/css2?family=Battambang:wght@400;700&family=Kantumruy+Pro:ital,wght@0,100..700;1,100..700&display=swap"
     rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+
+  <style>
+    /* ============================================
+       CONSENT POPUP STYLES
+       Only affects the new consent popup.
+       Nothing else is changed.
+    ============================================ */
+
+    /* Dark overlay behind the popup */
+    .consent-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.65);
+      z-index: 9000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      /* Smooth fade in */
+      animation: consentFadeIn 0.25s ease;
+    }
+    @keyframes consentFadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+
+    /* The popup box itself */
+    .consent-box {
+      background: #ffffff;
+      border-radius: 18px;
+      box-shadow:
+        0 20px 60px rgba(0, 0, 0, 0.25),
+        0 4px 16px rgba(0, 0, 0, 0.12);
+      width: 100%;
+      max-width: 480px;
+      max-height: 90vh;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      /* Smooth slide up */
+      animation: consentSlideUp 0.28s ease;
+    }
+    @keyframes consentSlideUp {
+      from {
+        opacity: 0;
+        transform: translateY(24px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Popup header — blue gradient */
+    .consent-header {
+      background: linear-gradient(
+        135deg, #1e40af 0%, #3b82f6 100%
+      );
+      padding: 22px 24px 18px;
+      border-radius: 18px 18px 0 0;
+      text-align: center;
+      flex-shrink: 0;
+    }
+    .consent-header-icon {
+      font-size: 36px;
+      margin-bottom: 8px;
+      display: block;
+    }
+    .consent-header h2 {
+      color: #ffffff;
+      font-size: 18px;
+      font-weight: 700;
+      margin: 0;
+      line-height: 1.3;
+    }
+
+    /* Popup body */
+    .consent-body {
+      padding: 20px 24px 16px;
+      flex: 1;
+    }
+
+    /* Intro text above the list */
+    .consent-intro {
+      font-size: 13px;
+      color: #475569;
+      margin: 0 0 14px;
+      line-height: 1.5;
+      font-weight: 500;
+    }
+
+    /* The bullet-point list */
+    .consent-list {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .consent-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 13px;
+      color: #334155;
+      line-height: 1.55;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 10px 12px;
+    }
+    .consent-list li .consent-bullet {
+      color: #3b82f6;
+      font-size: 15px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    /* Checkbox row */
+    .consent-checkbox-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      background: #eff6ff;
+      border: 1.5px solid #93c5fd;
+      border-radius: 12px;
+      padding: 13px 14px;
+      margin-bottom: 18px;
+      cursor: pointer;
+      transition: background 0.15s ease,
+                  border-color 0.15s ease;
+    }
+    .consent-checkbox-row:hover {
+      background: #dbeafe;
+      border-color: #3b82f6;
+    }
+    .consent-checkbox-row.checked {
+      background: #f0fdf4;
+      border-color: #86efac;
+    }
+
+    /* The actual checkbox — large tap target */
+    #consentCheckbox {
+      width: 22px;
+      height: 22px;
+      flex-shrink: 0;
+      margin-top: 1px;
+      cursor: pointer;
+      accent-color: #16a34a;
+    }
+
+    /* Checkbox label text */
+    .consent-checkbox-label {
+      font-size: 13px;
+      color: #1e293b;
+      font-weight: 600;
+      line-height: 1.5;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    /* Popup footer */
+    .consent-footer {
+      padding: 0 24px 22px;
+      flex-shrink: 0;
+    }
+
+    /* The "Continue" button */
+    .consent-continue-btn {
+      width: 100%;
+      padding: 13px 20px;
+      border: none;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      transition:
+        background 0.2s ease,
+        opacity 0.2s ease,
+        box-shadow 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 50px;
+    }
+
+    /* Disabled state — locked, grey */
+    .consent-continue-btn:disabled {
+      background: #e2e8f0;
+      color: #94a3b8;
+      cursor: not-allowed;
+      box-shadow: none;
+      opacity: 1;
+    }
+
+    /* Enabled state — green, prominent */
+    .consent-continue-btn:not(:disabled) {
+      background: linear-gradient(
+        135deg, #16a34a 0%, #22c55e 100%
+      );
+      color: #ffffff;
+      box-shadow:
+        0 4px 16px rgba(22, 163, 74, 0.35);
+    }
+    .consent-continue-btn:not(:disabled):hover {
+      background: linear-gradient(
+        135deg, #15803d 0%, #16a34a 100%
+      );
+      box-shadow:
+        0 6px 20px rgba(22, 163, 74, 0.45);
+    }
+    .consent-continue-btn:not(:disabled):active {
+      transform: scale(0.98);
+    }
+
+    /* Small hint shown when checkbox not ticked
+       and user tries to tap the disabled button */
+    .consent-hint {
+      font-size: 12px;
+      color: #f59e0b;
+      text-align: center;
+      margin-top: 8px;
+      min-height: 18px;
+      font-weight: 600;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+    .consent-hint.visible {
+      opacity: 1;
+    }
+
+    /* Mobile-specific tweaks */
+    @media (max-width: 480px) {
+      .consent-box {
+        border-radius: 16px;
+        max-height: 95vh;
+      }
+      .consent-header {
+        padding: 18px 18px 14px;
+        border-radius: 16px 16px 0 0;
+      }
+      .consent-body {
+        padding: 16px 18px 12px;
+      }
+      .consent-footer {
+        padding: 0 18px 18px;
+      }
+      .consent-header h2 {
+        font-size: 16px;
+      }
+      .consent-list li {
+        font-size: 12.5px;
+      }
+      .consent-intro {
+        font-size: 12.5px;
+      }
+      .consent-checkbox-label {
+        font-size: 12.5px;
+      }
+      .consent-continue-btn {
+        font-size: 14px;
+        min-height: 48px;
+      }
+    }
+  </style>
 </head>
 
 <body>
+
+<!-- ============================================
+     ✅ NEW: CONSENT POPUP
+     Shown BEFORE the attendance form.
+     Hidden by default (display:none).
+     JavaScript shows it after session loads.
+     The page body is visible behind the overlay.
+============================================= -->
+<div id="consentOverlay"
+  class="consent-overlay"
+  style="display:none;"
+  aria-modal="true"
+  role="dialog"
+  aria-labelledby="consentTitle">
+
+  <div class="consent-box">
+
+    <!-- Header -->
+    <div class="consent-header">
+      <span class="consent-header-icon">📋</span>
+      <h2 id="consentTitle"
+        data-consent="consentTitle">
+        Attendance Consent
+      </h2>
+    </div>
+
+    <!-- Body -->
+    <div class="consent-body">
+
+      <!-- Intro sentence -->
+      <p class="consent-intro"
+        data-consent="consentIntro">
+        Please read the information below
+        before continuing.
+      </p>
+
+      <!-- Bullet points -->
+      <ul class="consent-list"
+        id="consentList">
+        <!-- Built by JS so language switch
+             updates them correctly -->
+      </ul>
+
+      <!-- Checkbox -->
+      <label class="consent-checkbox-row"
+        id="consentCheckboxRow"
+        for="consentCheckbox">
+        <input
+          type="checkbox"
+          id="consentCheckbox">
+        <span class="consent-checkbox-label"
+          id="consentCheckboxLabel"
+          data-consent="consentCheckboxLabel">
+          I have read and agree to the
+          terms above.
+        </span>
+      </label>
+
+    </div>
+
+    <!-- Footer -->
+    <div class="consent-footer">
+      <button
+        id="consentContinueBtn"
+        class="consent-continue-btn"
+        disabled
+        data-consent="consentBtnLocked">
+        🔒 Continue to Attendance
+      </button>
+      <p class="consent-hint"
+        id="consentHint"
+        data-consent="consentHint">
+        Please tick the checkbox to continue.
+      </p>
+    </div>
+
+  </div>
+</div>
+
 <div class="page-wrapper">
 
   <!-- LANGUAGE SWITCH -->
@@ -146,7 +493,7 @@
                  color:#64748b;">
       </div>
 
-      <!-- ✅ CHANGED: Age → Sex — READ ONLY -->
+      <!-- Sex — READ ONLY -->
       <div class="form-group">
         <label for="sex">
           <span data-i18n="sexLabel"></span>
