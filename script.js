@@ -15,6 +15,12 @@
 //   - Added: after loadAllStudents() completes,
 //     re-check if ID is typed + location verified
 //     and enable the button if both are true
+//
+// ✅ NEW: Consent Popup
+//   - Shows before form when QR is scanned
+//   - Student must tick checkbox to continue
+//   - Full Khmer/English support
+//   - Does NOT change any existing logic
 // ================================================
 
 import {
@@ -91,6 +97,12 @@ let studentsLoaded = false;
 let studentCheckedIn  = false;
 let studentCheckedOut = false;
 let currentStudentId  = null;
+
+// ✅ NEW: Consent state
+// Tracks whether the student has agreed.
+// Reset to false on every fresh page load
+// (which is correct — consent is per-visit).
+let consentGiven = false;
 
 // ================================================
 // TRANSLATIONS
@@ -286,13 +298,44 @@ const i18n = {
     footerSchool:
       "Tepranom High School Attendance System",
 
-    // ✅ Sex display values
     sexMale:      "Male",
     sexFemale:    "Female",
     sexNotSet:    "—",
 
     colDate: "Date",
-    colTime: "Time"
+    colTime: "Time",
+
+    // ✅ NEW: Consent popup translations (English)
+    consentTitle:
+      "📋 Attendance Consent",
+    consentIntro:
+      "Please read the information below " +
+      "before continuing.",
+    consentItems: [
+      "This system is intended for student " +
+        "attendance only.",
+      "Students must use their own Student ID.",
+      "Do not use another student's information " +
+        "or submit attendance for another student.",
+      "Location permission is required to verify " +
+        "that the student is within the school area.",
+      "Information submitted through this system " +
+        "is used for attendance purposes.",
+      "Misuse of the system or attempts to " +
+        "manipulate the attendance system may be " +
+        "reported to the teacher or system " +
+        "administrator.",
+      "Students are responsible for the proper " +
+        "use of their attendance information."
+    ],
+    consentCheckboxLabel:
+      "I have read and agree to the terms above.",
+    consentBtnLocked:
+      "🔒 Continue to Attendance",
+    consentBtnReady:
+      "✅ Continue to Attendance",
+    consentHint:
+      "Please tick the checkbox to continue."
   },
 
   km: {
@@ -488,13 +531,49 @@ const i18n = {
     footerSchool:
       "ប្រព័ន្ធវត្តមានវិទ្យាល័យទេពប្រណម្យ",
 
-    // ✅ Sex display values (Khmer)
     sexMale:      "ប្រុស",
     sexFemale:    "ស្រី",
     sexNotSet:    "—",
 
     colDate: "កាលបរិច្ឆេទ",
-    colTime: "ម៉ោង"
+    colTime: "ម៉ោង",
+
+    // ✅ NEW: Consent popup translations (Khmer)
+    consentTitle:
+      "📋 ការយល់ព្រមចុះវត្តមាន",
+    consentIntro:
+      "សូមអានព័ត៌មានខាងក្រោម " +
+      "មុនពេលបន្តចុះវត្តមាន។",
+    consentItems: [
+      "ប្រព័ន្ធនេះត្រូវបានប្រើសម្រាប់" +
+        "ចុះវត្តមានសិស្សប៉ុណ្ណោះ។",
+      "សិស្សត្រូវប្រើ Student ID " +
+        "របស់ខ្លួនឯង។",
+      "មិនត្រូវប្រើព័ត៌មានរបស់សិស្សផ្សេង " +
+        "ឬចុះវត្តមានជំនួសអ្នកដទៃ។",
+      "សិស្សត្រូវអនុញ្ញាត Location " +
+        "ដើម្បីឲ្យប្រព័ន្ធពិនិត្យថា" +
+        "សិស្សស្ថិតនៅក្នុងតំបន់សាលា។",
+      "ព័ត៌មានដែលបានបញ្ចូលត្រូវប្រើ" +
+        "សម្រាប់គោលបំណងចុះវត្តមាន។",
+      "ការប្រើប្រាស់ប្រព័ន្ធខុសគោលបំណង " +
+        "ឬការព្យាយាមបន្លំប្រព័ន្ធ " +
+        "អាចត្រូវបានរាយការណ៍ទៅគ្រូ " +
+        "ឬអ្នកគ្រប់គ្រងប្រព័ន្ធ។",
+      "សិស្សត្រូវទទួលខុសត្រូវចំពោះ" +
+        "ការប្រើប្រាស់គណនី " +
+        "និងព័ត៌មានរបស់ខ្លួន។"
+    ],
+    consentCheckboxLabel:
+      "ខ្ញុំបានអាន និងយល់ព្រមតាម" +
+      "លក្ខខណ្ឌខាងលើ។",
+    consentBtnLocked:
+      "🔒 បន្តចុះវត្តមាន",
+    consentBtnReady:
+      "✅ បន្តចុះវត្តមាន",
+    consentHint:
+      "សូមធីកប្រអប់យល់ព្រម " +
+      "ដើម្បីបន្តចុះវត្តមាន។"
   }
 };
 
@@ -506,50 +585,20 @@ function i(key) {
 }
 
 // ================================================
-// ✅ FIXED: TRANSLATE SEX VALUE
-//
-// BEFORE: only handled "Male" and "Female"
-// NOW: also handles empty string, undefined,
-//      null gracefully by showing "—"
-//
-// Also handles old Firebase records that may
-// have stored Khmer text directly — we keep
-// them as-is if not recognized.
+// TRANSLATE SEX VALUE
 // ================================================
 function translateSex(sexValue) {
-  // No value at all → show dash
   if (!sexValue || sexValue.trim() === "") {
     return i("sexNotSet");
   }
-
   const normalized = sexValue.trim();
-
-  if (normalized === "Male") {
-    return i("sexMale");
-  }
-  if (normalized === "Female") {
-    return i("sexFemale");
-  }
-
-  // If already in Khmer or unknown value,
-  // return as-is so data is not lost
+  if (normalized === "Male")   return i("sexMale");
+  if (normalized === "Female") return i("sexFemale");
   return normalized;
 }
 
 // ================================================
-// ✅ FIXED: CHECK IF SUBMIT BUTTON SHOULD ENABLE
-//
-// This is a NEW central function that checks
-// ALL conditions needed to enable the button.
-//
-// Called from:
-//   - after student ID validation
-//   - after location is verified
-//   - after students finish loading
-//
-// This fixes the race condition where GPS
-// finished before students loaded (or vice versa)
-// and the button never got enabled.
+// CHECK AND ENABLE SUBMIT BUTTON
 // ================================================
 function checkAndEnableSubmitButton() {
   const submitBtn =
@@ -560,11 +609,6 @@ function checkAndEnableSubmitButton() {
     document.getElementById("studentId")
       ?.value.trim() || "";
 
-  // All conditions must be true:
-  // 1. Students are loaded from Firebase
-  // 2. Student ID is entered
-  // 3. Student exists in Firebase
-  // 4. Location is verified (within 100m)
   const shouldEnable =
     studentsLoaded &&
     idVal !== "" &&
@@ -573,7 +617,6 @@ function checkAndEnableSubmitButton() {
 
   submitBtn.disabled = !shouldEnable;
 
-  // Log for debugging
   console.log(
     "🔘 Submit button check:",
     "\n  studentsLoaded:", studentsLoaded,
@@ -582,6 +625,129 @@ function checkAndEnableSubmitButton() {
     "\n  locationVerified:", locationVerified,
     "\n  → button enabled:", shouldEnable
   );
+}
+
+// ================================================
+// ✅ NEW: CONSENT POPUP FUNCTIONS
+//
+// showConsentPopup()
+//   — renders the bullet list in the current
+//     language, then shows the overlay.
+//
+// updateConsentPopupLanguage()
+//   — called from applyLanguage() so all text
+//     inside the popup updates when language
+//     is switched, even while popup is open.
+//
+// hideConsentPopup()
+//   — hides the overlay after student agrees.
+//
+// The popup is completely separate from all
+// attendance logic. It only controls whether
+// the overlay is visible. All existing
+// location / Firebase / form code is unchanged.
+// ================================================
+
+// Renders the consent list items in the
+// correct language and shows the popup.
+function showConsentPopup() {
+  renderConsentList();
+  updateConsentPopupTexts();
+
+  // Reset checkbox state every time the
+  // popup is shown (fresh consent required)
+  const checkbox =
+    document.getElementById("consentCheckbox");
+  const btn =
+    document.getElementById("consentContinueBtn");
+  const row =
+    document.getElementById("consentCheckboxRow");
+  const hint =
+    document.getElementById("consentHint");
+
+  if (checkbox) checkbox.checked = false;
+  if (btn) {
+    btn.disabled    = true;
+    btn.textContent = i("consentBtnLocked");
+  }
+  if (row) row.classList.remove("checked");
+  if (hint) hint.classList.remove("visible");
+
+  const overlay =
+    document.getElementById("consentOverlay");
+  if (overlay) {
+    overlay.style.display = "flex";
+    // Scroll popup to top in case it was
+    // scrolled down on a previous visit
+    const box =
+      overlay.querySelector(".consent-box");
+    if (box) box.scrollTop = 0;
+  }
+}
+
+// Hides the consent popup overlay.
+// Called when student clicks the enabled button.
+function hideConsentPopup() {
+  const overlay =
+    document.getElementById("consentOverlay");
+  if (overlay) overlay.style.display = "none";
+}
+
+// Rebuilds the <ul> bullet list from the
+// consentItems array for the current language.
+function renderConsentList() {
+  const ul =
+    document.getElementById("consentList");
+  if (!ul) return;
+
+  const items = i18n[currentLang].consentItems;
+  ul.innerHTML = items.map(text => `
+    <li>
+      <span class="consent-bullet">•</span>
+      <span>${text}</span>
+    </li>
+  `).join("");
+}
+
+// Updates all text nodes inside the popup
+// that are NOT the list (title, intro,
+// checkbox label, button, hint).
+// Called on language switch so everything
+// stays in sync.
+function updateConsentPopupTexts() {
+  const titleEl =
+    document.getElementById("consentTitle");
+  const introEl =
+    document.querySelector(".consent-intro");
+  const labelEl =
+    document.getElementById("consentCheckboxLabel");
+  const hintEl =
+    document.getElementById("consentHint");
+  const btn =
+    document.getElementById("consentContinueBtn");
+
+  if (titleEl) {
+    titleEl.textContent = i("consentTitle");
+  }
+  if (introEl) {
+    introEl.textContent = i("consentIntro");
+  }
+  if (labelEl) {
+    labelEl.textContent = i("consentCheckboxLabel");
+  }
+  if (hintEl) {
+    hintEl.textContent = i("consentHint");
+  }
+  if (btn) {
+    // Preserve the locked/unlocked state
+    // when language switches mid-popup
+    const isChecked =
+      document.getElementById("consentCheckbox")
+        ?.checked;
+    btn.textContent = isChecked
+      ? i("consentBtnReady")
+      : i("consentBtnLocked");
+  }
 }
 
 // ================================================
@@ -626,9 +792,7 @@ function applyLanguage(lang) {
     retryBtn.textContent = i("retryLocation");
   }
 
-  // ✅ Re-translate sex field if already filled
-  // Uses rawValue stored in dataset to
-  // convert to the new language
+  // Re-translate sex field if already filled
   const sexField =
     document.getElementById("sex");
   if (
@@ -648,6 +812,12 @@ function applyLanguage(lang) {
   }
 
   updateStudentIdFieldState();
+
+  // ✅ NEW: Re-render consent popup texts
+  // when language is switched.
+  // Works whether the popup is open or closed.
+  renderConsentList();
+  updateConsentPopupTexts();
 }
 
 // ================================================
@@ -747,27 +917,7 @@ function updateStudentIdFieldState() {
 }
 
 // ================================================
-// ✅ FIXED: LOAD STUDENTS FROM FIREBASE
-//
-// CHANGE: Now reads BOTH "sex" AND "age" fields.
-//
-// Why: Old student records in Firebase were
-// created when the system used "age". After the
-// change to "sex", old records still have "age"
-// but no "sex". New records have "sex".
-//
-// Fix: Read sex first. If sex is empty/missing,
-// try reading age as a fallback display value.
-// This way old records still show something
-// instead of being blank.
-//
-// IMPORTANT: We do NOT delete or overwrite
-// existing Firebase data. We just read
-// whichever field exists.
-//
-// ✅ FIX 2: After loading, re-check button state
-// This handles the race condition where GPS
-// finishes before students load.
+// LOAD STUDENTS FROM FIREBASE
 // ================================================
 async function loadAllStudents() {
   studentsLoaded = false;
@@ -783,11 +933,6 @@ async function loadAllStudents() {
       const docId =
         String(d.id).trim().toUpperCase();
 
-      // ✅ Read sex field
-      // If sex is missing (old record), use age
-      // as a display fallback.
-      // Store original Firebase field in rawSex
-      // so we know what the actual DB value is.
       let sexValue = "";
 
       if (
@@ -795,16 +940,12 @@ async function loadAllStudents() {
         data.sex !== null &&
         String(data.sex).trim() !== ""
       ) {
-        // New record: has sex field
         sexValue = String(data.sex).trim();
       } else if (
         data.age !== undefined &&
         data.age !== null &&
         String(data.age).trim() !== ""
       ) {
-        // Old record: has age field, use it
-        // We show it as-is since we cannot
-        // know if it was Male/Female
         sexValue = String(data.age).trim();
       }
 
@@ -826,10 +967,6 @@ async function loadAllStudents() {
     studentsLoaded = true;
     updateStudentIdFieldState();
 
-    // ✅ FIX: After students load, re-validate
-    // any ID the student already typed.
-    // This handles the case where GPS finished
-    // first and students loaded second.
     const el =
       document.getElementById("studentId");
     if (el && el.value.trim() !== "") {
@@ -841,9 +978,6 @@ async function loadAllStudents() {
       validateStudentId();
     }
 
-    // ✅ Always re-check button state after
-    // students load, regardless of whether
-    // ID was already typed
     checkAndEnableSubmitButton();
 
   } catch (err) {
@@ -866,16 +1000,7 @@ function findStudent(rawId) {
 }
 
 // ================================================
-// ✅ FIXED: VALIDATE STUDENT ID — AUTO-FILL
-//
-// CHANGE: Sex field now uses the fixed
-// translateSex() which handles empty values
-// gracefully instead of showing nothing.
-//
-// CHANGE: Button enabling now calls the central
-// checkAndEnableSubmitButton() instead of
-// checking locationVerified directly here.
-// This ensures consistent behavior.
+// VALIDATE STUDENT ID — AUTO-FILL
 // ================================================
 function validateStudentId() {
   const idInput =
@@ -894,7 +1019,6 @@ function validateStudentId() {
       idError.textContent =
         i("errStudentIdLoading");
     }
-    // ✅ Ensure button is disabled while loading
     const submitBtn =
       document.getElementById("submitBtn");
     if (submitBtn) submitBtn.disabled = true;
@@ -905,7 +1029,6 @@ function validateStudentId() {
     if (idError) idError.textContent = "";
     if (msgEl) msgEl.style.display = "none";
     clearAutoFill();
-    // ✅ Recheck button (will disable it)
     checkAndEnableSubmitButton();
     return false;
   }
@@ -919,26 +1042,18 @@ function validateStudentId() {
     }
     if (msgEl) msgEl.style.display = "none";
     clearAutoFill();
-    // ✅ Recheck button (will disable it)
     checkAndEnableSubmitButton();
     return false;
   }
 
-  // ✅ Student found — clear error
   if (idError) idError.textContent = "";
 
-  // Fill name field
   setField("fullName", student.fullName);
 
-  // ✅ FIXED: Fill sex field properly
-  // Store raw English value in dataset
-  // so language switch can re-translate it
   const sexField =
     document.getElementById("sex");
   if (sexField) {
-    // Store the raw Firebase value
     sexField.dataset.rawValue = student.sex;
-    // Display translated value
     const displaySex = translateSex(student.sex);
     sexField.value = displaySex;
 
@@ -949,7 +1064,6 @@ function validateStudentId() {
     );
   }
 
-  // Fill grade field
   setField("grade", student.grade);
 
   if (msgEl) {
@@ -966,8 +1080,6 @@ function validateStudentId() {
     "\n  locationVerified:", locationVerified
   );
 
-  // ✅ FIXED: Use central function to check
-  // all conditions and enable/disable button
   checkAndEnableSubmitButton();
 
   return true;
@@ -1012,14 +1124,7 @@ function haversineDistance(
 }
 
 // ================================================
-// ✅ FIXED: SHOW DISTANCE RESULT
-//
-// CHANGE: Now calls checkAndEnableSubmitButton()
-// instead of directly checking findStudent().
-//
-// This fixes the case where:
-// - GPS finishes AFTER students load
-// - The central function checks all conditions
+// SHOW DISTANCE RESULT
 // ================================================
 function showDistanceResult(loc) {
   const box    =
@@ -1035,9 +1140,6 @@ function showDistanceResult(loc) {
 
   const isNear = loc.distance <= MAX_DISTANCE;
 
-  // ✅ Only one location message on screen
-  // at a time — hide the "checking..." box
-  // now that we have a result.
   if (locBox) locBox.style.display = "none";
   box.style.display = "flex";
 
@@ -1069,9 +1171,6 @@ function showDistanceResult(loc) {
     );
   }
 
-  // ✅ FIXED: Use central function
-  // This handles both cases:
-  // GPS finishes before or after students load
   checkAndEnableSubmitButton();
 }
 
@@ -1091,14 +1190,10 @@ function requestLocation() {
   locationVerified    = false;
   studentLocation     = null;
 
-  // Disable button while re-requesting location
   const submitBtn =
     document.getElementById("submitBtn");
   if (submitBtn) submitBtn.disabled = true;
 
-  // ✅ Only one location message on screen
-  // at a time — show the "checking..." box
-  // and hide any previous result.
   box.style.display   = "none";
   retry.style.display = "none";
   if (locBox) locBox.style.display = "flex";
@@ -1312,6 +1407,10 @@ function handleSessionClosed() {
     if (el) el.style.display = "none";
   });
 
+  // Also hide consent popup if session ends
+  // while popup is open
+  hideConsentPopup();
+
   const closed =
     document.getElementById("sessionClosedCard");
   if (closed) {
@@ -1370,6 +1469,11 @@ function startSessionListener() {
 
 // ================================================
 // LOAD SESSION
+// ✅ CHANGED: After confirming session is valid,
+//    show the consent popup BEFORE running
+//    location + student load.
+//    The actual form flow starts only after
+//    the student clicks "Continue".
 // ================================================
 async function loadSession() {
   const params  =
@@ -1464,29 +1568,50 @@ async function loadSession() {
     deviceToken = getOrCreateDeviceToken();
     startSessionListener();
 
-    // ✅ NEW: If this device already has a
-    // Firebase-verified attendance record for
-    // THIS exact session (e.g. the student
-    // refreshed the page after checking in),
-    // restore the success screen instead of
-    // showing the form again.
+    // ✅ Check if student already has a
+    // verified Firebase attendance record.
+    // If yes — restore success screen directly.
+    // No consent popup needed (already agreed
+    // earlier in the same session).
     const restored = await tryRestoreAttendanceState();
     if (restored) return;
 
-    // Load students AND start location at same time
-    await Promise.all([
-      loadAllStudents(),
-      new Promise(resolve => {
-        requestLocation();
-        resolve();
-      })
-    ]);
+    // ✅ NEW: Show consent popup FIRST.
+    // The popup's "Continue" button will call
+    // startAttendanceFlow() below, which runs
+    // location + student loading.
+    showConsentPopup();
 
   } catch (err) {
     console.error("Load session error:", err);
     formCard.style.display   = "none";
     closedCard.style.display = "block";
   }
+}
+
+// ================================================
+// ✅ NEW: START ATTENDANCE FLOW
+//
+// This is what used to run directly inside
+// loadSession() after session validation.
+//
+// Now it only runs AFTER the student agrees
+// to the consent popup.
+//
+// NOTHING inside this function has changed
+// from the original loadSession() flow.
+// We just moved it here so consent comes first.
+// ================================================
+async function startAttendanceFlow() {
+  // Load students AND start location at same time
+  // (exactly as before — no change)
+  await Promise.all([
+    loadAllStudents(),
+    new Promise(resolve => {
+      requestLocation();
+      resolve();
+    })
+  ]);
 }
 
 // ================================================
@@ -1688,21 +1813,7 @@ function showNotCheckedInCard() {
 }
 
 // ================================================
-// ✅ NEW: LOCAL ATTENDANCE STATE (refresh fix)
-//
-// PURPOSE:
-// Only fixes the UI after an accidental page
-// refresh/reload. It does NOT create or prove
-// attendance by itself — Firebase Firestore is
-// still the real source of truth.
-//
-// The key is scoped to the current sessionId,
-// which already encodes today's date
-// (e.g. "2026-08-21-AB12X9" — see
-// generateSessionId() in teacher.html), so a
-// saved state can never be mistaken for a
-// different day's or a different session's
-// attendance.
+// LOCAL ATTENDANCE STATE (refresh fix)
 // ================================================
 function saveAttendanceState(state) {
   try {
@@ -1715,14 +1826,6 @@ function saveAttendanceState(state) {
   }
 }
 
-// Reads the locally saved state (if any) for
-// THIS session, then verifies it against the
-// real Firestore attendance record before
-// trusting it. Only restores the success page
-// if Firebase confirms the student is actually
-// checked in. Returns true if it restored the
-// UI, false otherwise (caller should continue
-// with the normal form flow).
 async function tryRestoreAttendanceState() {
   let saved = null;
   try {
@@ -1752,10 +1855,6 @@ async function tryRestoreAttendanceState() {
     );
     const snap = await getDoc(recordRef);
 
-    // ✅ Firebase is the real source of truth.
-    // If the record doesn't exist, or was never
-    // actually marked present, do NOT restore —
-    // fall back to the normal attendance form.
     if (!snap.exists()) return false;
     const rd = snap.data();
     if (rd.status !== "present" || !rd.checkInTime) {
@@ -1773,8 +1872,6 @@ async function tryRestoreAttendanceState() {
       !!rd.checkOutTime
     );
 
-    // Keep the local copy in sync with the
-    // verified Firebase values.
     saveAttendanceState({
       studentId:       saved.studentId,
       sessionId:       sessionId,
@@ -1838,7 +1935,6 @@ async function submitAttendance(e) {
     return;
   }
 
-  // Time window check
   if (qrMode === "checkOut") {
     if (!isWithinTimeWindow(
       checkOutStartTime,
@@ -1966,8 +2062,6 @@ async function handleCheckInSubmit(
       const checkDate   =
         now.toLocaleDateString("en-CA");
 
-      // Store the raw English sex value
-      // in Firebase (not translated Khmer)
       const data = {
         fullName:           nameVal,
         sex:                sexVal,
@@ -2027,8 +2121,6 @@ async function handleCheckInSubmit(
       false
     );
 
-    // ✅ NEW: remember this so a page refresh
-    // restores this same success screen
     saveAttendanceState({
       studentId:       studentIdVal,
       sessionId:       sessionId,
@@ -2113,7 +2205,6 @@ async function handleCheckOutSubmit(
         rd.checkOutDisplay || "--",
         true
       );
-      // ✅ NEW: keep local state in sync
       saveAttendanceState({
         studentId:       studentIdVal,
         sessionId:       sessionId,
@@ -2176,8 +2267,6 @@ async function handleCheckOutSubmit(
             true
           );
 
-          // ✅ NEW: remember the completed
-          // checkout so a refresh restores it
           saveAttendanceState({
             studentId:       studentIdVal,
             sessionId:       sessionId,
@@ -2368,8 +2457,6 @@ async function handleCheckOut() {
           doneMsg.style.color   = "#16a34a";
         }
 
-        // ✅ NEW: remember the completed
-        // checkout so a refresh restores it
         const nameElNow = document.getElementById(
           "checkoutStudentName"
         );
@@ -2420,7 +2507,104 @@ async function handleCheckOut() {
 }
 
 // ================================================
-// EVENT LISTENERS
+// ✅ NEW: CONSENT POPUP EVENT LISTENERS
+//
+// 1. Checkbox toggles the button state
+// 2. Button click hides popup and starts flow
+// 3. Clicking the disabled button shows hint
+// ================================================
+
+// When student ticks/unticks the checkbox
+document.getElementById("consentCheckbox")
+  ?.addEventListener("change", function () {
+    const btn =
+      document.getElementById("consentContinueBtn");
+    const row =
+      document.getElementById("consentCheckboxRow");
+    const hint =
+      document.getElementById("consentHint");
+
+    if (this.checked) {
+      if (btn) {
+        btn.disabled    = false;
+        btn.textContent = i("consentBtnReady");
+      }
+      if (row) row.classList.add("checked");
+      if (hint) hint.classList.remove("visible");
+    } else {
+      if (btn) {
+        btn.disabled    = true;
+        btn.textContent = i("consentBtnLocked");
+      }
+      if (row) row.classList.remove("checked");
+    }
+  });
+
+// When student clicks the "Continue" button
+// (only fires when button is enabled)
+document.getElementById("consentContinueBtn")
+  ?.addEventListener("click", async function () {
+    const checkbox =
+      document.getElementById("consentCheckbox");
+
+    if (!checkbox || !checkbox.checked) {
+      // Safety check — should not happen since
+      // button is disabled, but guard anyway
+      const hint =
+        document.getElementById("consentHint");
+      if (hint) hint.classList.add("visible");
+      return;
+    }
+
+    // Mark consent as given
+    consentGiven = true;
+
+    // Hide the popup
+    hideConsentPopup();
+
+    // ✅ NOW start location + student loading
+    // (the actual attendance flow)
+    await startAttendanceFlow();
+  });
+
+// Tapping the disabled button shows the hint
+// message ("please tick the checkbox")
+// so students on mobile understand why it
+// doesn't respond.
+document.getElementById("consentContinueBtn")
+  ?.addEventListener("click", function () {
+    // This also fires when disabled on some
+    // browsers (pointer-events not blocked).
+    // We handle it safely via the checked test
+    // in the handler above.
+  }, { capture: true });
+
+// Show hint if student taps the disabled
+// button area (works on mobile where
+// pointer-events may not fully block taps
+// on disabled buttons)
+document.getElementById("consentOverlay")
+  ?.addEventListener("click", function (e) {
+    const btn =
+      document.getElementById("consentContinueBtn");
+    const checkbox =
+      document.getElementById("consentCheckbox");
+
+    // If they clicked the button area but
+    // checkbox is not ticked, show hint
+    if (
+      e.target === btn &&
+      btn.disabled &&
+      checkbox && !checkbox.checked
+    ) {
+      const hint =
+        document.getElementById("consentHint");
+      if (hint) hint.classList.add("visible");
+    }
+  });
+
+// ================================================
+// EXISTING EVENT LISTENERS (all unchanged)
 // ================================================
 document.getElementById("languageButton")
   ?.addEventListener("click", function () {
