@@ -56,10 +56,9 @@ const lt = {
     forgotPassword:
       "Forgot Password?",
     loginFooter:
-      "🔒 Authorized teachers only",
+      "Authorized teachers only",
     langBtn:      "ខ្មែរ",
 
-    // Validation errors
     errEmailEmpty:
       "Please enter your email address.",
     errEmailInvalid:
@@ -69,29 +68,31 @@ const lt = {
     errPasswordShort:
       "Password must be at least 6 characters.",
 
-    // Auth errors
     errInvalidCredential:
       "Invalid email or password.",
     errTooManyRequests:
-      "Too many failed attempts. Please try again later.",
+      "Too many failed attempts. " +
+      "Please try again later.",
     errNetworkFailed:
-      "Network error. Please check your connection.",
+      "Network error. " +
+      "Please check your connection.",
     errGeneral:
       "Login failed. Please try again.",
 
-    // Success
     loginSuccess:
       "Login successful. Redirecting...",
 
-    // Forgot password
     forgotEmailPrompt:
-      "Enter your email address to reset your password:",
+      "Enter your email address " +
+      "to reset your password:",
     resetEmailSent:
-      "Password reset email sent. Please check your inbox.",
+      "Password reset email sent. " +
+      "Please check your inbox.",
     errResetEmailEmpty:
       "Please enter your email address.",
     errResetFailed:
-      "Could not send reset email. Please try again."
+      "Could not send reset email. " +
+      "Please try again."
   },
 
   km: {
@@ -118,11 +119,10 @@ const lt = {
     forgotPassword:
       "ភ្លេចពាក្យសម្ងាត់?",
     loginFooter:
-      "🔒 សម្រាប់តែគ្រូដែលមានការអនុញ្ញាតប៉ុណ្ណោះ",
+      "សម្រាប់តែគ្រូដែលមានការអនុញ្ញាតប៉ុណ្ណោះ",
     langBtn:
       "English",
 
-    // Validation errors
     errEmailEmpty:
       "សូមបញ្ចូលអាសយដ្ឋានអ៊ីមែលរបស់អ្នក។",
     errEmailInvalid:
@@ -130,31 +130,36 @@ const lt = {
     errPasswordEmpty:
       "សូមបញ្ចូលពាក្យសម្ងាត់របស់អ្នក។",
     errPasswordShort:
-      "ពាក្យសម្ងាត់ត្រូវមានយ៉ាងហោចណាស់ 6 តួអក្សរ។",
+      "ពាក្យសម្ងាត់ត្រូវមានយ៉ាងហោចណាស់ " +
+      "6 តួអក្សរ។",
 
-    // Auth errors
     errInvalidCredential:
       "អ៊ីមែល ឬ ពាក្យសម្ងាត់មិនត្រឹមត្រូវ។",
     errTooManyRequests:
-      "ព្យាយាមច្រើនដងពេក។ សូមព្យាយាមម្តងទៀតពេលក្រោយ។",
+      "ព្យាយាមច្រើនដងពេក។ " +
+      "សូមព្យាយាមម្តងទៀតពេលក្រោយ។",
     errNetworkFailed:
-      "បញ្ហាបណ្តាញ។ សូមពិនិត្យការតភ្ជាប់របស់អ្នក។",
+      "បញ្ហាបណ្តាញ។ " +
+      "សូមពិនិត្យការតភ្ជាប់របស់អ្នក។",
     errGeneral:
-      "ការចូលប្រើបានបរាជ័យ។ សូមព្យាយាមម្តងទៀត។",
+      "ការចូលប្រើបានបរាជ័យ។ " +
+      "សូមព្យាយាមម្តងទៀត។",
 
-    // Success
     loginSuccess:
       "ចូលប្រើបានជោគជ័យ។ កំពុងបញ្ជូន...",
 
-    // Forgot password
     forgotEmailPrompt:
-      "បញ្ចូលអាសយដ្ឋានអ៊ីមែលរបស់អ្នក ដើម្បីកំណត់ពាក្យសម្ងាត់ឡើងវិញ៖",
+      "បញ្ចូលអាសយដ្ឋានអ៊ីមែលរបស់អ្នក " +
+      "ដើម្បីកំណត់ពាក្យសម្ងាត់ឡើងវិញ៖",
     resetEmailSent:
-      "បានផ្ញើអ៊ីមែលកំណត់ពាក្យសម្ងាត់ឡើងវិញ។ សូមពិនិត្យប្រអប់សំបុត្ររបស់អ្នក។",
+      "បានផ្ញើអ៊ីមែលកំណត់ពាក្យសម្ងាត់ " +
+      "ឡើងវិញ។ " +
+      "សូមពិនិត្យប្រអប់សំបុត្ររបស់អ្នក។",
     errResetEmailEmpty:
       "សូមបញ្ចូលអាសយដ្ឋានអ៊ីមែលរបស់អ្នក។",
     errResetFailed:
-      "មិនអាចផ្ញើអ៊ីមែលកំណត់ឡើងវិញ។ សូមព្យាយាមម្តងទៀត។"
+      "មិនអាចផ្ញើអ៊ីមែលកំណត់ឡើងវិញ។ " +
+      "សូមព្យាយាមម្តងទៀត។"
   }
 };
 
@@ -165,7 +170,6 @@ let lLang =
   localStorage.getItem("teacherLanguage")
   || "en";
 
-// Get translation by key
 function l(key) {
   return lt[lLang][key] || key;
 }
@@ -185,7 +189,6 @@ function applyLoginLang(lang) {
 
   document.title = l("pageTitle");
 
-  // Translate all data-l elements
   document.querySelectorAll("[data-l]")
     .forEach(function (el) {
       const key = el.getAttribute("data-l");
@@ -193,7 +196,6 @@ function applyLoginLang(lang) {
       if (val !== key) el.textContent = val;
     });
 
-  // Translate placeholders
   document.querySelectorAll(
     "[data-l-placeholder]"
   ).forEach(function (el) {
@@ -203,7 +205,6 @@ function applyLoginLang(lang) {
     if (val !== key) el.placeholder = val;
   });
 
-  // Language button
   const langBtn =
     document.getElementById("loginLangBtn");
   if (langBtn) {
@@ -223,12 +224,11 @@ function showError(message) {
     document.getElementById("loginSuccessBox");
 
   successBox.style.display = "none";
-  msg.textContent  = message;
+  msg.textContent   = message;
   box.style.display = "flex";
 
-  // Shake animation
   box.classList.remove("shake");
-  void box.offsetWidth; // force reflow
+  void box.offsetWidth;
   box.classList.add("shake");
 }
 
@@ -286,7 +286,6 @@ function setLoading(isLoading) {
 
 // ================================================
 // VALIDATE FORM FIELDS
-// Returns true if valid, false if not
 // ================================================
 function validateLoginForm() {
   let valid = true;
@@ -298,25 +297,23 @@ function validateLoginForm() {
     document.getElementById("loginPassword")
       .value;
 
-  // Clear old errors
   document.getElementById("emailError")
     .textContent = "";
   document.getElementById("passwordError")
     .textContent = "";
 
-  // Email validation
   if (!email) {
     document.getElementById("emailError")
       .textContent = l("errEmailEmpty");
     valid = false;
-  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/
-      .test(email)) {
+  } else if (
+    !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+  ) {
     document.getElementById("emailError")
       .textContent = l("errEmailInvalid");
     valid = false;
   }
 
-  // Password validation
   if (!password) {
     document.getElementById("passwordError")
       .textContent = l("errPasswordEmpty");
@@ -331,8 +328,7 @@ function validateLoginForm() {
 }
 
 // ================================================
-// GET CORRECT REDIRECT URL
-// Works on GitHub Pages and localhost
+// GET REDIRECT URL
 // ================================================
 function getTeacherPageUrl() {
   const origin   = window.location.origin;
@@ -350,7 +346,6 @@ async function handleLogin(e) {
   e.preventDefault();
   hideMessages();
 
-  // Validate first
   if (!validateLoginForm()) return;
 
   const email =
@@ -363,15 +358,12 @@ async function handleLogin(e) {
   setLoading(true);
 
   try {
-    // Sign in with Firebase Authentication
     await signInWithEmailAndPassword(
       auth, email, password
     );
 
-    // Login successful
     showSuccess(l("loginSuccess"));
 
-    // Wait a moment then redirect
     setTimeout(function () {
       window.location.href =
         getTeacherPageUrl();
@@ -381,8 +373,6 @@ async function handleLogin(e) {
     setLoading(false);
     console.error("Login error:", error.code);
 
-    // Show correct error message
-    // based on Firebase error code
     switch (error.code) {
       case "auth/invalid-credential":
       case "auth/wrong-password":
@@ -412,7 +402,6 @@ async function handleLogin(e) {
 async function handleForgotPassword() {
   const email = prompt(l("forgotEmailPrompt"));
 
-  // Teacher cancelled the prompt
   if (email === null) return;
 
   if (!email.trim()) {
@@ -435,20 +424,16 @@ async function handleForgotPassword() {
 
 // ================================================
 // CHECK IF ALREADY LOGGED IN
-// If teacher is already logged in,
-// skip the login page and go to dashboard
 // ================================================
 onAuthStateChanged(auth, function (user) {
   if (user) {
-    // Already logged in
-    // Redirect to teacher dashboard
     window.location.href = getTeacherPageUrl();
   }
-  // If not logged in, stay on login page
 });
 
 // ================================================
 // SHOW / HIDE PASSWORD TOGGLE
+// No emoji — use plain text characters
 // ================================================
 document.getElementById("togglePassword")
   .addEventListener("click", function () {
@@ -458,8 +443,9 @@ document.getElementById("togglePassword")
       input.type === "password";
     input.type =
       isPassword ? "text" : "password";
+    // Use plain text instead of emoji
     this.textContent =
-      isPassword ? "🙈" : "👁";
+      isPassword ? "Hide" : "Show";
   });
 
 // ================================================
@@ -487,6 +473,6 @@ document.getElementById("loginLangBtn")
   });
 
 // ================================================
-// START THE LOGIN PAGE
+// START
 // ================================================
 applyLoginLang(lLang);
