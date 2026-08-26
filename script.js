@@ -1,26 +1,5 @@
 // ================================================
 // script.js — Student Attendance Page
-//
-// BUG FIXES in this version:
-//
-// FIX 1: Sex field was empty because:
-//   - Old Firebase records used "age" not "sex"
-//   - Added fallback: reads sex first, then age
-//   - If neither exists, shows "—" gracefully
-//
-// FIX 2: Submit button stayed disabled because:
-//   - GPS sometimes finishes before students load
-//   - showDistanceResult() ran before studentsMap
-//     was populated, so findStudent() returned null
-//   - Added: after loadAllStudents() completes,
-//     re-check if ID is typed + location verified
-//     and enable the button if both are true
-//
-// ✅ NEW: Consent Popup
-//   - Shows before form when QR is scanned
-//   - Student must tick checkbox to continue
-//   - Full Khmer/English support
-//   - Does NOT change any existing logic
 // ================================================
 
 import {
@@ -85,7 +64,6 @@ let deviceToken      = null;
 let sessionListener  = null;
 let qrMode           = "checkIn";
 
-// Time window values read from Firebase session
 let checkInStartTime  = null;
 let checkInEndTime    = null;
 let checkOutStartTime = null;
@@ -98,14 +76,9 @@ let studentCheckedIn  = false;
 let studentCheckedOut = false;
 let currentStudentId  = null;
 
-// ✅ NEW: Consent state
-// Tracks whether the student has agreed.
-// Reset to false on every fresh page load
-// (which is correct — consent is per-visit).
-let consentGiven = false;
-
 // ================================================
 // TRANSLATIONS
+// All emojis removed from visible UI strings
 // ================================================
 const i18n = {
   en: {
@@ -133,21 +106,21 @@ const i18n = {
       "Attendance session has ended.",
 
     modeBannerCheckIn:
-      "✅ This is a CHECK-IN QR Code",
+      "This is a Check-In QR Code",
     modeBannerCheckOut:
-      "🚪 This is a CHECK-OUT QR Code",
+      "This is a Check-Out QR Code",
 
     requestingLocation:
-      "📍 Checking your location...",
+      "Checking your location...",
     locating:
-      "📍 Checking your location...",
+      "Checking your location...",
     locationVerifiedMsg:
-      "✅ You are inside the school area.",
+      "You are inside the school area.",
     locationTooFar:
-      "❌ You are too far from the school. " +
+      "You are too far from the school. " +
       "Please go to the school to check in.",
     locationDenied:
-      "📍 Please allow location access " +
+      "Please allow location access " +
       "to check in.",
     locationError:
       "Could not get your location. " +
@@ -187,21 +160,21 @@ const i18n = {
       "Auto-filled",
 
     formTitle:
-      "📋 Mark Your Attendance",
+      "Mark Your Attendance",
     formTitleCheckIn:
-      "📥 Check-In",
+      "Check-In",
     formTitleCheckOut:
-      "📤 Check-Out",
+      "Check-Out",
 
     submitButton:
-      "✅ Check In",
+      "Check In",
     submitButtonCheckIn:
-      "✅ Check In",
+      "Check In",
     submitButtonCheckOut:
-      "🚪 Check Out",
+      "Check Out",
 
     autoFillMsg:
-      "✅ Student found. Details filled " +
+      "Student found. Details filled " +
       "automatically.",
     autoFillReadOnly:
       "Name, Sex and Grade are read-only.",
@@ -215,7 +188,8 @@ const i18n = {
       "Please wait. Student data is " +
       "still loading.",
     errLocation:
-      "Location not verified yet. Please wait.",
+      "Location not verified yet. " +
+      "Please wait.",
     errTooFar:
       "You are outside the school area. " +
       "Attendance is not allowed.",
@@ -226,7 +200,8 @@ const i18n = {
       "This device has already checked in " +
       "for this attendance session.",
     errRateLimit:
-      "Too many attempts.\nPlease wait 5 minutes.",
+      "Too many attempts.\n" +
+      "Please wait 5 minutes.",
     errSessionClosed:
       "The attendance session has ended.",
 
@@ -276,13 +251,13 @@ const i18n = {
     notCheckedInYet:
       "Not Checked In Yet",
     checkOutButton:
-      "🚪 Check Out",
+      "Check Out",
     checkingOut:
       "Processing check-out...",
     checkOutSuccess:
-      "✅ You have successfully checked out.",
+      "You have successfully checked out.",
     alreadyCheckedOutMsg:
-      "✅ You have already checked out " +
+      "You have already checked out " +
       "for this session.",
 
     notCheckedInTitle:
@@ -293,49 +268,17 @@ const i18n = {
       "for the Check-In QR code.",
 
     footerSecurity:
-      "🔒 Your location is only used to " +
+      "Your location is only used to " +
       "verify attendance.",
     footerSchool:
       "Tepranom High School Attendance System",
 
-    sexMale:      "Male",
-    sexFemale:    "Female",
-    sexNotSet:    "—",
+    sexMale:   "Male",
+    sexFemale: "Female",
+    sexNotSet: "—",
 
     colDate: "Date",
-    colTime: "Time",
-
-    // ✅ NEW: Consent popup translations (English)
-    consentTitle:
-      "📋 Attendance Consent",
-    consentIntro:
-      "Please read the information below " +
-      "before continuing.",
-    consentItems: [
-      "This system is intended for student " +
-        "attendance only.",
-      "Students must use their own Student ID.",
-      "Do not use another student's information " +
-        "or submit attendance for another student.",
-      "Location permission is required to verify " +
-        "that the student is within the school area.",
-      "Information submitted through this system " +
-        "is used for attendance purposes.",
-      "Misuse of the system or attempts to " +
-        "manipulate the attendance system may be " +
-        "reported to the teacher or system " +
-        "administrator.",
-      "Students are responsible for the proper " +
-        "use of their attendance information."
-    ],
-    consentCheckboxLabel:
-      "I have read and agree to the terms above.",
-    consentBtnLocked:
-      "🔒 Continue to Attendance",
-    consentBtnReady:
-      "✅ Continue to Attendance",
-    consentHint:
-      "Please tick the checkbox to continue."
+    colTime: "Time"
   },
 
   km: {
@@ -362,27 +305,28 @@ const i18n = {
       "វគ្គចុះវត្តមានបានបញ្ចប់។",
 
     modeBannerCheckIn:
-      "✅ QR Code នេះសម្រាប់ម៉ោងចូល",
+      "QR Code នេះសម្រាប់ម៉ោងចូល",
     modeBannerCheckOut:
-      "🚪 QR Code នេះសម្រាប់ម៉ោងចេញ",
+      "QR Code នេះសម្រាប់ម៉ោងចេញ",
 
     requestingLocation:
-      "📍 កំពុងពិនិត្យទីតាំងរបស់អ្នក...",
+      "កំពុងពិនិត្យទីតាំងរបស់អ្នក...",
     locating:
-      "📍 កំពុងពិនិត្យទីតាំងរបស់អ្នក...",
+      "កំពុងពិនិត្យទីតាំងរបស់អ្នក...",
     locationVerifiedMsg:
-      "✅ អ្នកស្ថិតនៅក្នុងបរិវេណសាលា។",
+      "អ្នកស្ថិតនៅក្នុងបរិវេណសាលា។",
     locationTooFar:
-      "❌ អ្នកនៅឆ្ងាយពីសាលា។ " +
+      "អ្នកនៅឆ្ងាយពីសាលា។ " +
       "សូមទៅកាន់សាលា ដើម្បីចុះវត្តមាន។",
     locationDenied:
-      "📍 សូមអនុញ្ញាតការប្រើទីតាំង " +
+      "សូមអនុញ្ញាតការប្រើទីតាំង " +
       "ដើម្បីចុះវត្តមាន។",
     locationError:
       "មិនអាចទទួលទីតាំងរបស់អ្នក។ " +
       "សូមព្យាយាមម្តងទៀត។",
     locationPoorAccuracy:
-      "មិនអាចផ្ទៀងផ្ទាត់ទីតាំងរបស់អ្នកបានទេ។ " +
+      "មិនអាចផ្ទៀងផ្ទាត់ទីតាំងរបស់អ្នក" +
+      "បានទេ។ " +
       "សូមព្យាយាមម្តងទៀត។",
     locationNotSupported:
       "កម្មវិធីរុករករបស់អ្នកមិនអាចប្រើ" +
@@ -416,21 +360,21 @@ const i18n = {
       "បំពេញដោយស្វ័យប្រវត្តិ",
 
     formTitle:
-      "📋 ចុះវត្តមានរបស់អ្នក",
+      "ចុះវត្តមានរបស់អ្នក",
     formTitleCheckIn:
-      "📥 ចុះម៉ោងចូល",
+      "ចុះម៉ោងចូល",
     formTitleCheckOut:
-      "📤 ចុះម៉ោងចេញ",
+      "ចុះម៉ោងចេញ",
 
     submitButton:
-      "✅ ចុះម៉ោងចូល",
+      "ចុះម៉ោងចូល",
     submitButtonCheckIn:
-      "✅ ចុះម៉ោងចូល",
+      "ចុះម៉ោងចូល",
     submitButtonCheckOut:
-      "🚪 ចុះម៉ោងចេញ",
+      "ចុះម៉ោងចេញ",
 
     autoFillMsg:
-      "✅ រកឃើញសិស្ស។ " +
+      "រកឃើញសិស្ស។ " +
       "ព័ត៌មានត្រូវបានបំពេញ" +
       "ដោយស្វ័យប្រវត្តិ។",
     autoFillReadOnly:
@@ -508,14 +452,13 @@ const i18n = {
     notCheckedInYet:
       "មិនទាន់ចុះវត្តមាន",
     checkOutButton:
-      "🚪 ចុះម៉ោងចេញ",
+      "ចុះម៉ោងចេញ",
     checkingOut:
       "កំពុងដំណើរការចុះម៉ោងចេញ...",
     checkOutSuccess:
-      "✅ អ្នកបានចុះម៉ោងចេញ" +
-      "ដោយជោគជ័យ។",
+      "អ្នកបានចុះម៉ោងចេញដោយជោគជ័យ។",
     alreadyCheckedOutMsg:
-      "✅ អ្នកបានចុះម៉ោងចេញរួចហើយ។",
+      "អ្នកបានចុះម៉ោងចេញរួចហើយ។",
 
     notCheckedInTitle:
       "មិនទាន់ចុះវត្តមាន",
@@ -525,55 +468,18 @@ const i18n = {
       "សូមស្នើ QR Code ម៉ោងចូលពីគ្រូ។",
 
     footerSecurity:
-      "🔒 ទីតាំងរបស់អ្នកត្រូវបានប្រើ" +
-      "តែ​សម្រាប់​ផ្ទៀង​ផ្ទាត់​វត្តមាន" +
-      "​ប៉ុណ្ណោះ។",
+      "ទីតាំងរបស់អ្នកត្រូវបានប្រើ" +
+      "តែសម្រាប់ផ្ទៀងផ្ទាត់វត្តមាន" +
+      "ប៉ុណ្ណោះ។",
     footerSchool:
       "ប្រព័ន្ធវត្តមានវិទ្យាល័យទេពប្រណម្យ",
 
-    sexMale:      "ប្រុស",
-    sexFemale:    "ស្រី",
-    sexNotSet:    "—",
+    sexMale:   "ប្រុស",
+    sexFemale: "ស្រី",
+    sexNotSet: "—",
 
     colDate: "កាលបរិច្ឆេទ",
-    colTime: "ម៉ោង",
-
-    // ✅ NEW: Consent popup translations (Khmer)
-    consentTitle:
-      "📋 ការយល់ព្រមចុះវត្តមាន",
-    consentIntro:
-      "សូមអានព័ត៌មានខាងក្រោម " +
-      "មុនពេលបន្តចុះវត្តមាន។",
-    consentItems: [
-      "ប្រព័ន្ធនេះត្រូវបានប្រើសម្រាប់" +
-        "ចុះវត្តមានសិស្សប៉ុណ្ណោះ។",
-      "សិស្សត្រូវប្រើ Student ID " +
-        "របស់ខ្លួនឯង។",
-      "មិនត្រូវប្រើព័ត៌មានរបស់សិស្សផ្សេង " +
-        "ឬចុះវត្តមានជំនួសអ្នកដទៃ។",
-      "សិស្សត្រូវអនុញ្ញាត Location " +
-        "ដើម្បីឲ្យប្រព័ន្ធពិនិត្យថា" +
-        "សិស្សស្ថិតនៅក្នុងតំបន់សាលា។",
-      "ព័ត៌មានដែលបានបញ្ចូលត្រូវប្រើ" +
-        "សម្រាប់គោលបំណងចុះវត្តមាន។",
-      "ការប្រើប្រាស់ប្រព័ន្ធខុសគោលបំណង " +
-        "ឬការព្យាយាមបន្លំប្រព័ន្ធ " +
-        "អាចត្រូវបានរាយការណ៍ទៅគ្រូ " +
-        "ឬអ្នកគ្រប់គ្រងប្រព័ន្ធ។",
-      "សិស្សត្រូវទទួលខុសត្រូវចំពោះ" +
-        "ការប្រើប្រាស់គណនី " +
-        "និងព័ត៌មានរបស់ខ្លួន។"
-    ],
-    consentCheckboxLabel:
-      "ខ្ញុំបានអាន និងយល់ព្រមតាម" +
-      "លក្ខខណ្ឌខាងលើ។",
-    consentBtnLocked:
-      "🔒 បន្តចុះវត្តមាន",
-    consentBtnReady:
-      "✅ បន្តចុះវត្តមាន",
-    consentHint:
-      "សូមធីកប្រអប់យល់ព្រម " +
-      "ដើម្បីបន្តចុះវត្តមាន។"
+    colTime: "ម៉ោង"
   }
 };
 
@@ -616,138 +522,6 @@ function checkAndEnableSubmitButton() {
     locationVerified;
 
   submitBtn.disabled = !shouldEnable;
-
-  console.log(
-    "🔘 Submit button check:",
-    "\n  studentsLoaded:", studentsLoaded,
-    "\n  idVal:", idVal,
-    "\n  studentFound:", findStudent(idVal) !== null,
-    "\n  locationVerified:", locationVerified,
-    "\n  → button enabled:", shouldEnable
-  );
-}
-
-// ================================================
-// ✅ NEW: CONSENT POPUP FUNCTIONS
-//
-// showConsentPopup()
-//   — renders the bullet list in the current
-//     language, then shows the overlay.
-//
-// updateConsentPopupLanguage()
-//   — called from applyLanguage() so all text
-//     inside the popup updates when language
-//     is switched, even while popup is open.
-//
-// hideConsentPopup()
-//   — hides the overlay after student agrees.
-//
-// The popup is completely separate from all
-// attendance logic. It only controls whether
-// the overlay is visible. All existing
-// location / Firebase / form code is unchanged.
-// ================================================
-
-// Renders the consent list items in the
-// correct language and shows the popup.
-function showConsentPopup() {
-  renderConsentList();
-  updateConsentPopupTexts();
-
-  // Reset checkbox state every time the
-  // popup is shown (fresh consent required)
-  const checkbox =
-    document.getElementById("consentCheckbox");
-  const btn =
-    document.getElementById("consentContinueBtn");
-  const row =
-    document.getElementById("consentCheckboxRow");
-  const hint =
-    document.getElementById("consentHint");
-
-  if (checkbox) checkbox.checked = false;
-  if (btn) {
-    btn.disabled    = true;
-    btn.textContent = i("consentBtnLocked");
-  }
-  if (row) row.classList.remove("checked");
-  if (hint) hint.classList.remove("visible");
-
-  const overlay =
-    document.getElementById("consentOverlay");
-  if (overlay) {
-    overlay.style.display = "flex";
-    // Scroll popup to top in case it was
-    // scrolled down on a previous visit
-    const box =
-      overlay.querySelector(".consent-box");
-    if (box) box.scrollTop = 0;
-  }
-}
-
-// Hides the consent popup overlay.
-// Called when student clicks the enabled button.
-function hideConsentPopup() {
-  const overlay =
-    document.getElementById("consentOverlay");
-  if (overlay) overlay.style.display = "none";
-}
-
-// Rebuilds the <ul> bullet list from the
-// consentItems array for the current language.
-function renderConsentList() {
-  const ul =
-    document.getElementById("consentList");
-  if (!ul) return;
-
-  const items = i18n[currentLang].consentItems;
-  ul.innerHTML = items.map(text => `
-    <li>
-      <span class="consent-bullet">•</span>
-      <span>${text}</span>
-    </li>
-  `).join("");
-}
-
-// Updates all text nodes inside the popup
-// that are NOT the list (title, intro,
-// checkbox label, button, hint).
-// Called on language switch so everything
-// stays in sync.
-function updateConsentPopupTexts() {
-  const titleEl =
-    document.getElementById("consentTitle");
-  const introEl =
-    document.querySelector(".consent-intro");
-  const labelEl =
-    document.getElementById("consentCheckboxLabel");
-  const hintEl =
-    document.getElementById("consentHint");
-  const btn =
-    document.getElementById("consentContinueBtn");
-
-  if (titleEl) {
-    titleEl.textContent = i("consentTitle");
-  }
-  if (introEl) {
-    introEl.textContent = i("consentIntro");
-  }
-  if (labelEl) {
-    labelEl.textContent = i("consentCheckboxLabel");
-  }
-  if (hintEl) {
-    hintEl.textContent = i("consentHint");
-  }
-  if (btn) {
-    // Preserve the locked/unlocked state
-    // when language switches mid-popup
-    const isChecked =
-      document.getElementById("consentCheckbox")
-        ?.checked;
-    btn.textContent = isChecked
-      ? i("consentBtnReady")
-      : i("consentBtnLocked");
-  }
 }
 
 // ================================================
@@ -792,7 +566,6 @@ function applyLanguage(lang) {
     retryBtn.textContent = i("retryLocation");
   }
 
-  // Re-translate sex field if already filled
   const sexField =
     document.getElementById("sex");
   if (
@@ -812,12 +585,6 @@ function applyLanguage(lang) {
   }
 
   updateStudentIdFieldState();
-
-  // ✅ NEW: Re-render consent popup texts
-  // when language is switched.
-  // Works whether the popup is open or closed.
-  renderConsentList();
-  updateConsentPopupTexts();
 }
 
 // ================================================
@@ -949,13 +716,6 @@ async function loadAllStudents() {
         sexValue = String(data.age).trim();
       }
 
-      console.log(
-        "📚 Loaded student:",
-        docId,
-        "| sex:", sexValue,
-        "| grade:", data.grade
-      );
-
       studentsMap.set(docId, {
         studentId: docId,
         fullName:  data.fullName  || "",
@@ -970,11 +730,6 @@ async function loadAllStudents() {
     const el =
       document.getElementById("studentId");
     if (el && el.value.trim() !== "") {
-      console.log(
-        "🔄 Students loaded after ID entered.",
-        "Re-validating ID:",
-        el.value.trim()
-      );
       validateStudentId();
     }
 
@@ -1000,7 +755,7 @@ function findStudent(rawId) {
 }
 
 // ================================================
-// VALIDATE STUDENT ID — AUTO-FILL
+// VALIDATE STUDENT ID
 // ================================================
 function validateStudentId() {
   const idInput =
@@ -1054,14 +809,7 @@ function validateStudentId() {
     document.getElementById("sex");
   if (sexField) {
     sexField.dataset.rawValue = student.sex;
-    const displaySex = translateSex(student.sex);
-    sexField.value = displaySex;
-
-    console.log(
-      "👤 Sex field filled:",
-      "\n  raw value:", student.sex,
-      "\n  displayed:", displaySex
-    );
+    sexField.value = translateSex(student.sex);
   }
 
   setField("grade", student.grade);
@@ -1071,17 +819,7 @@ function validateStudentId() {
     msgEl.style.display = "block";
   }
 
-  console.log(
-    "✅ Student validated:",
-    "\n  ID:", student.studentId,
-    "\n  Name:", student.fullName,
-    "\n  Sex:", student.sex,
-    "\n  Grade:", student.grade,
-    "\n  locationVerified:", locationVerified
-  );
-
   checkAndEnableSubmitButton();
-
   return true;
 }
 
@@ -1092,14 +830,12 @@ function setField(id, value) {
 
 function clearAutoFill() {
   setField("fullName", "");
-
   const sexField =
     document.getElementById("sex");
   if (sexField) {
     sexField.value = "";
     sexField.dataset.rawValue = "";
   }
-
   setField("grade", "");
 }
 
@@ -1144,31 +880,21 @@ function showDistanceResult(loc) {
   box.style.display = "flex";
 
   if (isNear) {
-    icon.textContent      = "✅";
+    icon.textContent      = "";
     status.textContent    = i("locationVerifiedMsg");
     status.style.color    = "#16a34a";
     box.style.background  = "#f0fdf4";
     box.style.borderColor = "#86efac";
     retry.style.display   = "none";
     locationVerified      = true;
-
-    console.log(
-      "📍 Location verified.",
-      "Distance:", Math.round(loc.distance), "m"
-    );
   } else {
-    icon.textContent      = "❌";
+    icon.textContent      = "";
     status.textContent    = i("locationTooFar");
     status.style.color    = "#dc2626";
     box.style.background  = "#fef2f2";
     box.style.borderColor = "#fca5a5";
     retry.style.display   = "block";
     locationVerified      = false;
-
-    console.log(
-      "📍 Location too far.",
-      "Distance:", Math.round(loc.distance), "m"
-    );
   }
 
   checkAndEnableSubmitButton();
@@ -1221,7 +947,7 @@ function requestLocation() {
         box.style.background  = "#fef2f2";
         box.style.borderColor = "#fca5a5";
         document.getElementById("distanceIcon")
-          .textContent = "❌";
+          .textContent = "";
         document.getElementById("distanceStatus")
           .textContent = i("locationPoorAccuracy");
         document.getElementById("distanceStatus")
@@ -1259,7 +985,7 @@ function requestLocation() {
       box.style.background  = "#fef2f2";
       box.style.borderColor = "#fca5a5";
       document.getElementById("distanceIcon")
-        .textContent = "❌";
+        .textContent = "";
       document.getElementById("distanceStatus")
         .textContent = msg;
       document.getElementById("distanceStatus")
@@ -1342,7 +1068,8 @@ function showRateLimitBox() {
     <p style="font-weight:700;
               color:#991b1b;
               font-size:15px;">
-      ${i("errRateLimit").split("\n").join("<br>")}
+      ${i("errRateLimit")
+        .split("\n").join("<br>")}
     </p>
     <p id="rlCountdown"
        style="font-size:13px;
@@ -1350,7 +1077,9 @@ function showRateLimitBox() {
               margin-top:8px;"></p>
   `;
 
-  formCard.parentNode.insertBefore(box, formCard);
+  formCard.parentNode.insertBefore(
+    box, formCard
+  );
   formCard.style.display = "none";
 
   function tick() {
@@ -1376,7 +1105,7 @@ function showRateLimitBox() {
       document.getElementById("rlCountdown");
     if (el) {
       el.textContent =
-        `⏱ ${mins}:${
+        `${mins}:${
           String(secs).padStart(2, "0")
         }`;
     }
@@ -1407,10 +1136,6 @@ function handleSessionClosed() {
     if (el) el.style.display = "none";
   });
 
-  // Also hide consent popup if session ends
-  // while popup is open
-  hideConsentPopup();
-
   const closed =
     document.getElementById("sessionClosedCard");
   if (closed) {
@@ -1434,7 +1159,7 @@ function handleSessionClosed() {
       document.getElementById("sessionBannerIcon");
     const text =
       document.getElementById("sessionBannerText");
-    if (icon) icon.textContent = "🔴";
+    if (icon) icon.textContent = "";
     if (text) {
       text.textContent = i("attendanceClosed");
     }
@@ -1469,11 +1194,6 @@ function startSessionListener() {
 
 // ================================================
 // LOAD SESSION
-// ✅ CHANGED: After confirming session is valid,
-//    show the consent popup BEFORE running
-//    location + student load.
-//    The actual form flow starts only after
-//    the student clicks "Continue".
 // ================================================
 async function loadSession() {
   const params  =
@@ -1541,7 +1261,6 @@ async function loadSession() {
       return;
     }
 
-    // Read time windows from Firebase
     checkInStartTime  =
       sessionData.checkInStartTime  || null;
     checkInEndTime    =
@@ -1556,7 +1275,7 @@ async function loadSession() {
     }
 
     banner.style.display    = "flex";
-    bannerIcon.textContent  = "🟢";
+    bannerIcon.textContent  = "";
     bannerText.textContent  = i("sessionActive");
     banner.style.background = "#f0fdf4";
     banner.style.color      = "#16a34a";
@@ -1568,50 +1287,23 @@ async function loadSession() {
     deviceToken = getOrCreateDeviceToken();
     startSessionListener();
 
-    // ✅ Check if student already has a
-    // verified Firebase attendance record.
-    // If yes — restore success screen directly.
-    // No consent popup needed (already agreed
-    // earlier in the same session).
-    const restored = await tryRestoreAttendanceState();
+    const restored =
+      await tryRestoreAttendanceState();
     if (restored) return;
 
-    // ✅ NEW: Show consent popup FIRST.
-    // The popup's "Continue" button will call
-    // startAttendanceFlow() below, which runs
-    // location + student loading.
-    showConsentPopup();
+    await Promise.all([
+      loadAllStudents(),
+      new Promise(resolve => {
+        requestLocation();
+        resolve();
+      })
+    ]);
 
   } catch (err) {
     console.error("Load session error:", err);
     formCard.style.display   = "none";
     closedCard.style.display = "block";
   }
-}
-
-// ================================================
-// ✅ NEW: START ATTENDANCE FLOW
-//
-// This is what used to run directly inside
-// loadSession() after session validation.
-//
-// Now it only runs AFTER the student agrees
-// to the consent popup.
-//
-// NOTHING inside this function has changed
-// from the original loadSession() flow.
-// We just moved it here so consent comes first.
-// ================================================
-async function startAttendanceFlow() {
-  // Load students AND start location at same time
-  // (exactly as before — no change)
-  await Promise.all([
-    loadAllStudents(),
-    new Promise(resolve => {
-      requestLocation();
-      resolve();
-    })
-  ]);
 }
 
 // ================================================
@@ -1636,7 +1328,7 @@ function showError(message) {
 }
 
 // ================================================
-// VALIDATE FORM BEFORE SUBMIT
+// VALIDATE FORM
 // ================================================
 function validateForm() {
   const idVal =
@@ -1731,7 +1423,9 @@ function showCheckoutCard(
   card.style.display = "block";
 
   const nameEl =
-    document.getElementById("checkoutStudentName");
+    document.getElementById(
+      "checkoutStudentName"
+    );
   if (nameEl) nameEl.textContent = studentName;
 
   const ciEl =
@@ -1757,7 +1451,9 @@ function showCheckoutCard(
   const btn =
     document.getElementById("checkOutBtn");
   const doneMsg =
-    document.getElementById("alreadyCheckedOutMsg");
+    document.getElementById(
+      "alreadyCheckedOutMsg"
+    );
 
   if (isCheckedOut) {
     if (btn) btn.style.display     = "none";
@@ -1813,12 +1509,14 @@ function showNotCheckedInCard() {
 }
 
 // ================================================
-// LOCAL ATTENDANCE STATE (refresh fix)
+// LOCAL ATTENDANCE STATE
 // ================================================
 function saveAttendanceState(state) {
   try {
     const key = "attendanceState_" + sessionId;
-    localStorage.setItem(key, JSON.stringify(state));
+    localStorage.setItem(
+      key, JSON.stringify(state)
+    );
   } catch (err) {
     console.error(
       "Save attendance state error:", err
@@ -1857,7 +1555,10 @@ async function tryRestoreAttendanceState() {
 
     if (!snap.exists()) return false;
     const rd = snap.data();
-    if (rd.status !== "present" || !rd.checkInTime) {
+    if (
+      rd.status !== "present" ||
+      !rd.checkInTime
+    ) {
       return false;
     }
 
@@ -1873,16 +1574,21 @@ async function tryRestoreAttendanceState() {
     );
 
     saveAttendanceState({
-      studentId:       saved.studentId,
-      sessionId:       sessionId,
+      studentId:
+        saved.studentId,
+      sessionId:
+        sessionId,
       date:
         (sessionData && sessionData.date) ||
         saved.date || null,
-      fullName:        rd.fullName || saved.fullName || "",
-      checkInDisplay:  rd.checkInDisplay  || null,
-      checkOutDisplay: rd.checkOutDisplay || null,
-      checkedIn:       true,
-      checkedOut:      !!rd.checkOutTime
+      fullName:
+        rd.fullName || saved.fullName || "",
+      checkInDisplay:
+        rd.checkInDisplay  || null,
+      checkOutDisplay:
+        rd.checkOutDisplay || null,
+      checkedIn:  true,
+      checkedOut: !!rd.checkOutTime
     });
 
     return true;
@@ -1937,16 +1643,14 @@ async function submitAttendance(e) {
 
   if (qrMode === "checkOut") {
     if (!isWithinTimeWindow(
-      checkOutStartTime,
-      checkOutEndTime
+      checkOutStartTime, checkOutEndTime
     )) {
       showError(i("errCheckOutClosed"));
       return;
     }
   } else {
     if (!isWithinTimeWindow(
-      checkInStartTime,
-      checkInEndTime
+      checkInStartTime, checkInEndTime
     )) {
       showError(i("errCheckInClosed"));
       return;
@@ -1967,21 +1671,13 @@ async function submitAttendance(e) {
 
   if (qrMode === "checkOut") {
     await handleCheckOutSubmit(
-      studentIdVal,
-      nameVal,
-      sexVal,
-      gradeVal,
-      dist,
-      overlay
+      studentIdVal, nameVal, sexVal,
+      gradeVal, dist, overlay
     );
   } else {
     await handleCheckInSubmit(
-      studentIdVal,
-      nameVal,
-      sexVal,
-      gradeVal,
-      dist,
-      overlay
+      studentIdVal, nameVal, sexVal,
+      gradeVal, dist, overlay
     );
   }
 }
@@ -1990,12 +1686,8 @@ async function submitAttendance(e) {
 // HANDLE CHECK-IN SUBMIT
 // ================================================
 async function handleCheckInSubmit(
-  studentIdVal,
-  nameVal,
-  sexVal,
-  gradeVal,
-  dist,
-  overlay
+  studentIdVal, nameVal, sexVal,
+  gradeVal, dist, overlay
 ) {
   try {
     const freshSnap = await getDoc(
@@ -2010,7 +1702,9 @@ async function handleCheckInSubmit(
         fd.date   !== today ||
         fd.sessionId !== sessionId
       ) {
-        if (overlay) overlay.style.display = "none";
+        if (overlay) {
+          overlay.style.display = "none";
+        }
         handleSessionClosed();
         return;
       }
@@ -2046,9 +1740,7 @@ async function handleCheckInSubmit(
         }
       }
 
-      if (!recordSnap.exists()) {
-        return;
-      }
+      if (!recordSnap.exists()) return;
 
       const rd = recordSnap.data();
       if (rd.status === "present") {
@@ -2074,17 +1766,19 @@ async function handleCheckInSubmit(
         checkOutTime:       null,
         checkOutDisplay:    null,
         status:             "present",
-        latitude:           studentLocation.latitude,
-        longitude:          studentLocation.longitude,
-        gpsAccuracy:        studentLocation.accuracy,
+        latitude:
+          studentLocation.latitude,
+        longitude:
+          studentLocation.longitude,
+        gpsAccuracy:
+          studentLocation.accuracy,
         distanceFromSchool: dist,
         deviceToken:
           deviceToken.substring(0, 8) + "...",
-        submittedAt:        checkInTime
+        submittedAt: checkInTime
       };
 
       tx.update(recordRef, data);
-
       tx.set(deviceLogRef, {
         deviceToken: deviceToken,
         studentId:   studentIdVal,
@@ -2115,15 +1809,12 @@ async function handleCheckInSubmit(
 
     const now = new Date();
     showCheckoutCard(
-      nameVal,
-      formatTime(now),
-      null,
-      false
+      nameVal, formatTime(now), null, false
     );
 
     saveAttendanceState({
-      studentId:       studentIdVal,
-      sessionId:       sessionId,
+      studentId: studentIdVal,
+      sessionId: sessionId,
       date:
         (sessionData && sessionData.date) ||
         new Date().toLocaleDateString("en-CA"),
@@ -2145,12 +1836,8 @@ async function handleCheckInSubmit(
 // HANDLE CHECK-OUT SUBMIT
 // ================================================
 async function handleCheckOutSubmit(
-  studentIdVal,
-  nameVal,
-  sexVal,
-  gradeVal,
-  dist,
-  overlay
+  studentIdVal, nameVal, sexVal,
+  gradeVal, dist, overlay
 ) {
   try {
     const freshSnap = await getDoc(
@@ -2165,7 +1852,9 @@ async function handleCheckOutSubmit(
         fd.date   !== today ||
         fd.sessionId !== sessionId
       ) {
-        if (overlay) overlay.style.display = "none";
+        if (overlay) {
+          overlay.style.display = "none";
+        }
         handleSessionClosed();
         return;
       }
@@ -2206,16 +1895,19 @@ async function handleCheckOutSubmit(
         true
       );
       saveAttendanceState({
-        studentId:       studentIdVal,
-        sessionId:       sessionId,
+        studentId: studentIdVal,
+        sessionId: sessionId,
         date:
           (sessionData && sessionData.date) ||
           new Date().toLocaleDateString("en-CA"),
-        fullName:        rd.fullName || nameVal,
-        checkInDisplay:  rd.checkInDisplay  || "--",
-        checkOutDisplay: rd.checkOutDisplay || "--",
-        checkedIn:       true,
-        checkedOut:      true
+        fullName:
+          rd.fullName || nameVal,
+        checkInDisplay:
+          rd.checkInDisplay  || "--",
+        checkOutDisplay:
+          rd.checkOutDisplay || "--",
+        checkedIn:  true,
+        checkedOut: true
       });
       return;
     }
@@ -2241,8 +1933,10 @@ async function handleCheckOutSubmit(
 
         try {
           const now             = new Date();
-          const checkOutISO     = now.toISOString();
-          const checkOutDisplay = formatTime(now);
+          const checkOutISO     =
+            now.toISOString();
+          const checkOutDisplay =
+            formatTime(now);
 
           await updateDoc(recordRef, {
             checkOutTime:    checkOutISO,
@@ -2268,16 +1962,20 @@ async function handleCheckOutSubmit(
           );
 
           saveAttendanceState({
-            studentId:       studentIdVal,
-            sessionId:       sessionId,
+            studentId: studentIdVal,
+            sessionId: sessionId,
             date:
-              (sessionData && sessionData.date) ||
-              new Date().toLocaleDateString("en-CA"),
-            fullName:        rd.fullName || nameVal,
-            checkInDisplay:  rd.checkInDisplay || "--",
+              (sessionData &&
+               sessionData.date) ||
+              new Date()
+                .toLocaleDateString("en-CA"),
+            fullName:
+              rd.fullName || nameVal,
+            checkInDisplay:
+              rd.checkInDisplay || "--",
             checkOutDisplay: checkOutDisplay,
-            checkedIn:       true,
-            checkedOut:      true
+            checkedIn:  true,
+            checkedOut: true
           });
 
         } catch (err) {
@@ -2291,7 +1989,7 @@ async function handleCheckOutSubmit(
         }
       },
 
-      function (err) {
+      function () {
         if (overlay) {
           overlay.style.display = "none";
         }
@@ -2306,7 +2004,9 @@ async function handleCheckOutSubmit(
     );
 
   } catch (err) {
-    console.error("Check-out submit error:", err);
+    console.error(
+      "Check-out submit error:", err
+    );
     if (overlay) overlay.style.display = "none";
     showError(err.message);
   }
@@ -2327,8 +2027,7 @@ async function handleCheckOut() {
   }
 
   if (!isWithinTimeWindow(
-    checkOutStartTime,
-    checkOutEndTime
+    checkOutStartTime, checkOutEndTime
   )) {
     showError(i("errCheckOutClosed"));
     return;
@@ -2371,7 +2070,8 @@ async function handleCheckOut() {
         if (freshSnap.exists()) {
           const fd    = freshSnap.data();
           const today =
-            new Date().toLocaleDateString("en-CA");
+            new Date()
+              .toLocaleDateString("en-CA");
           if (
             !fd.isOpen          ||
             fd.date   !== today ||
@@ -2417,8 +2117,10 @@ async function handleCheckOut() {
         }
 
         const now             = new Date();
-        const checkOutISO     = now.toISOString();
-        const checkOutDisplay = formatTime(now);
+        const checkOutISO     =
+          now.toISOString();
+        const checkOutDisplay =
+          formatTime(now);
 
         await updateDoc(recordRef, {
           checkOutTime:    checkOutISO,
@@ -2434,7 +2136,8 @@ async function handleCheckOut() {
           overlay.style.display = "none";
         }
         if (loadingText) {
-          loadingText.textContent = i("savingText");
+          loadingText.textContent =
+            i("savingText");
         }
 
         const coEl = document.getElementById(
@@ -2446,36 +2149,41 @@ async function handleCheckOut() {
 
         const btn =
           document.getElementById("checkOutBtn");
-        const doneMsg = document.getElementById(
-          "alreadyCheckedOutMsg"
-        );
+        const doneMsg =
+          document.getElementById(
+            "alreadyCheckedOutMsg"
+          );
         if (btn) btn.style.display = "none";
         if (doneMsg) {
-          doneMsg.textContent   =
+          doneMsg.textContent =
             i("checkOutSuccess");
           doneMsg.style.display = "block";
           doneMsg.style.color   = "#16a34a";
         }
 
-        const nameElNow = document.getElementById(
-          "checkoutStudentName"
-        );
-        const ciElNow = document.getElementById(
-          "displayCheckInTime"
-        );
+        const nameElNow =
+          document.getElementById(
+            "checkoutStudentName"
+          );
+        const ciElNow =
+          document.getElementById(
+            "displayCheckInTime"
+          );
         saveAttendanceState({
-          studentId:       currentStudentId,
-          sessionId:       sessionId,
+          studentId: currentStudentId,
+          sessionId: sessionId,
           date:
-            (sessionData && sessionData.date) ||
-            new Date().toLocaleDateString("en-CA"),
+            (sessionData &&
+             sessionData.date) ||
+            new Date()
+              .toLocaleDateString("en-CA"),
           fullName:
             nameElNow?.textContent || "",
           checkInDisplay:
             ciElNow?.textContent || null,
           checkOutDisplay: checkOutDisplay,
-          checkedIn:       true,
-          checkedOut:      true
+          checkedIn:  true,
+          checkedOut: true
         });
 
       } catch (err) {
@@ -2484,14 +2192,17 @@ async function handleCheckOut() {
           overlay.style.display = "none";
         }
         if (loadingText) {
-          loadingText.textContent = i("savingText");
+          loadingText.textContent =
+            i("savingText");
         }
         showError(err.message);
       }
     },
 
-    function (err) {
-      if (overlay) overlay.style.display = "none";
+    function () {
+      if (overlay) {
+        overlay.style.display = "none";
+      }
       if (loadingText) {
         loadingText.textContent = i("savingText");
       }
@@ -2507,104 +2218,7 @@ async function handleCheckOut() {
 }
 
 // ================================================
-// ✅ NEW: CONSENT POPUP EVENT LISTENERS
-//
-// 1. Checkbox toggles the button state
-// 2. Button click hides popup and starts flow
-// 3. Clicking the disabled button shows hint
-// ================================================
-
-// When student ticks/unticks the checkbox
-document.getElementById("consentCheckbox")
-  ?.addEventListener("change", function () {
-    const btn =
-      document.getElementById("consentContinueBtn");
-    const row =
-      document.getElementById("consentCheckboxRow");
-    const hint =
-      document.getElementById("consentHint");
-
-    if (this.checked) {
-      if (btn) {
-        btn.disabled    = false;
-        btn.textContent = i("consentBtnReady");
-      }
-      if (row) row.classList.add("checked");
-      if (hint) hint.classList.remove("visible");
-    } else {
-      if (btn) {
-        btn.disabled    = true;
-        btn.textContent = i("consentBtnLocked");
-      }
-      if (row) row.classList.remove("checked");
-    }
-  });
-
-// When student clicks the "Continue" button
-// (only fires when button is enabled)
-document.getElementById("consentContinueBtn")
-  ?.addEventListener("click", async function () {
-    const checkbox =
-      document.getElementById("consentCheckbox");
-
-    if (!checkbox || !checkbox.checked) {
-      // Safety check — should not happen since
-      // button is disabled, but guard anyway
-      const hint =
-        document.getElementById("consentHint");
-      if (hint) hint.classList.add("visible");
-      return;
-    }
-
-    // Mark consent as given
-    consentGiven = true;
-
-    // Hide the popup
-    hideConsentPopup();
-
-    // ✅ NOW start location + student loading
-    // (the actual attendance flow)
-    await startAttendanceFlow();
-  });
-
-// Tapping the disabled button shows the hint
-// message ("please tick the checkbox")
-// so students on mobile understand why it
-// doesn't respond.
-document.getElementById("consentContinueBtn")
-  ?.addEventListener("click", function () {
-    // This also fires when disabled on some
-    // browsers (pointer-events not blocked).
-    // We handle it safely via the checked test
-    // in the handler above.
-  }, { capture: true });
-
-// Show hint if student taps the disabled
-// button area (works on mobile where
-// pointer-events may not fully block taps
-// on disabled buttons)
-document.getElementById("consentOverlay")
-  ?.addEventListener("click", function (e) {
-    const btn =
-      document.getElementById("consentContinueBtn");
-    const checkbox =
-      document.getElementById("consentCheckbox");
-
-    // If they clicked the button area but
-    // checkbox is not ticked, show hint
-    if (
-      e.target === btn &&
-      btn.disabled &&
-      checkbox && !checkbox.checked
-    ) {
-      const hint =
-        document.getElementById("consentHint");
-      if (hint) hint.classList.add("visible");
-    }
-  });
-
-// ================================================
-// EXISTING EVENT LISTENERS (all unchanged)
+// EVENT LISTENERS
 // ================================================
 document.getElementById("languageButton")
   ?.addEventListener("click", function () {
@@ -2626,7 +2240,8 @@ let idTimer = null;
 document.getElementById("studentId")
   ?.addEventListener("input", function () {
     clearTimeout(idTimer);
-    idTimer = setTimeout(validateStudentId, 600);
+    idTimer =
+      setTimeout(validateStudentId, 600);
   });
 
 document.getElementById("studentId")
@@ -2639,6 +2254,7 @@ document.getElementById("studentId")
 // START
 // ================================================
 const savedLang =
-  localStorage.getItem("studentLanguage") || "en";
+  localStorage.getItem("studentLanguage")
+  || "en";
 applyLanguage(savedLang);
 await loadSession();
