@@ -19,58 +19,35 @@
   <link rel="stylesheet" href="style.css">
 
   <style>
-    /* ============================================
+    /* ================================================
        CONSENT POPUP STYLES
-       Only affects the new consent popup.
-       Nothing else is changed.
-    ============================================ */
+       Only affects the consent popup.
+       Nothing else is touched.
+    ================================================ */
 
-    /* Dark overlay behind the popup */
     .consent-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(15, 23, 42, 0.65);
-      z-index: 9000;
+      z-index: 9999;
+      background: rgba(15, 23, 42, 0.7);
       display: flex;
       align-items: center;
       justify-content: center;
       padding: 16px;
-      /* Smooth fade in */
-      animation: consentFadeIn 0.25s ease;
-    }
-    @keyframes consentFadeIn {
-      from { opacity: 0; }
-      to   { opacity: 1; }
     }
 
-    /* The popup box itself */
     .consent-box {
       background: #ffffff;
       border-radius: 18px;
-      box-shadow:
-        0 20px 60px rgba(0, 0, 0, 0.25),
-        0 4px 16px rgba(0, 0, 0, 0.12);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.25);
       width: 100%;
-      max-width: 480px;
-      max-height: 90vh;
+      max-width: 460px;
+      max-height: 88vh;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
-      /* Smooth slide up */
-      animation: consentSlideUp 0.28s ease;
-    }
-    @keyframes consentSlideUp {
-      from {
-        opacity: 0;
-        transform: translateY(24px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
     }
 
-    /* Popup header — blue gradient */
     .consent-header {
       background: linear-gradient(
         135deg, #1e40af 0%, #3b82f6 100%
@@ -80,63 +57,60 @@
       text-align: center;
       flex-shrink: 0;
     }
-    .consent-header-icon {
-      font-size: 36px;
-      margin-bottom: 8px;
-      display: block;
-    }
+
     .consent-header h2 {
       color: #ffffff;
-      font-size: 18px;
+      font-size: 17px;
       font-weight: 700;
       margin: 0;
-      line-height: 1.3;
+      line-height: 1.4;
+      font-family: "Battambang",
+        "Kantumruy Pro", Arial, sans-serif;
     }
 
-    /* Popup body */
     .consent-body {
-      padding: 20px 24px 16px;
+      padding: 20px 22px 14px;
       flex: 1;
     }
 
-    /* Intro text above the list */
     .consent-intro {
       font-size: 13px;
       color: #475569;
       margin: 0 0 14px;
-      line-height: 1.5;
+      line-height: 1.6;
       font-weight: 500;
     }
 
-    /* The bullet-point list */
     .consent-list {
       list-style: none;
       padding: 0;
-      margin: 0 0 18px;
+      margin: 0 0 16px;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 8px;
     }
+
     .consent-list li {
       display: flex;
       align-items: flex-start;
       gap: 10px;
       font-size: 13px;
       color: #334155;
-      line-height: 1.55;
+      line-height: 1.6;
       background: #f8fafc;
       border: 1px solid #e2e8f0;
       border-radius: 10px;
       padding: 10px 12px;
     }
-    .consent-list li .consent-bullet {
+
+    .consent-bullet {
       color: #3b82f6;
-      font-size: 15px;
+      font-weight: 700;
       flex-shrink: 0;
+      font-size: 14px;
       margin-top: 1px;
     }
 
-    /* Checkbox row */
     .consent-checkbox-row {
       display: flex;
       align-items: flex-start;
@@ -145,98 +119,46 @@
       border: 1.5px solid #93c5fd;
       border-radius: 12px;
       padding: 13px 14px;
-      margin-bottom: 18px;
+      margin-bottom: 0;
       cursor: pointer;
-      transition: background 0.15s ease,
-                  border-color 0.15s ease;
+      transition: background 0.15s,
+                  border-color 0.15s;
     }
+
     .consent-checkbox-row:hover {
       background: #dbeafe;
       border-color: #3b82f6;
     }
+
     .consent-checkbox-row.checked {
       background: #f0fdf4;
       border-color: #86efac;
     }
 
-    /* The actual checkbox — large tap target */
     #consentCheckbox {
       width: 22px;
       height: 22px;
+      min-width: 22px;
       flex-shrink: 0;
       margin-top: 1px;
       cursor: pointer;
       accent-color: #16a34a;
     }
 
-    /* Checkbox label text */
     .consent-checkbox-label {
       font-size: 13px;
       color: #1e293b;
       font-weight: 600;
-      line-height: 1.5;
+      line-height: 1.55;
       cursor: pointer;
       user-select: none;
     }
 
-    /* Popup footer */
     .consent-footer {
-      padding: 0 24px 22px;
+      padding: 14px 22px 20px;
       flex-shrink: 0;
     }
 
-    /* The "Continue" button */
-    .consent-continue-btn {
-      width: 100%;
-      padding: 13px 20px;
-      border: none;
-      border-radius: 12px;
-      font-size: 15px;
-      font-weight: 700;
-      font-family: inherit;
-      cursor: pointer;
-      transition:
-        background 0.2s ease,
-        opacity 0.2s ease,
-        box-shadow 0.2s ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      min-height: 50px;
-    }
-
-    /* Disabled state — locked, grey */
-    .consent-continue-btn:disabled {
-      background: #e2e8f0;
-      color: #94a3b8;
-      cursor: not-allowed;
-      box-shadow: none;
-      opacity: 1;
-    }
-
-    /* Enabled state — green, prominent */
-    .consent-continue-btn:not(:disabled) {
-      background: linear-gradient(
-        135deg, #16a34a 0%, #22c55e 100%
-      );
-      color: #ffffff;
-      box-shadow:
-        0 4px 16px rgba(22, 163, 74, 0.35);
-    }
-    .consent-continue-btn:not(:disabled):hover {
-      background: linear-gradient(
-        135deg, #15803d 0%, #16a34a 100%
-      );
-      box-shadow:
-        0 6px 20px rgba(22, 163, 74, 0.45);
-    }
-    .consent-continue-btn:not(:disabled):active {
-      transform: scale(0.98);
-    }
-
-    /* Small hint shown when checkbox not ticked
-       and user tries to tap the disabled button */
     .consent-hint {
       font-size: 12px;
       color: #f59e0b;
@@ -244,31 +166,72 @@
       margin-top: 8px;
       min-height: 18px;
       font-weight: 600;
-      opacity: 0;
-      transition: opacity 0.2s ease;
-    }
-    .consent-hint.visible {
-      opacity: 1;
+      display: none;
     }
 
-    /* Mobile-specific tweaks */
+    .consent-continue-btn {
+      width: 100%;
+      padding: 14px 20px;
+      border: none;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      min-height: 50px;
+      transition: background 0.2s,
+                  transform 0.15s,
+                  box-shadow 0.2s;
+      display: block;
+      text-align: center;
+    }
+
+    .consent-continue-btn:disabled {
+      background: #e2e8f0;
+      color: #94a3b8;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .consent-continue-btn:not(:disabled) {
+      background: linear-gradient(
+        135deg, #16a34a 0%, #22c55e 100%
+      );
+      color: #ffffff;
+      box-shadow: 0 4px 16px
+        rgba(22,163,74,0.35);
+    }
+
+    .consent-continue-btn:not(:disabled):hover {
+      background: linear-gradient(
+        135deg, #15803d 0%, #16a34a 100%
+      );
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px
+        rgba(22,163,74,0.45);
+    }
+
+    .consent-continue-btn:not(:disabled):active {
+      transform: scale(0.97);
+    }
+
     @media (max-width: 480px) {
       .consent-box {
+        max-height: 92vh;
         border-radius: 16px;
-        max-height: 95vh;
       }
       .consent-header {
         padding: 18px 18px 14px;
         border-radius: 16px 16px 0 0;
       }
       .consent-body {
-        padding: 16px 18px 12px;
+        padding: 16px 16px 12px;
       }
       .consent-footer {
-        padding: 0 18px 18px;
+        padding: 12px 16px 18px;
       }
       .consent-header h2 {
-        font-size: 16px;
+        font-size: 15px;
       }
       .consent-list li {
         font-size: 12.5px;
@@ -289,49 +252,35 @@
 
 <body>
 
-<!-- ============================================
-     ✅ NEW: CONSENT POPUP
-     Shown BEFORE the attendance form.
-     Hidden by default (display:none).
-     JavaScript shows it after session loads.
-     The page body is visible behind the overlay.
-============================================= -->
-<div id="consentOverlay"
-  class="consent-overlay"
-  style="display:none;"
-  aria-modal="true"
-  role="dialog"
-  aria-labelledby="consentTitle">
-
+<!-- ================================================
+     CONSENT POPUP
+     Shown immediately when page loads.
+     Hides ALL other content until student agrees.
+     Location and session loading start ONLY after
+     student clicks Continue.
+================================================= -->
+<div id="consentOverlay" class="consent-overlay">
   <div class="consent-box">
 
-    <!-- Header -->
     <div class="consent-header">
-      <span class="consent-header-icon">📋</span>
-      <h2 id="consentTitle"
-        data-consent="consentTitle">
+      <h2 id="consentTitle">
         Attendance Consent
       </h2>
     </div>
 
-    <!-- Body -->
     <div class="consent-body">
 
-      <!-- Intro sentence -->
       <p class="consent-intro"
-        data-consent="consentIntro">
+        id="consentIntro">
         Please read the information below
         before continuing.
       </p>
 
-      <!-- Bullet points -->
       <ul class="consent-list"
         id="consentList">
-        <!-- Built by JS so language switch
-             updates them correctly -->
+        <!-- Filled by JS -->
       </ul>
 
-      <!-- Checkbox -->
       <label class="consent-checkbox-row"
         id="consentCheckboxRow"
         for="consentCheckbox">
@@ -339,8 +288,7 @@
           type="checkbox"
           id="consentCheckbox">
         <span class="consent-checkbox-label"
-          id="consentCheckboxLabel"
-          data-consent="consentCheckboxLabel">
+          id="consentCheckboxLabel">
           I have read and agree to the
           terms above.
         </span>
@@ -348,18 +296,15 @@
 
     </div>
 
-    <!-- Footer -->
     <div class="consent-footer">
       <button
         id="consentContinueBtn"
         class="consent-continue-btn"
-        disabled
-        data-consent="consentBtnLocked">
-        🔒 Continue to Attendance
+        disabled>
+        បន្តចុះវត្តមាន
       </button>
       <p class="consent-hint"
-        id="consentHint"
-        data-consent="consentHint">
+        id="consentHint">
         Please tick the checkbox to continue.
       </p>
     </div>
@@ -367,6 +312,11 @@
   </div>
 </div>
 
+<!-- ================================================
+     MAIN PAGE CONTENT
+     Hidden behind the consent overlay until
+     student agrees. Shown after consent.
+================================================= -->
 <div class="page-wrapper">
 
   <!-- LANGUAGE SWITCH -->
@@ -399,7 +349,7 @@
   <div class="session-banner"
     id="sessionBanner"
     style="display:none;">
-    <span id="sessionBannerIcon">📋</span>
+    <span id="sessionBannerIcon"></span>
     <span id="sessionBannerText"></span>
   </div>
 
@@ -420,8 +370,20 @@
   </div>
 
   <!-- LOCATION STATUS BOX -->
-  <div class="location-box" id="locationBox">
-    <div class="location-icon">📍</div>
+  <div class="location-box"
+    id="locationBox"
+    style="display:none;">
+    <div class="location-icon">
+      <svg width="20" height="20"
+        viewBox="0 0 24 24" fill="none"
+        stroke="#1e3a8a" stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round">
+        <path d="M21 10c0 7-9 13-9 13S3
+          17 3 10a9 9 0 0 1 18 0z"/>
+        <circle cx="12" cy="10" r="3"/>
+      </svg>
+    </div>
     <div class="location-text">
       <p id="locationStatus"
         data-i18n="requestingLocation"></p>
@@ -432,7 +394,7 @@
   <div class="distance-box" id="distanceBox"
     style="display:none;">
     <div class="distance-icon"
-      id="distanceIcon">📏</div>
+      id="distanceIcon"></div>
     <div class="distance-text">
       <p id="distanceStatus"></p>
     </div>
@@ -453,14 +415,14 @@
   </div>
 
   <!-- ATTENDANCE FORM -->
-  <main class="form-card" id="formCard">
+  <main class="form-card" id="formCard"
+    style="display:none;">
 
     <h2 class="form-title"
       data-i18n="formTitle"></h2>
 
     <form id="attendanceForm" novalidate>
 
-      <!-- Student ID -->
       <div class="form-group">
         <label for="studentId">
           <span data-i18n="studentIdLabel">
@@ -476,7 +438,6 @@
           id="studentIdError"></span>
       </div>
 
-      <!-- Full name — READ ONLY -->
       <div class="form-group">
         <label for="fullName">
           <span data-i18n="fullNameLabel">
@@ -493,7 +454,6 @@
                  color:#64748b;">
       </div>
 
-      <!-- Sex — READ ONLY -->
       <div class="form-group">
         <label for="sex">
           <span data-i18n="sexLabel"></span>
@@ -508,7 +468,6 @@
                  color:#64748b;">
       </div>
 
-      <!-- Grade — READ ONLY -->
       <div class="form-group">
         <label for="grade">
           <span data-i18n="gradeLabel"></span>
@@ -524,7 +483,6 @@
                  color:#64748b;">
       </div>
 
-      <!-- Auto-fill message -->
       <p id="autoFillMsg"
         style="font-size:12px;
                color:#16a34a;
@@ -533,7 +491,6 @@
                margin-bottom:12px;
                display:none;"></p>
 
-      <!-- Submit button -->
       <button
         type="submit"
         class="submit-btn"
@@ -551,7 +508,15 @@
     style="display:none;">
 
     <div class="checkout-header">
-      <div style="font-size:36px;">✅</div>
+      <div style="font-size:36px;">
+        <svg width="36" height="36"
+          viewBox="0 0 24 24" fill="none"
+          stroke="#15803d" stroke-width="2.5"
+          stroke-linecap="round"
+          stroke-linejoin="round">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+      </div>
       <h2 data-i18n="checkedInTitle">
         Checked In
       </h2>
@@ -623,7 +588,6 @@
            margin:20px auto;">
     <div style="font-size:48px;
                 margin-bottom:12px;">
-      ⚠️
     </div>
     <h2 style="color:#92400e;
                font-size:20px;
@@ -634,7 +598,8 @@
     <p style="color:#78350f;
               font-size:14px;"
       data-i18n="notCheckedInMsg">
-      You must check in before you can check out.
+      You must check in before you can
+      check out.
     </p>
   </div>
 
@@ -642,7 +607,18 @@
   <div class="session-closed-card"
     id="sessionClosedCard"
     style="display:none;">
-    <div style="font-size:48px;">🔒</div>
+    <div style="font-size:48px;
+                margin-bottom:8px;">
+      <svg width="48" height="48"
+        viewBox="0 0 24 24" fill="none"
+        stroke="#dc2626" stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round">
+        <rect x="3" y="11" width="18"
+          height="11" rx="2" ry="2"/>
+        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+      </svg>
+    </div>
     <h2 data-i18n="sessionClosedTitle"></h2>
     <p data-i18n="sessionClosedMsg"></p>
   </div>
@@ -651,7 +627,15 @@
   <section class="success-card"
     id="successCard"
     style="display:none;">
-    <div class="success-icon">✅</div>
+    <div class="success-icon">
+      <svg width="52" height="52"
+        viewBox="0 0 24 24" fill="none"
+        stroke="#15803d" stroke-width="2.5"
+        stroke-linecap="round"
+        stroke-linejoin="round">
+        <polyline points="20 6 9 17 4 12"/>
+      </svg>
+    </div>
     <h2 class="success-title"
       data-i18n="successTitle"></h2>
     <p class="success-message"
@@ -664,7 +648,19 @@
   <section class="error-card"
     id="errorCard"
     style="display:none;">
-    <div class="error-icon">❌</div>
+    <div class="error-icon">
+      <svg width="28" height="28"
+        viewBox="0 0 24 24" fill="none"
+        stroke="#991b1b" stroke-width="2.5"
+        stroke-linecap="round"
+        stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="15" y1="9"
+              x2="9"  y2="15"/>
+        <line x1="9"  y1="9"
+              x2="15" y2="15"/>
+      </svg>
+    </div>
     <p class="error-message"
       id="errorMessage"></p>
   </section>
@@ -685,6 +681,243 @@
   </footer>
 
 </div>
+
+<script type="module">
+// ================================================
+// CONSENT POPUP — Inline script
+//
+// Runs BEFORE script.js loads.
+// Shows the popup immediately.
+// Calls window.startAttendanceFlow() only after
+// student agrees — that function is defined in
+// script.js and starts location + session.
+//
+// Translation strings are self-contained here
+// so they work even before script.js finishes
+// loading.
+// ================================================
+
+const CONSENT_TEXT = {
+  en: {
+    title: "Attendance Consent",
+    intro:
+      "Please read the information below " +
+      "before continuing.",
+    items: [
+      "This system is intended for student " +
+        "attendance only.",
+      "Students must use their own Student ID.",
+      "Do not use another student's information " +
+        "or submit attendance for " +
+        "another student.",
+      "Location permission is required to " +
+        "verify that the student is within " +
+        "the school area.",
+      "Information submitted through this " +
+        "system is used for attendance purposes.",
+      "Misuse of the system or attempts to " +
+        "manipulate the attendance system may " +
+        "be reported to the teacher or " +
+        "system administrator.",
+      "Students are responsible for the proper " +
+        "use of their attendance information."
+    ],
+    checkboxLabel:
+      "I have read and agree to the " +
+      "terms above.",
+    btnLocked:
+      "Continue to Attendance",
+    btnReady:
+      "Continue to Attendance",
+    hint:
+      "Please tick the checkbox to continue."
+  },
+  km: {
+    title: "ការយល់ព្រមចុះវត្តមាន",
+    intro:
+      "សូមអានព័ត៌មានខាងក្រោម " +
+      "មុនពេលបន្តចុះវត្តមាន។",
+    items: [
+      "ប្រព័ន្ធនេះត្រូវបានប្រើសម្រាប់" +
+        "ចុះវត្តមានសិស្សប៉ុណ្ណោះ។",
+      "សិស្សត្រូវប្រើ Student ID " +
+        "របស់ខ្លួនឯង។",
+      "មិនត្រូវប្រើព័ត៌មានរបស់សិស្សផ្សេង " +
+        "ឬចុះវត្តមានជំនួសអ្នកដទៃ។",
+      "សិស្សត្រូវអនុញ្ញាត Location " +
+        "ដើម្បីឲ្យប្រព័ន្ធពិនិត្យថា" +
+        "សិស្សស្ថិតនៅក្នុងតំបន់សាលា។",
+      "ព័ត៌មានដែលបានបញ្ចូលត្រូវប្រើ" +
+        "សម្រាប់គោលបំណងចុះវត្តមាន។",
+      "ការប្រើប្រាស់ប្រព័ន្ធខុសគោលបំណង " +
+        "ឬការព្យាយាមបន្លំប្រព័ន្ធ " +
+        "អាចត្រូវបានរាយការណ៍ទៅគ្រូ " +
+        "ឬអ្នកគ្រប់គ្រងប្រព័ន្ធ។",
+      "សិស្សត្រូវទទួលខុសត្រូវចំពោះ" +
+        "ការប្រើប្រាស់គណនី " +
+        "និងព័ត៌មានរបស់ខ្លួន។"
+    ],
+    checkboxLabel:
+      "ខ្ញុំបានអាន និងយល់ព្រមតាម" +
+      "លក្ខខណ្ឌខាងលើ។",
+    btnLocked:
+      "បន្តចុះវត្តមាន",
+    btnReady:
+      "បន្តចុះវត្តមាន",
+    hint:
+      "សូមធីកប្រអប់យល់ព្រម " +
+      "ដើម្បីបន្តចុះវត្តមាន។"
+  }
+};
+
+// Read language from localStorage
+// (same key used by script.js)
+let consentLang =
+  localStorage.getItem("studentLanguage")
+  || "en";
+
+function getConsentText() {
+  return CONSENT_TEXT[consentLang]
+    || CONSENT_TEXT.en;
+}
+
+// Build the popup content in the current lang
+function renderConsent() {
+  const ct = getConsentText();
+
+  const titleEl =
+    document.getElementById("consentTitle");
+  const introEl =
+    document.getElementById("consentIntro");
+  const listEl =
+    document.getElementById("consentList");
+  const labelEl =
+    document.getElementById(
+      "consentCheckboxLabel"
+    );
+  const hintEl =
+    document.getElementById("consentHint");
+  const btn =
+    document.getElementById(
+      "consentContinueBtn"
+    );
+  const checkbox =
+    document.getElementById("consentCheckbox");
+
+  if (titleEl) titleEl.textContent = ct.title;
+  if (introEl) introEl.textContent = ct.intro;
+  if (labelEl) {
+    labelEl.textContent = ct.checkboxLabel;
+  }
+  if (hintEl) hintEl.textContent = ct.hint;
+
+  // Build bullet list
+  if (listEl) {
+    listEl.innerHTML = ct.items.map(
+      text => `
+        <li>
+          <span class="consent-bullet">
+            &bull;
+          </span>
+          <span>${text}</span>
+        </li>
+      `
+    ).join("");
+  }
+
+  // Set button text based on checkbox state
+  if (btn) {
+    const checked =
+      checkbox && checkbox.checked;
+    btn.textContent = checked
+      ? ct.btnReady
+      : ct.btnLocked;
+  }
+}
+
+// Initial render
+renderConsent();
+
+// Language button inside main page also
+// updates consent popup
+document
+  .getElementById("languageButton")
+  ?.addEventListener("click", function () {
+    // Toggle language
+    consentLang =
+      consentLang === "en" ? "km" : "en";
+    // Update button label
+    this.textContent =
+      consentLang === "en" ? "ខ្មែរ" : "English";
+    // Apply Khmer font class
+    document.body.classList.toggle(
+      "khmer", consentLang === "km"
+    );
+    // Re-render popup in new language
+    renderConsent();
+  });
+
+// Checkbox change — enable/disable button
+document
+  .getElementById("consentCheckbox")
+  ?.addEventListener("change", function () {
+    const btn =
+      document.getElementById(
+        "consentContinueBtn"
+      );
+    const row =
+      document.getElementById(
+        "consentCheckboxRow"
+      );
+    const hint =
+      document.getElementById("consentHint");
+    const ct = getConsentText();
+
+    if (this.checked) {
+      if (btn) {
+        btn.disabled = false;
+        btn.textContent = ct.btnReady;
+      }
+      if (row) row.classList.add("checked");
+      if (hint) hint.style.display = "none";
+    } else {
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = ct.btnLocked;
+      }
+      if (row) row.classList.remove("checked");
+    }
+  });
+
+// Continue button — hide popup and start flow
+document
+  .getElementById("consentContinueBtn")
+  ?.addEventListener("click", function () {
+    const checkbox =
+      document.getElementById("consentCheckbox");
+    const hint =
+      document.getElementById("consentHint");
+
+    if (!checkbox || !checkbox.checked) {
+      if (hint) hint.style.display = "block";
+      return;
+    }
+
+    // Hide the consent popup
+    const overlay =
+      document.getElementById("consentOverlay");
+    if (overlay) overlay.style.display = "none";
+
+    // NOW start the attendance flow
+    // window.startAttendanceFlow is defined
+    // in script.js and starts location +
+    // session loading
+    if (typeof window.startAttendanceFlow
+        === "function") {
+      window.startAttendanceFlow();
+    }
+  });
+</script>
 
 <script type="module" src="script.js"></script>
 </body>
