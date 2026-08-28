@@ -2332,5 +2332,5 @@ window.startAttendanceFlow = async function () {
 // after student agrees to consent.
 // ================================================
 const savedLang =
-  localStorage.getItem("studentLanguage") || "en";
+  localStorage.getItem("studentLanguage") || "km";
 applyLanguage(savedLang);
