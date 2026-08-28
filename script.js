@@ -78,7 +78,6 @@ let currentStudentId  = null;
 
 // ================================================
 // TRANSLATIONS
-// All emojis removed from visible UI strings
 // ================================================
 const i18n = {
   en: {
@@ -106,9 +105,9 @@ const i18n = {
       "Attendance session has ended.",
 
     modeBannerCheckIn:
-      "This is a Check-In QR Code",
+      "This is a CHECK-IN QR Code",
     modeBannerCheckOut:
-      "This is a Check-Out QR Code",
+      "This is a CHECK-OUT QR Code",
 
     requestingLocation:
       "Checking your location...",
@@ -188,8 +187,7 @@ const i18n = {
       "Please wait. Student data is " +
       "still loading.",
     errLocation:
-      "Location not verified yet. " +
-      "Please wait.",
+      "Location not verified yet. Please wait.",
     errTooFar:
       "You are outside the school area. " +
       "Attendance is not allowed.",
@@ -200,8 +198,8 @@ const i18n = {
       "This device has already checked in " +
       "for this attendance session.",
     errRateLimit:
-      "Too many attempts.\n" +
-      "Please wait 5 minutes.",
+      "Too many attempts.\nPlease wait " +
+      "5 minutes.",
     errSessionClosed:
       "The attendance session has ended.",
 
@@ -275,7 +273,7 @@ const i18n = {
 
     sexMale:   "Male",
     sexFemale: "Female",
-    sexNotSet: "—",
+    sexNotSet: "-",
 
     colDate: "Date",
     colTime: "Time"
@@ -325,12 +323,12 @@ const i18n = {
       "មិនអាចទទួលទីតាំងរបស់អ្នក។ " +
       "សូមព្យាយាមម្តងទៀត។",
     locationPoorAccuracy:
-      "មិនអាចផ្ទៀងផ្ទាត់ទីតាំងរបស់អ្នក" +
-      "បានទេ។ " +
+      "មិនអាចផ្ទៀងផ្ទាត់ទីតាំង" +
+      "របស់អ្នកបានទេ។ " +
       "សូមព្យាយាមម្តងទៀត។",
     locationNotSupported:
-      "កម្មវិធីរុករករបស់អ្នកមិនអាចប្រើ" +
-      "ទីតាំងបានទេ។",
+      "កម្មវិធីរុករករបស់អ្នក" +
+      "មិនអាចប្រើទីតាំងបានទេ។",
     retryLocation:
       "ព្យាយាមម្តងទៀត",
     gpsAccuracy:
@@ -385,11 +383,11 @@ const i18n = {
       "សូមបញ្ចូលលេខសម្គាល់សិស្ស។",
     errStudentIdNotFound:
       "រកមិនឃើញលេខសម្គាល់សិស្ស។ " +
-      "សូមពិនិត្យលេខសម្គាល់សិស្ស" +
-      "របស់អ្នក។",
+      "សូមពិនិត្យលេខសម្គាល់" +
+      "សិស្សរបស់អ្នក។",
     errStudentIdLoading:
-      "សូមរង់ចាំ។ ទិន្នន័យសិស្ស" +
-      "កំពុងផ្ទុក។",
+      "សូមរង់ចាំ។ " +
+      "ទិន្នន័យសិស្សកំពុងផ្ទុក។",
     errLocation:
       "ទីតាំងមិនទាន់ផ្ទៀងផ្ទាត់ទេ។",
     errTooFar:
@@ -476,7 +474,7 @@ const i18n = {
 
     sexMale:   "ប្រុស",
     sexFemale: "ស្រី",
-    sexNotSet: "—",
+    sexNotSet: "-",
 
     colDate: "កាលបរិច្ឆេទ",
     colTime: "ម៉ោង"
@@ -498,8 +496,12 @@ function translateSex(sexValue) {
     return i("sexNotSet");
   }
   const normalized = sexValue.trim();
-  if (normalized === "Male")   return i("sexMale");
-  if (normalized === "Female") return i("sexFemale");
+  if (normalized === "Male") {
+    return i("sexMale");
+  }
+  if (normalized === "Female") {
+    return i("sexFemale");
+  }
   return normalized;
 }
 
@@ -599,7 +601,8 @@ function updateFormForMode() {
 
   if (qrMode === "checkOut") {
     if (titleEl) {
-      titleEl.textContent = i("formTitleCheckOut");
+      titleEl.textContent =
+        i("formTitleCheckOut");
     }
     if (submitBtn) {
       submitBtn.textContent =
@@ -607,7 +610,8 @@ function updateFormForMode() {
     }
   } else {
     if (titleEl) {
-      titleEl.textContent = i("formTitleCheckIn");
+      titleEl.textContent =
+        i("formTitleCheckIn");
     }
     if (submitBtn) {
       submitBtn.textContent =
@@ -633,7 +637,8 @@ function updateModeBanner() {
     banner.style.color      = "#92400e";
     banner.style.border     = "2px solid #fcd34d";
     if (text) {
-      text.textContent = i("modeBannerCheckOut");
+      text.textContent =
+        i("modeBannerCheckOut");
     }
   } else {
     banner.style.display    = "block";
@@ -641,7 +646,8 @@ function updateModeBanner() {
     banner.style.color      = "#166534";
     banner.style.border     = "2px solid #86efac";
     if (text) {
-      text.textContent = i("modeBannerCheckIn");
+      text.textContent =
+        i("modeBannerCheckIn");
     }
   }
 }
@@ -675,7 +681,7 @@ function updateStudentIdFieldState() {
     el.style.color      = "#94a3b8";
   } else {
     el.disabled         = false;
-    el.placeholder      =
+    el.placeholder =
       i("studentIdPlaceholder");
     el.style.background = "";
     el.style.cursor     = "";
@@ -746,7 +752,8 @@ async function loadAllStudents() {
 // NORMALIZE + FIND STUDENT
 // ================================================
 function normalizeId(rawId) {
-  return String(rawId || "").trim().toUpperCase();
+  return String(rawId || "")
+    .trim().toUpperCase();
 }
 
 function findStudent(rawId) {
@@ -755,7 +762,7 @@ function findStudent(rawId) {
 }
 
 // ================================================
-// VALIDATE STUDENT ID
+// VALIDATE STUDENT ID — AUTO-FILL
 // ================================================
 function validateStudentId() {
   const idInput =
@@ -809,7 +816,8 @@ function validateStudentId() {
     document.getElementById("sex");
   if (sexField) {
     sexField.dataset.rawValue = student.sex;
-    sexField.value = translateSex(student.sex);
+    sexField.value =
+      translateSex(student.sex);
   }
 
   setField("grade", student.grade);
@@ -850,26 +858,28 @@ function haversineDistance(
   const dLat  = toRad(lat2 - lat1);
   const dLon  = toRad(lon2 - lon1);
   const a =
-    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.sin(dLat / 2) *
+    Math.sin(dLat / 2) +
     Math.cos(toRad(lat1)) *
     Math.cos(toRad(lat2)) *
     Math.sin(dLon / 2) *
     Math.sin(dLon / 2);
-  return R * 2 *
-    Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * 2 * Math.atan2(
+    Math.sqrt(a), Math.sqrt(1 - a)
+  );
 }
 
 // ================================================
 // SHOW DISTANCE RESULT
 // ================================================
 function showDistanceResult(loc) {
-  const box    =
+  const box =
     document.getElementById("distanceBox");
   const status =
     document.getElementById("distanceStatus");
-  const icon   =
+  const icon =
     document.getElementById("distanceIcon");
-  const retry  =
+  const retry =
     document.getElementById("retryLocationBtn");
   const locBox =
     document.getElementById("locationBox");
@@ -880,16 +890,37 @@ function showDistanceResult(loc) {
   box.style.display = "flex";
 
   if (isNear) {
-    icon.textContent      = "";
-    status.textContent    = i("locationVerifiedMsg");
+    icon.textContent   = "";
+    icon.innerHTML = `<svg width="22"
+      height="22" viewBox="0 0 24 24"
+      fill="none" stroke="#15803d"
+      stroke-width="2.5"
+      stroke-linecap="round"
+      stroke-linejoin="round">
+      <polyline points="20 6 9 17 4 12"/>
+    </svg>`;
+    status.textContent    =
+      i("locationVerifiedMsg");
     status.style.color    = "#16a34a";
     box.style.background  = "#f0fdf4";
     box.style.borderColor = "#86efac";
     retry.style.display   = "none";
     locationVerified      = true;
   } else {
-    icon.textContent      = "";
-    status.textContent    = i("locationTooFar");
+    icon.innerHTML = `<svg width="22"
+      height="22" viewBox="0 0 24 24"
+      fill="none" stroke="#dc2626"
+      stroke-width="2.5"
+      stroke-linecap="round"
+      stroke-linejoin="round">
+      <circle cx="12" cy="12" r="10"/>
+      <line x1="15" y1="9"
+            x2="9"  y2="15"/>
+      <line x1="9"  y1="9"
+            x2="15" y2="15"/>
+    </svg>`;
+    status.textContent    =
+      i("locationTooFar");
     status.style.color    = "#dc2626";
     box.style.background  = "#fef2f2";
     box.style.borderColor = "#fca5a5";
@@ -908,13 +939,13 @@ function requestLocation() {
     document.getElementById("locationStatus");
   const locBox =
     document.getElementById("locationBox");
-  const box   =
+  const box =
     document.getElementById("distanceBox");
   const retry =
     document.getElementById("retryLocationBtn");
 
-  locationVerified    = false;
-  studentLocation     = null;
+  locationVerified = false;
+  studentLocation  = null;
 
   const submitBtn =
     document.getElementById("submitBtn");
@@ -942,15 +973,21 @@ function requestLocation() {
       const accuracy = pos.coords.accuracy;
 
       if (accuracy > MAX_ACCURACY) {
-        if (locBox) locBox.style.display = "none";
+        if (locBox) {
+          locBox.style.display = "none";
+        }
         box.style.display     = "flex";
         box.style.background  = "#fef2f2";
         box.style.borderColor = "#fca5a5";
-        document.getElementById("distanceIcon")
+        document
+          .getElementById("distanceIcon")
           .textContent = "";
-        document.getElementById("distanceStatus")
-          .textContent = i("locationPoorAccuracy");
-        document.getElementById("distanceStatus")
+        document
+          .getElementById("distanceStatus")
+          .textContent =
+            i("locationPoorAccuracy");
+        document
+          .getElementById("distanceStatus")
           .style.color = "#dc2626";
         retry.style.display = "block";
         return;
@@ -976,7 +1013,9 @@ function requestLocation() {
           ? i("locationDenied")
           : i("locationError");
 
-      if (locBox) locBox.style.display = "none";
+      if (locBox) {
+        locBox.style.display = "none";
+      }
       if (locStatus) {
         locStatus.textContent = msg;
       }
@@ -984,11 +1023,14 @@ function requestLocation() {
       box.style.display     = "flex";
       box.style.background  = "#fef2f2";
       box.style.borderColor = "#fca5a5";
-      document.getElementById("distanceIcon")
+      document
+        .getElementById("distanceIcon")
         .textContent = "";
-      document.getElementById("distanceStatus")
+      document
+        .getElementById("distanceStatus")
         .textContent = msg;
-      document.getElementById("distanceStatus")
+      document
+        .getElementById("distanceStatus")
         .style.color = "#dc2626";
       retry.style.display = "block";
     },
@@ -1007,11 +1049,10 @@ function requestLocation() {
 function getRateData() {
   try {
     return JSON.parse(
-      localStorage.getItem("attendanceRL") || "{}"
+      localStorage.getItem("attendanceRL")
+      || "{}"
     );
-  } catch {
-    return {};
-  }
+  } catch { return {}; }
 }
 
 function saveRateData(d) {
@@ -1064,7 +1105,7 @@ function showRateLimitBox() {
   box.className = "rate-limit-box";
   box.innerHTML = `
     <div style="font-size:28px;
-                margin-bottom:8px;">⛔</div>
+                margin-bottom:8px;"></div>
     <p style="font-weight:700;
               color:#991b1b;
               font-size:15px;">
@@ -1077,15 +1118,17 @@ function showRateLimitBox() {
               margin-top:8px;"></p>
   `;
 
-  formCard.parentNode.insertBefore(
-    box, formCard
-  );
+  formCard.parentNode
+    .insertBefore(box, formCard);
   formCard.style.display = "none";
 
   function tick() {
     const d   = getRateData();
     const now = Date.now();
-    if (!d.lockedUntil || now >= d.lockedUntil) {
+    if (
+      !d.lockedUntil ||
+      now >= d.lockedUntil
+    ) {
       const b = document.getElementById(
         "rateLimitWarning"
       );
@@ -1096,9 +1139,8 @@ function showRateLimitBox() {
       resetRateLimit();
       return;
     }
-    const rem  = Math.ceil(
-      (d.lockedUntil - now) / 1000
-    );
+    const rem  =
+      Math.ceil((d.lockedUntil - now) / 1000);
     const mins = Math.floor(rem / 60);
     const secs = rem % 60;
     const el =
@@ -1136,8 +1178,9 @@ function handleSessionClosed() {
     if (el) el.style.display = "none";
   });
 
-  const closed =
-    document.getElementById("sessionClosedCard");
+  const closed = document.getElementById(
+    "sessionClosedCard"
+  );
   if (closed) {
     closed.style.display = "block";
     const msg = closed.querySelector(
@@ -1154,11 +1197,14 @@ function handleSessionClosed() {
     banner.style.display    = "flex";
     banner.style.background = "#fef2f2";
     banner.style.color      = "#dc2626";
-    banner.style.border     = "1px solid #fca5a5";
-    const icon =
-      document.getElementById("sessionBannerIcon");
-    const text =
-      document.getElementById("sessionBannerText");
+    banner.style.border =
+      "1px solid #fca5a5";
+    const icon = document.getElementById(
+      "sessionBannerIcon"
+    );
+    const text = document.getElementById(
+      "sessionBannerText"
+    );
     if (icon) icon.textContent = "";
     if (text) {
       text.textContent = i("attendanceClosed");
@@ -1196,7 +1242,7 @@ function startSessionListener() {
 // LOAD SESSION
 // ================================================
 async function loadSession() {
-  const params  =
+  const params =
     new URLSearchParams(window.location.search);
   sessionId = params.get("session");
 
@@ -1222,8 +1268,12 @@ async function loadSession() {
     document.getElementById("sessionBannerIcon");
 
   if (!sessionId) {
-    formCard.style.display   = "none";
-    closedCard.style.display = "block";
+    if (formCard) {
+      formCard.style.display = "none";
+    }
+    if (closedCard) {
+      closedCard.style.display = "block";
+    }
     const msg = document.querySelector(
       "[data-i18n='sessionClosedMsg']"
     );
@@ -1237,13 +1287,17 @@ async function loadSession() {
     );
 
     if (!snap.exists()) {
-      formCard.style.display   = "none";
-      closedCard.style.display = "block";
+      if (formCard) {
+        formCard.style.display = "none";
+      }
+      if (closedCard) {
+        closedCard.style.display = "block";
+      }
       return;
     }
 
-    sessionData   = snap.data();
-    const today   =
+    sessionData = snap.data();
+    const today =
       new Date().toLocaleDateString("en-CA");
 
     if (
@@ -1251,8 +1305,12 @@ async function loadSession() {
       sessionData.date   !== today ||
       sessionData.sessionId !== sessionId
     ) {
-      formCard.style.display   = "none";
-      closedCard.style.display = "block";
+      if (formCard) {
+        formCard.style.display = "none";
+      }
+      if (closedCard) {
+        closedCard.style.display = "block";
+      }
       document.querySelectorAll(
         "[data-i18n='sessionClosedMsg']"
       ).forEach(el => {
@@ -1261,25 +1319,29 @@ async function loadSession() {
       return;
     }
 
-    checkInStartTime  =
+    checkInStartTime =
       sessionData.checkInStartTime  || null;
-    checkInEndTime    =
+    checkInEndTime =
       sessionData.checkInEndTime    || null;
     checkOutStartTime =
       sessionData.checkOutStartTime || null;
-    checkOutEndTime   =
+    checkOutEndTime =
       sessionData.checkOutEndTime   || null;
 
     if (isRateLimited()) {
       showRateLimitBox();
     }
 
-    banner.style.display    = "flex";
-    bannerIcon.textContent  = "";
-    bannerText.textContent  = i("sessionActive");
-    banner.style.background = "#f0fdf4";
-    banner.style.color      = "#16a34a";
-    banner.style.border     = "1px solid #86efac";
+    if (banner) {
+      banner.style.display    = "flex";
+      bannerIcon.textContent  = "";
+      bannerText.textContent  =
+        i("sessionActive");
+      banner.style.background = "#f0fdf4";
+      banner.style.color      = "#16a34a";
+      banner.style.border =
+        "1px solid #86efac";
+    }
 
     updateModeBanner();
     updateFormForMode();
@@ -1291,6 +1353,15 @@ async function loadSession() {
       await tryRestoreAttendanceState();
     if (restored) return;
 
+    // Show form and start location
+    if (formCard) {
+      formCard.style.display = "block";
+    }
+    if (document.getElementById("locationBox")) {
+      document.getElementById("locationBox")
+        .style.display = "flex";
+    }
+
     await Promise.all([
       loadAllStudents(),
       new Promise(resolve => {
@@ -1301,8 +1372,12 @@ async function loadSession() {
 
   } catch (err) {
     console.error("Load session error:", err);
-    formCard.style.display   = "none";
-    closedCard.style.display = "block";
+    if (formCard) {
+      formCard.style.display = "none";
+    }
+    if (closedCard) {
+      closedCard.style.display = "block";
+    }
   }
 }
 
@@ -1312,7 +1387,7 @@ async function loadSession() {
 function showError(message) {
   const card =
     document.getElementById("errorCard");
-  const msg  =
+  const msg =
     document.getElementById("errorMessage");
   if (card && msg) {
     msg.textContent    = message;
@@ -1328,30 +1403,34 @@ function showError(message) {
 }
 
 // ================================================
-// VALIDATE FORM
+// VALIDATE FORM BEFORE SUBMIT
 // ================================================
 function validateForm() {
   const idVal =
     document.getElementById("studentId")
       ?.value.trim() || "";
 
-  document.getElementById("studentIdError")
+  document
+    .getElementById("studentIdError")
     .textContent = "";
 
   if (!studentsLoaded) {
-    document.getElementById("studentIdError")
+    document
+      .getElementById("studentIdError")
       .textContent = i("errStudentIdLoading");
     return false;
   }
 
   if (!idVal) {
-    document.getElementById("studentIdError")
+    document
+      .getElementById("studentIdError")
       .textContent = i("errStudentId");
     return false;
   }
 
   if (!findStudent(idVal)) {
-    document.getElementById("studentIdError")
+    document
+      .getElementById("studentIdError")
       .textContent = i("errStudentIdNotFound");
     return false;
   }
@@ -1380,19 +1459,21 @@ function timeToMinutes(timeStr) {
          parseInt(parts[1]);
 }
 
-function isWithinTimeWindow(startStr, endStr) {
+function isWithinTimeWindow(
+  startStr, endStr
+) {
   if (!startStr || !endStr) return true;
-
   const startMins = timeToMinutes(startStr);
   const endMins   = timeToMinutes(endStr);
-  if (startMins === null || endMins === null) {
+  if (
+    startMins === null ||
+    endMins   === null
+  ) {
     return true;
   }
-
   const now     = new Date();
   const nowMins =
     now.getHours() * 60 + now.getMinutes();
-
   return nowMins >= startMins &&
          nowMins <= endMins;
 }
@@ -1408,7 +1489,9 @@ function showCheckoutCard(
 ) {
   const formCard =
     document.getElementById("formCard");
-  if (formCard) formCard.style.display = "none";
+  if (formCard) {
+    formCard.style.display = "none";
+  }
 
   const distBox =
     document.getElementById("distanceBox");
@@ -1422,20 +1505,23 @@ function showCheckoutCard(
   if (!card) return;
   card.style.display = "block";
 
-  const nameEl =
-    document.getElementById(
-      "checkoutStudentName"
-    );
-  if (nameEl) nameEl.textContent = studentName;
+  const nameEl = document.getElementById(
+    "checkoutStudentName"
+  );
+  if (nameEl) {
+    nameEl.textContent = studentName;
+  }
 
-  const ciEl =
-    document.getElementById("displayCheckInTime");
+  const ciEl = document.getElementById(
+    "displayCheckInTime"
+  );
   if (ciEl) {
     ciEl.textContent = checkInDisplay || "--";
   }
 
-  const coEl =
-    document.getElementById("displayCheckOutTime");
+  const coEl = document.getElementById(
+    "displayCheckOutTime"
+  );
   if (coEl) {
     coEl.textContent =
       checkOutDisplay || i("notCheckedOut");
@@ -1450,20 +1536,19 @@ function showCheckoutCard(
 
   const btn =
     document.getElementById("checkOutBtn");
-  const doneMsg =
-    document.getElementById(
-      "alreadyCheckedOutMsg"
-    );
+  const doneMsg = document.getElementById(
+    "alreadyCheckedOutMsg"
+  );
 
   if (isCheckedOut) {
-    if (btn) btn.style.display     = "none";
+    if (btn) btn.style.display = "none";
     if (doneMsg) {
-      doneMsg.textContent   =
+      doneMsg.textContent =
         i("alreadyCheckedOutMsg");
       doneMsg.style.display = "block";
     }
   } else {
-    if (btn) btn.style.display     = "block";
+    if (btn) btn.style.display = "block";
     if (doneMsg) {
       doneMsg.style.display = "none";
     }
@@ -1487,19 +1572,19 @@ function showNotCheckedInCard() {
     if (el) el.style.display = "none";
   });
 
-  const card =
-    document.getElementById("notCheckedInCard");
+  const card = document.getElementById(
+    "notCheckedInCard"
+  );
   if (card) {
-    const title =
-      card.querySelector(
-        "[data-i18n='notCheckedInTitle']"
-      );
-    const msg =
-      card.querySelector(
-        "[data-i18n='notCheckedInMsg']"
-      );
+    const title = card.querySelector(
+      "[data-i18n='notCheckedInTitle']"
+    );
+    const msg = card.querySelector(
+      "[data-i18n='notCheckedInMsg']"
+    );
     if (title) {
-      title.textContent = i("notCheckedInTitle");
+      title.textContent =
+        i("notCheckedInTitle");
     }
     if (msg) {
       msg.textContent = i("notCheckedInMsg");
@@ -1509,11 +1594,12 @@ function showNotCheckedInCard() {
 }
 
 // ================================================
-// LOCAL ATTENDANCE STATE
+// LOCAL ATTENDANCE STATE (refresh fix)
 // ================================================
 function saveAttendanceState(state) {
   try {
-    const key = "attendanceState_" + sessionId;
+    const key =
+      "attendanceState_" + sessionId;
     localStorage.setItem(
       key, JSON.stringify(state)
     );
@@ -1574,10 +1660,8 @@ async function tryRestoreAttendanceState() {
     );
 
     saveAttendanceState({
-      studentId:
-        saved.studentId,
-      sessionId:
-        sessionId,
+      studentId: saved.studentId,
+      sessionId: sessionId,
       date:
         (sessionData && sessionData.date) ||
         saved.date || null,
@@ -1671,13 +1755,13 @@ async function submitAttendance(e) {
 
   if (qrMode === "checkOut") {
     await handleCheckOutSubmit(
-      studentIdVal, nameVal, sexVal,
-      gradeVal, dist, overlay
+      studentIdVal, nameVal,
+      sexVal, gradeVal, dist, overlay
     );
   } else {
     await handleCheckInSubmit(
-      studentIdVal, nameVal, sexVal,
-      gradeVal, dist, overlay
+      studentIdVal, nameVal,
+      sexVal, gradeVal, dist, overlay
     );
   }
 }
@@ -1686,8 +1770,8 @@ async function submitAttendance(e) {
 // HANDLE CHECK-IN SUBMIT
 // ================================================
 async function handleCheckInSubmit(
-  studentIdVal, nameVal, sexVal,
-  gradeVal, dist, overlay
+  studentIdVal, nameVal,
+  sexVal, gradeVal, dist, overlay
 ) {
   try {
     const freshSnap = await getDoc(
@@ -1710,17 +1794,13 @@ async function handleCheckInSubmit(
       }
     }
 
-    const deviceKey    =
+    const deviceKey =
       sessionId + "_" + deviceToken;
     const deviceLogRef =
       doc(db, "deviceLogs", deviceKey);
-
     const recordRef = doc(
-      db,
-      "sessionAttendance",
-      sessionId,
-      "records",
-      studentIdVal
+      db, "sessionAttendance",
+      sessionId, "records", studentIdVal
     );
 
     let alreadyUsedByOther = false;
@@ -1751,21 +1831,21 @@ async function handleCheckInSubmit(
       const now         = new Date();
       const checkInTime = now.toISOString();
       const display     = formatTime(now);
-      const checkDate   =
+      const checkDate =
         now.toLocaleDateString("en-CA");
 
       const data = {
-        fullName:           nameVal,
-        sex:                sexVal,
-        grade:              gradeVal,
-        studentId:          studentIdVal,
-        sessionId:          sessionId,
-        checkInTime:        checkInTime,
-        checkInDisplay:     display,
-        checkInDate:        checkDate,
-        checkOutTime:       null,
-        checkOutDisplay:    null,
-        status:             "present",
+        fullName:   nameVal,
+        sex:        sexVal,
+        grade:      gradeVal,
+        studentId:  studentIdVal,
+        sessionId:  sessionId,
+        checkInTime:     checkInTime,
+        checkInDisplay:  display,
+        checkInDate:     checkDate,
+        checkOutTime:    null,
+        checkOutDisplay: null,
+        status:          "present",
         latitude:
           studentLocation.latitude,
         longitude:
@@ -1797,7 +1877,6 @@ async function handleCheckInSubmit(
       showError(i("errDeviceUsed"));
       return;
     }
-
     if (alreadyCheckedIn) {
       showError(i("errAlreadyCheckedIn"));
       return;
@@ -1836,8 +1915,8 @@ async function handleCheckInSubmit(
 // HANDLE CHECK-OUT SUBMIT
 // ================================================
 async function handleCheckOutSubmit(
-  studentIdVal, nameVal, sexVal,
-  gradeVal, dist, overlay
+  studentIdVal, nameVal,
+  sexVal, gradeVal, dist, overlay
 ) {
   try {
     const freshSnap = await getDoc(
@@ -1861,13 +1940,9 @@ async function handleCheckOutSubmit(
     }
 
     const recordRef = doc(
-      db,
-      "sessionAttendance",
-      sessionId,
-      "records",
-      studentIdVal
+      db, "sessionAttendance",
+      sessionId, "records", studentIdVal
     );
-
     const recordSnap = await getDoc(recordRef);
 
     if (overlay) overlay.style.display = "none";
@@ -1890,7 +1965,7 @@ async function handleCheckOutSubmit(
     if (rd.checkOutTime) {
       showCheckoutCard(
         rd.fullName || nameVal,
-        rd.checkInDisplay || "--",
+        rd.checkInDisplay  || "--",
         rd.checkOutDisplay || "--",
         true
       );
@@ -1932,8 +2007,8 @@ async function handleCheckOutSubmit(
         }
 
         try {
-          const now             = new Date();
-          const checkOutISO     =
+          const now = new Date();
+          const checkOutISO =
             now.toISOString();
           const checkOutDisplay =
             formatTime(now);
@@ -1988,14 +2063,12 @@ async function handleCheckOutSubmit(
           showError(err.message);
         }
       },
-
       function () {
         if (overlay) {
           overlay.style.display = "none";
         }
         showError(i("locationError"));
       },
-
       {
         enableHighAccuracy: true,
         timeout:            10000,
@@ -2020,12 +2093,10 @@ async function handleCheckOut() {
     showError(i("errNotCheckedIn"));
     return;
   }
-
   if (studentCheckedOut) {
     showError(i("errAlreadyCheckedOut"));
     return;
   }
-
   if (!isWithinTimeWindow(
     checkOutStartTime, checkOutEndTime
   )) {
@@ -2086,15 +2157,12 @@ async function handleCheckOut() {
         }
 
         const recordRef = doc(
-          db,
-          "sessionAttendance",
-          sessionId,
-          "records",
-          currentStudentId
+          db, "sessionAttendance",
+          sessionId, "records", currentStudentId
         );
-
         const recordSnap =
           await getDoc(recordRef);
+
         if (!recordSnap.exists()) {
           if (overlay) {
             overlay.style.display = "none";
@@ -2106,7 +2174,6 @@ async function handleCheckOut() {
         }
 
         const rd = recordSnap.data();
-
         if (rd.checkOutTime) {
           if (overlay) {
             overlay.style.display = "none";
@@ -2116,11 +2183,9 @@ async function handleCheckOut() {
           return;
         }
 
-        const now             = new Date();
-        const checkOutISO     =
-          now.toISOString();
-        const checkOutDisplay =
-          formatTime(now);
+        const now = new Date();
+        const checkOutISO     = now.toISOString();
+        const checkOutDisplay = formatTime(now);
 
         await updateDoc(recordRef, {
           checkOutTime:    checkOutISO,
@@ -2147,12 +2212,12 @@ async function handleCheckOut() {
           coEl.textContent = checkOutDisplay;
         }
 
-        const btn =
-          document.getElementById("checkOutBtn");
-        const doneMsg =
-          document.getElementById(
-            "alreadyCheckedOutMsg"
-          );
+        const btn = document.getElementById(
+          "checkOutBtn"
+        );
+        const doneMsg = document.getElementById(
+          "alreadyCheckedOutMsg"
+        );
         if (btn) btn.style.display = "none";
         if (doneMsg) {
           doneMsg.textContent =
@@ -2169,18 +2234,18 @@ async function handleCheckOut() {
           document.getElementById(
             "displayCheckInTime"
           );
+
         saveAttendanceState({
           studentId: currentStudentId,
           sessionId: sessionId,
           date:
-            (sessionData &&
-             sessionData.date) ||
+            (sessionData && sessionData.date) ||
             new Date()
               .toLocaleDateString("en-CA"),
           fullName:
             nameElNow?.textContent || "",
           checkInDisplay:
-            ciElNow?.textContent || null,
+            ciElNow?.textContent   || null,
           checkOutDisplay: checkOutDisplay,
           checkedIn:  true,
           checkedOut: true
@@ -2198,7 +2263,6 @@ async function handleCheckOut() {
         showError(err.message);
       }
     },
-
     function () {
       if (overlay) {
         overlay.style.display = "none";
@@ -2208,7 +2272,6 @@ async function handleCheckOut() {
       }
       showError(i("locationError"));
     },
-
     {
       enableHighAccuracy: true,
       timeout:            10000,
@@ -2220,13 +2283,6 @@ async function handleCheckOut() {
 // ================================================
 // EVENT LISTENERS
 // ================================================
-document.getElementById("languageButton")
-  ?.addEventListener("click", function () {
-    applyLanguage(
-      currentLang === "en" ? "km" : "en"
-    );
-  });
-
 document.getElementById("retryLocationBtn")
   ?.addEventListener("click", requestLocation);
 
@@ -2240,8 +2296,7 @@ let idTimer = null;
 document.getElementById("studentId")
   ?.addEventListener("input", function () {
     clearTimeout(idTimer);
-    idTimer =
-      setTimeout(validateStudentId, 600);
+    idTimer = setTimeout(validateStudentId, 600);
   });
 
 document.getElementById("studentId")
@@ -2251,10 +2306,31 @@ document.getElementById("studentId")
   });
 
 // ================================================
+// ✅ EXPOSE startAttendanceFlow GLOBALLY
+// Called by the consent popup's Continue button
+// in index.html after student agrees.
+// This is the ONLY change from the original
+// loadSession() call at the bottom.
+// ================================================
+window.startAttendanceFlow = async function () {
+  // Apply language first
+  const savedLang =
+    localStorage.getItem("studentLanguage")
+    || "en";
+  applyLanguage(savedLang);
+
+  // Then load session and start everything
+  await loadSession();
+};
+
+// ================================================
 // START
+// Apply language on load so the main page
+// text is correct while popup is showing.
+// Do NOT call loadSession() here anymore.
+// It is called by window.startAttendanceFlow()
+// after student agrees to consent.
 // ================================================
 const savedLang =
-  localStorage.getItem("studentLanguage")
-  || "en";
+  localStorage.getItem("studentLanguage") || "en";
 applyLanguage(savedLang);
-await loadSession();
