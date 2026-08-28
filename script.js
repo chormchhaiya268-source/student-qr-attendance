@@ -2316,7 +2316,7 @@ window.startAttendanceFlow = async function () {
   // Apply language first
   const savedLang =
     localStorage.getItem("studentLanguage")
-    || "en";
+    || "km";
   applyLanguage(savedLang);
 
   // Then load session and start everything
