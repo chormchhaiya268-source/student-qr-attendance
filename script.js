@@ -2316,7 +2316,7 @@ window.startAttendanceFlow = async function () {
   // Apply language first
   const savedLang =
     localStorage.getItem("studentLanguage")
-    || "km";
+    || "en";
   applyLanguage(savedLang);
 
   // Then load session and start everything
@@ -2332,5 +2332,5 @@ window.startAttendanceFlow = async function () {
 // after student agrees to consent.
 // ================================================
 const savedLang =
-  localStorage.getItem("studentLanguage") || "km";
+  localStorage.getItem("studentLanguage") || "en";
 applyLanguage(savedLang);
