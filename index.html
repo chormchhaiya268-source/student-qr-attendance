@@ -19,12 +19,6 @@
   <link rel="stylesheet" href="style.css">
 
   <style>
-    /* ================================================
-       CONSENT POPUP STYLES
-       Only affects the consent popup.
-       Nothing else is touched.
-    ================================================ */
-
     .consent-overlay {
       position: fixed;
       inset: 0;
@@ -252,19 +246,13 @@
 
 <body>
 
-<!-- ================================================
-     CONSENT POPUP
-     Shown immediately when page loads.
-     Hides ALL other content until student agrees.
-     Location and session loading start ONLY after
-     student clicks Continue.
-================================================= -->
+<!-- CONSENT POPUP -->
 <div id="consentOverlay" class="consent-overlay">
   <div class="consent-box">
 
     <div class="consent-header">
       <h2 id="consentTitle">
-        Attendance Consent
+        ការយល់ព្រមចុះវត្តមាន
       </h2>
     </div>
 
@@ -272,13 +260,10 @@
 
       <p class="consent-intro"
         id="consentIntro">
-        Please read the information below
-        before continuing.
       </p>
 
       <ul class="consent-list"
         id="consentList">
-        <!-- Filled by JS -->
       </ul>
 
       <label class="consent-checkbox-row"
@@ -289,8 +274,6 @@
           id="consentCheckbox">
         <span class="consent-checkbox-label"
           id="consentCheckboxLabel">
-          I have read and agree to the
-          terms above.
         </span>
       </label>
 
@@ -301,29 +284,23 @@
         id="consentContinueBtn"
         class="consent-continue-btn"
         disabled>
-        បន្តចុះវត្តមាន
       </button>
       <p class="consent-hint"
         id="consentHint">
-        Please tick the checkbox to continue.
       </p>
     </div>
 
   </div>
 </div>
 
-<!-- ================================================
-     MAIN PAGE CONTENT
-     Hidden behind the consent overlay until
-     student agrees. Shown after consent.
-================================================= -->
+<!-- MAIN PAGE CONTENT -->
 <div class="page-wrapper">
 
   <!-- LANGUAGE SWITCH -->
   <div class="language-area">
     <button id="languageButton"
       class="language-button">
-      ខ្មែរ
+      English
     </button>
   </div>
 
@@ -336,10 +313,8 @@
         class="school-logo">
       <div class="header-title-group">
         <h1 data-i18n="title">
-          QR Attendance System
         </h1>
         <p data-i18n="subtitle">
-          Teppranam High School
         </p>
       </div>
     </div>
@@ -410,7 +385,6 @@
              cursor:pointer;
              font-family:inherit;"
       data-i18n="retryLocation">
-      Try Again
     </button>
   </div>
 
@@ -518,7 +492,6 @@
         </svg>
       </div>
       <h2 data-i18n="checkedInTitle">
-        Checked In
       </h2>
       <p id="checkoutStudentName"
         style="font-size:14px;
@@ -530,7 +503,6 @@
     <div class="checkout-info-box">
       <div class="checkout-info-row">
         <span data-i18n="checkInTimeLabel">
-          Check In Time
         </span>
         <strong id="displayCheckInTime">
           --
@@ -538,21 +510,17 @@
       </div>
       <div class="checkout-info-row">
         <span data-i18n="checkOutTimeLabel">
-          Check Out Time
         </span>
         <strong id="displayCheckOutTime"
           data-i18n="notCheckedOut">
-          Not Checked Out
         </strong>
       </div>
       <div class="checkout-info-row">
         <span data-i18n="statusLabel">
-          Status
         </span>
         <strong id="displayStatus"
           style="color:#16a34a;"
           data-i18n="present">
-          Present
         </strong>
       </div>
     </div>
@@ -561,7 +529,6 @@
       id="checkOutBtn"
       class="checkout-btn"
       data-i18n="checkOutButton">
-      Check Out
     </button>
 
     <p id="alreadyCheckedOutMsg"
@@ -586,20 +553,14 @@
            text-align:center;
            max-width:480px;
            margin:20px auto;">
-    <div style="font-size:48px;
-                margin-bottom:12px;">
-    </div>
     <h2 style="color:#92400e;
                font-size:20px;
                margin-bottom:8px;"
       data-i18n="notCheckedInTitle">
-      Not Checked In Yet
     </h2>
     <p style="color:#78350f;
               font-size:14px;"
       data-i18n="notCheckedInMsg">
-      You must check in before you can
-      check out.
     </p>
   </div>
 
@@ -607,8 +568,7 @@
   <div class="session-closed-card"
     id="sessionClosedCard"
     style="display:none;">
-    <div style="font-size:48px;
-                margin-bottom:8px;">
+    <div style="margin-bottom:8px;">
       <svg width="48" height="48"
         viewBox="0 0 24 24" fill="none"
         stroke="#dc2626" stroke-width="2"
@@ -682,19 +642,21 @@
 
 </div>
 
-<script type="module">
+<script>
 // ================================================
-// CONSENT POPUP — Inline script
+// CONSENT POPUP — plain (non-module) script
+// Runs immediately, before script.js loads.
+// Does NOT handle the language button click —
+// that is handled entirely by script.js so
+// there is only ONE place that controls language.
 //
-// Runs BEFORE script.js loads.
-// Shows the popup immediately.
-// Calls window.startAttendanceFlow() only after
-// student agrees — that function is defined in
-// script.js and starts location + session.
-//
-// Translation strings are self-contained here
-// so they work even before script.js finishes
-// loading.
+// This script exposes two globals:
+//   window.renderConsent(lang)
+//     — called by script.js applyLanguage()
+//       so the popup updates when lang switches
+//   window.startAttendanceFlow
+//     — set by script.js, called here when
+//       the student clicks Continue
 // ================================================
 
 const CONSENT_TEXT = {
@@ -707,9 +669,9 @@ const CONSENT_TEXT = {
       "This system is intended for student " +
         "attendance only.",
       "Students must use their own Student ID.",
-      "Do not use another student's information " +
-        "or submit attendance for " +
-        "another student.",
+      "Do not use another student's " +
+        "information or submit attendance " +
+        "for another student.",
       "Location permission is required to " +
         "verify that the student is within " +
         "the school area.",
@@ -719,16 +681,15 @@ const CONSENT_TEXT = {
         "manipulate the attendance system may " +
         "be reported to the teacher or " +
         "system administrator.",
-      "Students are responsible for the proper " +
-        "use of their attendance information."
+      "Students are responsible for the " +
+        "proper use of their attendance " +
+        "information."
     ],
     checkboxLabel:
       "I have read and agree to the " +
       "terms above.",
-    btnLocked:
-      "Continue to Attendance",
-    btnReady:
-      "Continue to Attendance",
+    btnLocked: "Continue to Attendance",
+    btnReady:  "Continue to Attendance",
     hint:
       "Please tick the checkbox to continue."
   },
@@ -760,30 +721,24 @@ const CONSENT_TEXT = {
     checkboxLabel:
       "ខ្ញុំបានអាន និងយល់ព្រមតាម" +
       "លក្ខខណ្ឌខាងលើ។",
-    btnLocked:
-      "បន្តចុះវត្តមាន",
-    btnReady:
-      "បន្តចុះវត្តមាន",
+    btnLocked: "បន្តចុះវត្តមាន",
+    btnReady:  "បន្តចុះវត្តមាន",
     hint:
       "សូមធីកប្រអប់យល់ព្រម " +
       "ដើម្បីបន្តចុះវត្តមាន។"
   }
 };
 
-// Read language from localStorage
-// (same key used by script.js)
-let consentLang =
-  localStorage.getItem("studentLanguage")
-  || "km";
-
-function getConsentText() {
-  return CONSENT_TEXT[consentLang]
-    || CONSENT_TEXT.en;
-}
-
-// Build the popup content in the current lang
-function renderConsent() {
-  const ct = getConsentText();
+// ================================================
+// renderConsent(lang)
+// Exposed globally so script.js can call it
+// inside applyLanguage() whenever the user
+// switches language — keeping the popup text
+// in sync with the rest of the page.
+// ================================================
+window.renderConsent = function (lang) {
+  const ct =
+    CONSENT_TEXT[lang] || CONSENT_TEXT.km;
 
   const titleEl =
     document.getElementById("consentTitle");
@@ -811,21 +766,15 @@ function renderConsent() {
   }
   if (hintEl) hintEl.textContent = ct.hint;
 
-  // Build bullet list
   if (listEl) {
     listEl.innerHTML = ct.items.map(
-      text => `
-        <li>
-          <span class="consent-bullet">
-            &bull;
-          </span>
-          <span>${text}</span>
-        </li>
-      `
+      text => `<li>
+        <span class="consent-bullet">&bull;</span>
+        <span>${text}</span>
+      </li>`
     ).join("");
   }
 
-  // Set button text based on checkbox state
   if (btn) {
     const checked =
       checkbox && checkbox.checked;
@@ -833,34 +782,24 @@ function renderConsent() {
       ? ct.btnReady
       : ct.btnLocked;
   }
-}
+};
 
-// Initial render
-renderConsent();
+// ================================================
+// Initial render using saved language.
+// Default is "km" (Khmer) if nothing saved.
+// ================================================
+const _initLang =
+  localStorage.getItem("studentLanguage")
+  || "km";
 
-// Language button inside main page also
-// updates consent popup
-document
-  .getElementById("languageButton")
-  ?.addEventListener("click", function () {
-    // Toggle language
-    consentLang =
-      consentLang === "en" ? "km" : "en";
-    // Update button label
-    this.textContent =
-      consentLang === "en" ? "ខ្មែរ" : "English";
-    // Apply Khmer font class
-    document.body.classList.toggle(
-      "khmer", consentLang === "km"
-    );
-    // Re-render popup in new language
-    renderConsent();
-  });
+window.renderConsent(_initLang);
 
-// Checkbox change — enable/disable button
+// ================================================
+// Checkbox — enable/disable Continue button
+// ================================================
 document
   .getElementById("consentCheckbox")
-  ?.addEventListener("change", function () {
+  .addEventListener("change", function () {
     const btn =
       document.getElementById(
         "consentContinueBtn"
@@ -871,28 +810,37 @@ document
       );
     const hint =
       document.getElementById("consentHint");
-    const ct = getConsentText();
+
+    // Read current lang from localStorage
+    // so the button text is always correct
+    const lang =
+      localStorage.getItem("studentLanguage")
+      || "km";
+    const ct =
+      CONSENT_TEXT[lang] || CONSENT_TEXT.km;
 
     if (this.checked) {
       if (btn) {
-        btn.disabled = false;
+        btn.disabled    = false;
         btn.textContent = ct.btnReady;
       }
       if (row) row.classList.add("checked");
       if (hint) hint.style.display = "none";
     } else {
       if (btn) {
-        btn.disabled = true;
+        btn.disabled    = true;
         btn.textContent = ct.btnLocked;
       }
       if (row) row.classList.remove("checked");
     }
   });
 
-// Continue button — hide popup and start flow
+// ================================================
+// Continue button — start attendance flow
+// ================================================
 document
   .getElementById("consentContinueBtn")
-  ?.addEventListener("click", function () {
+  .addEventListener("click", function () {
     const checkbox =
       document.getElementById("consentCheckbox");
     const hint =
@@ -903,15 +851,12 @@ document
       return;
     }
 
-    // Hide the consent popup
     const overlay =
       document.getElementById("consentOverlay");
-    if (overlay) overlay.style.display = "none";
+    if (overlay) {
+      overlay.style.display = "none";
+    }
 
-    // NOW start the attendance flow
-    // window.startAttendanceFlow is defined
-    // in script.js and starts location +
-    // session loading
     if (typeof window.startAttendanceFlow
         === "function") {
       window.startAttendanceFlow();
