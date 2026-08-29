@@ -587,6 +587,12 @@ function applyLanguage(lang) {
   }
 
   updateStudentIdFieldState();
+
+  // Keep the consent popup (defined in index.html)
+  // in sync with the selected language.
+  if (typeof window.renderConsent === "function") {
+    window.renderConsent(lang);
+  }
 }
 
 // ================================================
@@ -2283,6 +2289,22 @@ async function handleCheckOut() {
 // ================================================
 // EVENT LISTENERS
 // ================================================
+
+// ------------------------------------------------
+// LANGUAGE BUTTON — toggles between English and
+// Khmer every time it is clicked. This is the
+// only place that switches currentLang, and it
+// always flips off the CURRENT value of
+// currentLang (never off displayed text), so the
+// switch is safe to click repeatedly in any order.
+// ------------------------------------------------
+document.getElementById("languageButton")
+  ?.addEventListener("click", function () {
+    const nextLang =
+      currentLang === "en" ? "km" : "en";
+    applyLanguage(nextLang);
+  });
+
 document.getElementById("retryLocationBtn")
   ?.addEventListener("click", requestLocation);
 
