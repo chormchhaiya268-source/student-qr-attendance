@@ -129,7 +129,8 @@
       border-color: #86efac;
     }
 
-    #consentCheckbox {
+    #consentCheckbox,
+    #consentNeverAskCheckbox {
       width: 22px;
       height: 22px;
       min-width: 22px;
@@ -274,6 +275,17 @@
           id="consentCheckbox">
         <span class="consent-checkbox-label"
           id="consentCheckboxLabel">
+        </span>
+      </label>
+
+      <label class="consent-checkbox-row"
+        id="consentNeverAskRow"
+        for="consentNeverAskCheckbox">
+        <input
+          type="checkbox"
+          id="consentNeverAskCheckbox">
+        <span class="consent-checkbox-label"
+          id="consentNeverAskLabel">
         </span>
       </label>
 
@@ -688,6 +700,8 @@ const CONSENT_TEXT = {
     checkboxLabel:
       "I have read and agree to the " +
       "terms above.",
+    neverAskLabel:
+      "Never ask me again",
     btnLocked: "Continue to Attendance",
     btnReady:  "Continue to Attendance",
     hint:
@@ -721,6 +735,8 @@ const CONSENT_TEXT = {
     checkboxLabel:
       "ខ្ញុំបានអាន និងយល់ព្រមតាម" +
       "លក្ខខណ្ឌខាងលើ។",
+    neverAskLabel:
+      "កុំសួរខ្ញុំម្តងទៀត",
     btnLocked: "បន្តចុះវត្តមាន",
     btnReady:  "បន្តចុះវត្តមាន",
     hint:
@@ -750,6 +766,10 @@ window.renderConsent = function (lang) {
     document.getElementById(
       "consentCheckboxLabel"
     );
+  const neverAskLabelEl =
+    document.getElementById(
+      "consentNeverAskLabel"
+    );
   const hintEl =
     document.getElementById("consentHint");
   const btn =
@@ -763,6 +783,10 @@ window.renderConsent = function (lang) {
   if (introEl) introEl.textContent = ct.intro;
   if (labelEl) {
     labelEl.textContent = ct.checkboxLabel;
+  }
+  if (neverAskLabelEl) {
+    neverAskLabelEl.textContent =
+      ct.neverAskLabel;
   }
   if (hintEl) hintEl.textContent = ct.hint;
 
@@ -793,6 +817,44 @@ const _initLang =
   || "km";
 
 window.renderConsent(_initLang);
+
+// ================================================
+// "Never ask me again" — skip the popup on
+// repeat visits if the student previously
+// checked it and confirmed.
+//
+// This ONLY affects the website's own consent
+// popup. It does not touch, request, or skip
+// the browser's Location permission, GPS
+// verification, or any attendance logic — all
+// of that still runs exactly as before, inside
+// window.startAttendanceFlow() (defined in
+// script.js), which is still called normally.
+// ================================================
+function tryStartAttendanceFlow() {
+  if (typeof window.startAttendanceFlow
+      === "function") {
+    window.startAttendanceFlow();
+  } else {
+    // script.js hasn't finished loading yet —
+    // check again shortly.
+    setTimeout(tryStartAttendanceFlow, 20);
+  }
+}
+
+const consentAlreadyAccepted =
+  localStorage.getItem(
+    "attendanceConsentAccepted"
+  ) === "true";
+
+if (consentAlreadyAccepted) {
+  const overlay =
+    document.getElementById("consentOverlay");
+  if (overlay) {
+    overlay.style.display = "none";
+  }
+  tryStartAttendanceFlow();
+}
 
 // ================================================
 // Checkbox — enable/disable Continue button
@@ -849,6 +911,22 @@ document
     if (!checkbox || !checkbox.checked) {
       if (hint) hint.style.display = "block";
       return;
+    }
+
+    // Save ONLY the popup preference — never
+    // any student ID, name, location, or
+    // attendance data — and only if the
+    // student explicitly checked the box.
+    const neverAskCheckbox =
+      document.getElementById(
+        "consentNeverAskCheckbox"
+      );
+    if (neverAskCheckbox
+        && neverAskCheckbox.checked) {
+      localStorage.setItem(
+        "attendanceConsentAccepted",
+        "true"
+      );
     }
 
     const overlay =
