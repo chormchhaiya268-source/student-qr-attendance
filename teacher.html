@@ -174,74 +174,138 @@
     }
 
     /* ============================================
-       ✅ EDIT BUTTON — safe/normal action
-       Blue, clean, standard appearance
+       ✅ EDIT BUTTON — FIXED & IMPROVED
+       Bigger, clearer, proper blue gradient
     ============================================ */
     .btn-edit-student {
       display: inline-flex;
       align-items: center;
-      gap: 5px;
-      padding: 6px 14px;
-      background: #2563eb;
+      justify-content: center;
+      gap: 6px;
+      padding: 8px 16px;
+      background: linear-gradient(
+        135deg, #2563eb 0%, #3b82f6 100%
+      );
       color: #ffffff;
       border: none;
-      border-radius: 8px;
-      font-size: 12px;
-      font-weight: 600;
-      font-family: inherit;
-      cursor: pointer;
-      white-space: nowrap;
-      min-height: 34px;
-      transition: background 0.18s ease,
-                  box-shadow 0.18s ease;
-      text-decoration: none;
-    }
-    .btn-edit-student:hover {
-      background: #1d4ed8;
-      box-shadow: 0 2px 8px rgba(37,99,235,0.25);
-    }
-    .btn-edit-student:active {
-      background: #1e40af;
-    }
-
-    /* ============================================
-       ✅ DELETE BUTTON — destructive/dangerous
-       Red, strong visual warning, different shape
-       so teacher cannot confuse it with Edit
-    ============================================ */
-    .btn-delete-student {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      padding: 6px 14px;
-      background: #ffffff;
-      color: #dc2626;
-      border: 2px solid #dc2626;
-      border-radius: 8px;
-      font-size: 12px;
+      border-radius: 10px;
+      font-size: 13px;
       font-weight: 700;
       font-family: inherit;
       cursor: pointer;
       white-space: nowrap;
-      min-height: 34px;
+      min-height: 38px;
+      min-width: 90px;
+      box-shadow: 0 2px 8px
+        rgba(37, 99, 235, 0.30);
+      transition: background 0.18s ease,
+                  box-shadow 0.18s ease,
+                  transform 0.15s ease;
+      text-decoration: none;
+    }
+    .btn-edit-student:hover {
+      background: linear-gradient(
+        135deg, #1d4ed8 0%, #2563eb 100%
+      );
+      box-shadow: 0 4px 14px
+        rgba(37, 99, 235, 0.40);
+      transform: translateY(-1px);
+    }
+    .btn-edit-student:active {
+      background: #1e40af;
+      transform: scale(0.97);
+    }
+
+    /* ============================================
+       ✅ DELETE BUTTON — FIXED & IMPROVED
+       Bigger, clearer red outline style
+       Cannot be confused with Edit button
+    ============================================ */
+    .btn-delete-student {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 8px 16px;
+      background: #ffffff;
+      color: #dc2626;
+      border: 2px solid #dc2626;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      white-space: nowrap;
+      min-height: 38px;
+      min-width: 90px;
       transition: background 0.18s ease,
                   color 0.18s ease,
-                  box-shadow 0.18s ease;
+                  box-shadow 0.18s ease,
+                  transform 0.15s ease;
       text-decoration: none;
     }
     .btn-delete-student:hover {
       background: #dc2626;
       color: #ffffff;
-      box-shadow: 0 2px 10px rgba(220,38,38,0.30);
+      box-shadow: 0 4px 14px
+        rgba(220, 38, 38, 0.35);
+      transform: translateY(-1px);
     }
     .btn-delete-student:active {
       background: #b91c1c;
       border-color: #b91c1c;
       color: #ffffff;
+      transform: scale(0.97);
     }
 
     /* ============================================
-       ✅ DELETE MODAL — danger header styling
+       ✅ EDIT CONFIRM MODAL FOOTER — FIXED
+       Cancel button now looks proper
+       Save/Confirm button is clear and visible
+    ============================================ */
+    .edit-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      align-items: center;
+      padding: 16px 20px 20px;
+      flex-wrap: wrap;
+    }
+
+    /* ✅ FIXED Cancel button inside modals
+       Was too light/grey — now clearly visible */
+    .close-modal-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 10px 22px;
+      background: #f1f5f9;
+      color: #374151;
+      border: 2px solid #cbd5e1;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      min-height: 42px;
+      min-width: 110px;
+      transition: background 0.18s ease,
+                  border-color 0.18s ease,
+                  transform 0.15s ease;
+    }
+    .close-modal-btn:hover {
+      background: #e2e8f0;
+      border-color: #94a3b8;
+      transform: translateY(-1px);
+    }
+    .close-modal-btn:active {
+      background: #cbd5e1;
+      transform: scale(0.97);
+    }
+
+    /* ============================================
+       ✅ DELETE MODAL STYLING — IMPROVED
     ============================================ */
     .delete-modal-avatar {
       font-size: 40px;
@@ -316,55 +380,132 @@
     }
 
     /* ============================================
-       ✅ CONFIRM DELETE BUTTON — full red fill
-       inside the modal footer
+       ✅ CONFIRM DELETE BUTTON — FIXED
+       Full red, clearly dangerous, proper size
     ============================================ */
     .btn-confirm-delete {
       display: inline-flex;
       align-items: center;
+      justify-content: center;
       gap: 6px;
-      padding: 9px 20px;
-      background: #dc2626;
+      padding: 10px 22px;
+      background: linear-gradient(
+        135deg, #dc2626 0%, #ef4444 100%
+      );
       color: #ffffff;
       border: none;
-      border-radius: 8px;
-      font-size: 13px;
+      border-radius: 10px;
+      font-size: 14px;
       font-weight: 700;
       font-family: inherit;
       cursor: pointer;
-      min-height: 38px;
+      min-height: 42px;
+      min-width: 140px;
+      box-shadow: 0 2px 10px
+        rgba(220, 38, 38, 0.35);
       transition: background 0.18s ease,
-                  box-shadow 0.18s ease;
+                  box-shadow 0.18s ease,
+                  transform 0.15s ease;
     }
     .btn-confirm-delete:hover {
-      background: #b91c1c;
-      box-shadow: 0 3px 12px rgba(220,38,38,0.35);
+      background: linear-gradient(
+        135deg, #b91c1c 0%, #dc2626 100%
+      );
+      box-shadow: 0 4px 16px
+        rgba(220, 38, 38, 0.45);
+      transform: translateY(-1px);
     }
     .btn-confirm-delete:active {
       background: #991b1b;
+      transform: scale(0.97);
     }
 
     /* ============================================
        ✅ CANCEL BUTTON inside delete modal
+       FIXED — proper visible style
     ============================================ */
     .btn-cancel-delete {
       display: inline-flex;
       align-items: center;
+      justify-content: center;
       gap: 6px;
-      padding: 9px 20px;
+      padding: 10px 22px;
       background: #f1f5f9;
-      color: #475569;
-      border: 1px solid #cbd5e1;
-      border-radius: 8px;
-      font-size: 13px;
-      font-weight: 600;
+      color: #374151;
+      border: 2px solid #cbd5e1;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 700;
       font-family: inherit;
       cursor: pointer;
-      min-height: 38px;
-      transition: background 0.18s ease;
+      min-height: 42px;
+      min-width: 110px;
+      transition: background 0.18s ease,
+                  border-color 0.18s ease,
+                  transform 0.15s ease;
     }
     .btn-cancel-delete:hover {
       background: #e2e8f0;
+      border-color: #94a3b8;
+      transform: translateY(-1px);
+    }
+    .btn-cancel-delete:active {
+      background: #cbd5e1;
+      transform: scale(0.97);
+    }
+
+    /* ============================================
+       ✅ EDIT CONFIRM MODAL FOOTER BUTTONS
+       Save button — green, clearly positive
+       Cancel button — grey, clearly safe
+    ============================================ */
+    .btn-confirm-save {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 10px 22px;
+      background: linear-gradient(
+        135deg, #16a34a 0%, #22c55e 100%
+      );
+      color: #ffffff;
+      border: none;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      min-height: 42px;
+      min-width: 120px;
+      box-shadow: 0 2px 10px
+        rgba(22, 163, 74, 0.30);
+      transition: background 0.18s ease,
+                  box-shadow 0.18s ease,
+                  transform 0.15s ease;
+    }
+    .btn-confirm-save:hover {
+      background: linear-gradient(
+        135deg, #15803d 0%, #16a34a 100%
+      );
+      box-shadow: 0 4px 16px
+        rgba(22, 163, 74, 0.40);
+      transform: translateY(-1px);
+    }
+    .btn-confirm-save:active {
+      transform: scale(0.97);
+    }
+
+    /* ============================================
+       ✅ MODAL FOOTER — proper padding & layout
+    ============================================ */
+    .profile-footer {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      align-items: center;
+      padding: 14px 22px 20px;
+      flex-wrap: wrap;
+      border-top: 1px solid #f1f5f9;
     }
 
   </style>
@@ -1070,14 +1211,15 @@
       <button id="closeProfileBtn"
         class="close-modal-btn"
         data-t="closeProfile">
-        Close
+        ✖ Close
       </button>
     </div>
   </div>
 </div>
 
 <!-- EDIT STUDENT MODAL -->
-<div id="editStudentModal" class="profile-modal">
+<div id="editStudentModal"
+  class="profile-modal">
   <div class="profile-content">
     <div class="profile-header">
       <div class="profile-avatar">✏️</div>
@@ -1188,23 +1330,32 @@
              padding:0 20px;
              margin:4px 0 0;"></p>
 
+    <!-- ✅ FIXED: Both buttons same height,
+         clearly visible, properly spaced -->
     <div class="profile-footer edit-actions">
-      <button id="saveEditBtn"
-        class="btn btn-blue"
-        data-t="saveChangesBtn">
-        💾 Save Changes
-      </button>
       <button id="cancelEditBtn"
         class="close-modal-btn"
         data-t="cancelEditBtnLabel">
-        ✖ Cancel
+        ✖ បោះបង់
+      </button>
+      <button id="saveEditBtn"
+        class="btn btn-blue"
+        data-t="saveChangesBtn"
+        style="min-height:42px;
+               min-width:150px;
+               font-size:14px;
+               font-weight:700;
+               padding:10px 22px;
+               border-radius:10px;">
+        💾 Save Changes
       </button>
     </div>
   </div>
 </div>
 
 <!-- EDIT CONFIRMATION MODAL -->
-<div id="editConfirmModal" class="profile-modal">
+<div id="editConfirmModal"
+  class="profile-modal">
   <div class="profile-content"
     style="max-width:380px;">
     <div class="profile-header">
@@ -1219,8 +1370,8 @@
                 text-align:center;
                 padding:0 10px 10px;"
         data-t="editConfirmText">
-        Are you sure you want to update this
-        student's information?
+        Are you sure you want to update
+        this student's information?
       </p>
 
       <div class="profile-row">
@@ -1264,33 +1415,34 @@
         Student ID cannot be changed.
       </p>
     </div>
+
+    <!-- ✅ FIXED: Cancel clearly visible,
+         Save button green and clear -->
     <div class="profile-footer"
-      style="gap:10px;">
+      style="gap:12px;">
       <button id="cancelEditConfirmBtn"
         class="close-modal-btn"
         data-t="cancelBtn">
-        Cancel
+        ✖ បោះបង់
       </button>
       <button id="confirmEditBtn"
-        class="btn btn-blue"
+        class="btn-confirm-save"
         data-t="saveBtnConfirm">
-        Save
+        💾 រក្សាទុក
       </button>
     </div>
   </div>
 </div>
 
-<!-- ============================================
-     ✅ DELETE CONFIRMATION MODAL
-     IMPROVED: danger header, student info box,
-     clear Cancel vs Delete buttons
-============================================= -->
-<div id="deleteStudentModal" class="profile-modal">
+<!-- DELETE CONFIRMATION MODAL -->
+<div id="deleteStudentModal"
+  class="profile-modal">
   <div class="profile-content"
-    style="max-width:400px;padding:0;
+    style="max-width:400px;
+           padding:0;
            overflow:hidden;">
 
-    <!-- ⚠️ Danger header — red background -->
+    <!-- ⚠️ Danger header -->
     <div class="delete-modal-header-danger">
       <div class="delete-modal-avatar">🗑️</div>
       <h2 data-t="deleteConfirmTitle">
@@ -1302,7 +1454,6 @@
     <div class="profile-body"
       style="padding:20px 24px 10px;">
 
-      <!-- Warning text -->
       <p class="delete-warning-text"
         data-t="deleteConfirmText">
         Are you sure you want to delete
@@ -1310,7 +1461,6 @@
         be undone.
       </p>
 
-      <!-- Student info box -->
       <div class="delete-student-info-box">
         <div class="delete-info-row">
           <span class="delete-info-label"
@@ -1331,9 +1481,7 @@
         </div>
         <div class="delete-info-row">
           <span class="delete-info-label"
-            data-t="colSex">
-            Sex
-          </span>
+            data-t="colSex">Sex</span>
           <span class="delete-info-value"
             id="deleteConfirmSex">—</span>
         </div>
@@ -1347,7 +1495,6 @@
         </div>
       </div>
 
-      <!-- Cannot undo note -->
       <p class="delete-cannot-undo"
         data-t="cannotUndoNote">
         ⚠️ This action cannot be undone.
@@ -1355,32 +1502,29 @@
 
     </div>
 
-    <!-- Footer buttons -->
+    <!-- ✅ FIXED Footer buttons:
+         Cancel — clearly visible grey
+         Delete — clearly visible red -->
     <div class="profile-footer"
-      style="gap:10px;
-             padding:14px 24px 20px;
-             justify-content:center;">
-
-      <!-- Cancel — safe, neutral -->
+      style="gap:12px;
+             padding:14px 24px 20px;">
       <button id="cancelDeleteBtn"
         class="btn-cancel-delete"
         data-t="cancelBtn">
-        ✖ Cancel
+        ✖ បោះបង់
       </button>
-
-      <!-- Confirm Delete — red, dangerous -->
       <button id="confirmDeleteBtn"
         class="btn-confirm-delete"
         data-t="deleteBtnConfirm">
-        🗑️ Delete Student
+        🗑️ លុបសិស្ស
       </button>
-
     </div>
   </div>
 </div>
 
 <!-- DUPLICATE STUDENT ID POPUP -->
-<div id="duplicateIdModal" class="profile-modal">
+<div id="duplicateIdModal"
+  class="profile-modal">
   <div class="profile-content"
     style="max-width:380px;">
     <div class="profile-header">
@@ -1402,7 +1546,12 @@
     <div class="profile-footer">
       <button id="duplicateIdOkBtn"
         class="btn btn-blue"
-        data-t="okBtn">
+        data-t="okBtn"
+        style="min-height:42px;
+               min-width:100px;
+               font-size:14px;
+               font-weight:700;
+               border-radius:10px;">
         OK
       </button>
     </div>
@@ -1505,7 +1654,9 @@ onAuthStateChanged(auth, function (user) {
   }
 
   const badge =
-    document.getElementById("teacherEmailBadge");
+    document.getElementById(
+      "teacherEmailBadge"
+    );
   const emailEl =
     document.getElementById("teacherEmailText");
 
@@ -1523,8 +1674,6 @@ onAuthStateChanged(auth, function (user) {
 
 // ============================================
 // TRANSLATIONS
-// ✅ Added: studentDeleted, cannotUndoNote,
-//    deleteBtnConfirm updated for both languages
 // ============================================
 const tt = {
   en: {
@@ -1542,7 +1691,8 @@ const tt = {
 
     studentListTitle: "Student List Manager",
     studentListHint:
-      "Add students here. They are saved permanently.",
+      "Add students here. " +
+      "They are saved permanently.",
     labelStudentName:  "Full Name",
     labelStudentId:    "Student ID",
     labelStudentSex:   "Sex",
@@ -1551,11 +1701,8 @@ const tt = {
     addStudent:        "➕ Add Student",
     removeStudent:     "🗑️ Delete",
     studentAdded:      "Student added.",
-
-    // ✅ UPDATED: delete success uses toast
     studentRemoved:
       "✅ Student deleted successfully!",
-
     fillAllFields:
       "Please fill in all fields.",
     studentIdExists:
@@ -1564,24 +1711,18 @@ const tt = {
     duplicateIdTitle:
       "Duplicate Student ID",
     okBtn: "OK",
-    noStudentsYet:     "No students yet.",
-    confirmRemove:
-      "Remove this student?",
+    noStudentsYet:  "No students yet.",
+    confirmRemove:  "Remove this student?",
 
-    // Edit / Delete labels
     editBtnLabel:      "✏️ Edit",
     deleteBtnLabel:    "🗑️ Delete",
-
     editStudentTitle:  "✏️ Edit Student",
     saveChangesBtn:    "💾 Save Changes",
     cancelBtn:         "Cancel",
     cancelEditBtnLabel: "✖ Cancel",
     confirmBtn:        "Confirm",
-    saveBtnConfirm:    "Save",
-
-    // ✅ UPDATED delete modal button text
+    saveBtnConfirm:    "💾 Save",
     deleteBtnConfirm:  "🗑️ Delete Student",
-
     editConfirmTitle:  "Confirm Save",
     editConfirmText:
       "Are you sure you want to save " +
@@ -1589,15 +1730,12 @@ const tt = {
     cancelEditConfirmText:
       "Are you sure you want to cancel?\n" +
       "Your unsaved changes will be lost.",
-
-    // ✅ UPDATED delete modal texts
     deleteConfirmTitle: "⚠️ Delete Student",
     deleteConfirmText:
       "Are you sure you want to delete " +
       "this student?",
     cannotUndoNote:
       "⚠️ This action cannot be undone.",
-
     newNameLabel:  "New Name",
     newSexLabel:   "New Sex",
     newClassLabel: "New Class",
@@ -1606,8 +1744,6 @@ const tt = {
       "successfully!",
     studentIdLocked:
       "Student ID cannot be changed.",
-
-    // ✅ NEW: delete success toast
     studentDeleted:
       "✅ Student deleted successfully!",
 
@@ -1626,18 +1762,19 @@ const tt = {
     sessionClosed:       "Closed",
     startSession:        "▶ Start Attendance",
     endSession:          "⏹ End Attendance",
-    sessionActive:
-      "Session active.",
+    sessionActive:       "Session active.",
     sessionStarted:
       "Attendance started. QR Code is ready.",
     sessionEnded:
       "Attendance session has ended.",
     confirmEnd:
-      "End attendance? Students cannot check in after this.",
+      "End attendance? Students cannot " +
+      "check in after this.",
     setTimesAlert:
       "Please set all time values.",
     timeOrderAlert:
-      "End time must be later than start time.",
+      "End time must be later than " +
+      "start time.",
     sessionError:
       "Session error. Please try again.",
     noStudentsError:
@@ -1646,7 +1783,8 @@ const tt = {
     startTimeLabel:    "Start",
     endTimeLabel:      "End",
     timeRangeError:
-      "End time must be later than start time.",
+      "End time must be later than " +
+      "start time.",
     checkInWindowLabel:  "Check-In Window",
     checkOutWindowLabel: "Check-Out Window",
 
@@ -1674,8 +1812,7 @@ const tt = {
     qrActive:              "✅ Active",
     qrInactive:            "🔴 Inactive",
 
-    qrTitle:
-      "📱 Today's QR Code",
+    qrTitle:         "📱 Today's QR Code",
     qrInstructions:
       "Show this QR code to students.",
     downloadQr:  "⬇ Download QR Code",
@@ -1741,11 +1878,8 @@ const tt = {
     colAction:         "សកម្មភាព",
     addStudent:        "➕ បន្ថែមសិស្ស",
     removeStudent:     "🗑️ លុប",
-
-    // ✅ UPDATED: delete success in Khmer
     studentRemoved:
       "✅ បានលុបសិស្សដោយជោគជ័យ!",
-
     studentAdded:    "បន្ថែមសិស្សដោយជោគជ័យ។",
     fillAllFields:
       "សូមបំពេញព័ត៌មានទាំងអស់។",
@@ -1755,38 +1889,30 @@ const tt = {
       "លេខសម្គាល់ស្ទួន",
     okBtn: "យល់ព្រម",
     noStudentsYet:  "មិនទាន់មានសិស្សទេ។",
-    confirmRemove:
-      "លុបសិស្សនេះ?",
+    confirmRemove:  "លុបសិស្សនេះ?",
 
-    // Edit / Delete labels — Khmer
     editBtnLabel:      "✏️ កែប្រែ",
     deleteBtnLabel:    "🗑️ លុប",
-
     editStudentTitle:  "✏️ កែប្រែព័ត៌មានសិស្ស",
     saveChangesBtn:    "💾 រក្សាទុកការកែប្រែ",
     cancelBtn:         "បោះបង់",
     cancelEditBtnLabel: "✖ បោះបង់",
     confirmBtn:        "បញ្ជាក់",
-    saveBtnConfirm:    "រក្សាទុក",
-
-    // ✅ UPDATED delete modal button — Khmer
+    saveBtnConfirm:    "💾 រក្សាទុក",
     deleteBtnConfirm:  "🗑️ លុបសិស្ស",
-
     editConfirmTitle:  "បញ្ជាក់ការរក្សាទុក",
     editConfirmText:
-      "តើអ្នកប្រាកដថាចង់រក្សាទុកការកែប្រែ" +
-      "ទាំងនេះមែនទេ?",
+      "តើអ្នកប្រាកដថាចង់រក្សាទុក" +
+      "ការកែប្រែទាំងនេះមែនទេ?",
     cancelEditConfirmText:
       "តើអ្នកប្រាកដថាចង់បោះបង់ការកែប្រែទេ?\n" +
-      "ការកែប្រែដែលមិនទាន់រក្សាទុកនឹងបាត់បង់។",
-
-    // ✅ UPDATED delete modal texts — Khmer
+      "ការកែប្រែដែលមិនទាន់រក្សាទុក" +
+      "នឹងបាត់បង់។",
     deleteConfirmTitle: "⚠️ លុបសិស្ស",
     deleteConfirmText:
       "តើអ្នកប្រាកដថាចង់លុបសិស្សនេះមែនទេ?",
     cannotUndoNote:
       "⚠️ ការលុបនេះមិនអាចត្រឡប់វិញបានទេ។",
-
     newNameLabel:  "ឈ្មោះថ្មី",
     newSexLabel:   "ភេទថ្មី",
     newClassLabel: "ថ្នាក់ថ្មី",
@@ -1794,8 +1920,6 @@ const tt = {
       "✅ កែប្រែព័ត៌មានសិស្សបានជោគជ័យ!",
     studentIdLocked:
       "លេខសម្គាល់សិស្សមិនអាចកែប្រែបានទេ",
-
-    // ✅ NEW: delete success toast — Khmer
     studentDeleted:
       "✅ បានលុបសិស្សដោយជោគជ័យ!",
 
@@ -1814,18 +1938,19 @@ const tt = {
     sessionClosed:       "បិទ",
     startSession:        "▶ ចាប់ផ្ដើមវត្តមាន",
     endSession:          "⏹ បញ្ចប់វត្តមាន",
-    sessionActive:
-      "វគ្គកំពុងដំណើរការ។",
+    sessionActive:       "វគ្គកំពុងដំណើរការ។",
     sessionStarted:
       "វត្តមានចាប់ផ្ដើម។ QR Code រួចរាល់។",
     sessionEnded:
       "វគ្គចុះវត្តមានបានបញ្ចប់។",
     confirmEnd:
-      "បញ្ចប់វត្តមាន? សិស្សនឹងមិនអាចចុះបានទៀតទេ។",
+      "បញ្ចប់វត្តមាន? " +
+      "សិស្សនឹងមិនអាចចុះបានទៀតទេ។",
     setTimesAlert:
       "សូមកំណត់ម៉ោងទាំងអស់។",
     timeOrderAlert:
-      "ម៉ោងបញ្ចប់ត្រូវតែយឺតជាងម៉ោងចាប់ផ្ដើម។",
+      "ម៉ោងបញ្ចប់ត្រូវតែ" +
+      "យឺតជាងម៉ោងចាប់ផ្ដើម។",
     sessionError:
       "មានបញ្ហា។ សូមព្យាយាមម្តងទៀត។",
     noStudentsError:
@@ -1834,7 +1959,8 @@ const tt = {
     startTimeLabel:    "ចាប់ផ្ដើម",
     endTimeLabel:      "បញ្ចប់",
     timeRangeError:
-      "ម៉ោងបញ្ចប់ត្រូវតែយឺតជាងម៉ោងចាប់ផ្ដើម។",
+      "ម៉ោងបញ្ចប់ត្រូវតែ" +
+      "យឺតជាងម៉ោងចាប់ផ្ដើម។",
     checkInWindowLabel:  "ម៉ោងអនុញ្ញាតចូល",
     checkOutWindowLabel: "ម៉ោងអនុញ្ញាតចេញ",
 
@@ -1863,7 +1989,8 @@ const tt = {
     qrInactive:            "🔴 អសកម្ម",
 
     qrTitle:        "📱 QR Code ថ្ងៃនេះ",
-    qrInstructions: "បង្ហាញ QR Code នេះដល់សិស្ស។",
+    qrInstructions:
+      "បង្ហាញ QR Code នេះដល់សិស្ស។",
     downloadQr:     "⬇ ទាញយក QR Code",
     qrSession:      "វគ្គ",
 
@@ -1898,7 +2025,8 @@ const tt = {
 
     noRecords:    "រកមិនឃើញកំណត់ត្រា។",
     noRecordsSub:
-      "ចាប់ផ្ដើមវត្តមានដើម្បីបង្កើតកំណត់ត្រា។",
+      "ចាប់ផ្ដើមវត្តមានដើម្បី" +
+      "បង្កើតកំណត់ត្រា។",
     loading:      "កំពុងផ្ទុក…",
     exportEmpty:  "មិនមានទិន្នន័យ។"
   }
@@ -1908,7 +2036,8 @@ const tt = {
 // LANGUAGE STATE
 // ============================================
 let tLang =
-  localStorage.getItem("teacherLanguage") || "en";
+  localStorage.getItem("teacherLanguage")
+  || "en";
 
 function t(key) {
   return tt[tLang][key] || key;
@@ -1950,7 +2079,9 @@ function esc(v) {
 let toastTimeout = null;
 function showToast(message) {
   const el =
-    document.getElementById("toastNotification");
+    document.getElementById(
+      "toastNotification"
+    );
   if (!el) return;
   el.textContent = message;
   el.classList.add("show");
@@ -1961,11 +2092,12 @@ function showToast(message) {
 }
 
 // ============================================
-// 12-HOUR <-> 24-HOUR TIME HELPERS
+// 12-HOUR TIME HELPERS
 // ============================================
 function to12Parts(hhmm) {
-  const safe = (hhmm && hhmm.includes(":"))
-    ? hhmm : "07:00";
+  const safe =
+    (hhmm && hhmm.includes(":"))
+      ? hhmm : "07:00";
   const [hStr, mStr] = safe.split(":");
   let h = parseInt(hStr, 10);
   let m = parseInt(mStr, 10);
@@ -1983,8 +2115,9 @@ function to24(hour12, minute, ampm) {
   let h = parseInt(hour12, 10) % 12;
   if (ampm === "PM") h += 12;
   const hh = String(h).padStart(2, "0");
-  const mm = String(parseInt(minute, 10))
-    .padStart(2, "0");
+  const mm =
+    String(parseInt(minute, 10))
+      .padStart(2, "0");
   return hh + ":" + mm;
 }
 
@@ -1996,46 +2129,55 @@ function formatDisplay12(hhmm) {
     " " + p.ampm;
 }
 
-function buildTimeSelector(containerId, hiddenId) {
+function buildTimeSelector(
+  containerId, hiddenId
+) {
   const container =
     document.getElementById(containerId);
   const hidden =
     document.getElementById(hiddenId);
   if (!container || !hidden) return;
 
-  const hourSel = document.createElement("select");
+  const hourSel =
+    document.createElement("select");
   hourSel.className =
     "time12-select time12-hour";
   hourSel.id = hiddenId + "_hour";
   for (let h = 1; h <= 12; h++) {
-    const opt = document.createElement("option");
+    const opt =
+      document.createElement("option");
     opt.value = h;
     opt.textContent = h;
     hourSel.appendChild(opt);
   }
 
-  const colon = document.createElement("span");
+  const colon =
+    document.createElement("span");
   colon.textContent = ":";
   colon.className = "time12-colon";
 
-  const minSel = document.createElement("select");
+  const minSel =
+    document.createElement("select");
   minSel.className =
     "time12-select time12-minute";
   minSel.id = hiddenId + "_min";
   for (let m = 0; m < 60; m++) {
     const mm = String(m).padStart(2, "0");
-    const opt = document.createElement("option");
+    const opt =
+      document.createElement("option");
     opt.value = mm;
     opt.textContent = mm;
     minSel.appendChild(opt);
   }
 
-  const ampmSel = document.createElement("select");
+  const ampmSel =
+    document.createElement("select");
   ampmSel.className =
     "time12-select time12-ampm";
   ampmSel.id = hiddenId + "_ampm";
   ["AM", "PM"].forEach(v => {
-    const opt = document.createElement("option");
+    const opt =
+      document.createElement("option");
     opt.value = v;
     opt.textContent = v;
     ampmSel.appendChild(opt);
@@ -2049,8 +2191,11 @@ function buildTimeSelector(containerId, hiddenId) {
   setSelectorFrom24(hiddenId);
 
   function syncHiddenFromSelector() {
-    hidden.value =
-      to24(hourSel.value, minSel.value, ampmSel.value);
+    hidden.value = to24(
+      hourSel.value,
+      minSel.value,
+      ampmSel.value
+    );
     hidden.dispatchEvent(
       new Event("change", { bubbles: true })
     );
@@ -2071,18 +2216,27 @@ function setSelectorFrom24(hiddenId) {
   const hidden =
     document.getElementById(hiddenId);
   const hourSel =
-    document.getElementById(hiddenId + "_hour");
+    document.getElementById(
+      hiddenId + "_hour"
+    );
   const minSel =
-    document.getElementById(hiddenId + "_min");
+    document.getElementById(
+      hiddenId + "_min"
+    );
   const ampmSel =
-    document.getElementById(hiddenId + "_ampm");
-  if (!hidden || !hourSel || !minSel || !ampmSel) {
-    return;
-  }
+    document.getElementById(
+      hiddenId + "_ampm"
+    );
+  if (
+    !hidden || !hourSel ||
+    !minSel  || !ampmSel
+  ) return;
 
   const p = to12Parts(hidden.value);
-  hourSel.value = p.hour;
-  minSel.value = String(p.minute).padStart(2, "0");
+  hourSel.value =
+    p.hour;
+  minSel.value =
+    String(p.minute).padStart(2, "0");
   ampmSel.value = p.ampm;
 }
 
@@ -2106,7 +2260,8 @@ function validateTimeRange(
 
   if (endVal <= startVal) {
     if (errEl) {
-      errEl.textContent = t("timeRangeError");
+      errEl.textContent =
+        t("timeRangeError");
     }
     return false;
   }
@@ -2120,7 +2275,9 @@ function validateTimeRange(
 // ============================================
 function applyTeacherLang(lang) {
   tLang = lang;
-  localStorage.setItem("teacherLanguage", lang);
+  localStorage.setItem(
+    "teacherLanguage", lang
+  );
 
   document.documentElement.lang =
     lang === "km" ? "km" : "en";
@@ -2130,7 +2287,8 @@ function applyTeacherLang(lang) {
 
   document.title =
     lang === "km"
-      ? "ផ្ទាំងគ្រប់គ្រងវត្តមានសិស្ស - វិទ្យាល័យទេពប្រណម្យ"
+      ? "ផ្ទាំងគ្រប់គ្រងវត្តមានសិស្ស" +
+        " - វិទ្យាល័យទេពប្រណម្យ"
       : "Student Absence Dashboard - Teppranam";
 
   document.querySelectorAll("[data-t]")
@@ -2159,12 +2317,15 @@ function applyTeacherLang(lang) {
 
   const langBtn =
     document.getElementById("teacherLangBtn");
-  if (langBtn) langBtn.textContent = t("langBtn");
+  if (langBtn) {
+    langBtn.textContent = t("langBtn");
+  }
 
   const search =
     document.getElementById("searchInput");
   if (search) {
-    search.placeholder = t("searchPlaceholder");
+    search.placeholder =
+      t("searchPlaceholder");
   }
 
   updateModeUI();
@@ -2178,15 +2339,19 @@ function applyTeacherLang(lang) {
 // ============================================
 function updateSessionBadge(isOpen) {
   const badge =
-    document.getElementById("sessionStatusBadge");
+    document.getElementById(
+      "sessionStatusBadge"
+    );
   const start =
     document.getElementById("startSessionBtn");
   const end =
     document.getElementById("endSessionBtn");
 
   if (isOpen) {
-    badge.className = "session-status-badge open";
-    badge.innerHTML = "🟢 " + t("sessionOpen");
+    badge.className =
+      "session-status-badge open";
+    badge.innerHTML =
+      "🟢 " + t("sessionOpen");
     start.style.display = "none";
     end.style.display   = "flex";
   } else {
@@ -2226,9 +2391,11 @@ function generateQRCode(sid) {
     "create-qr-code/?size=200x200&data=" +
     encodeURIComponent(url);
 
-  document.getElementById("qrCodeImage").src = qr;
+  document.getElementById("qrCodeImage")
+    .src = qr;
   document.getElementById("qrSessionInfo")
-    .textContent = t("qrSession") + ": " + sid;
+    .textContent =
+      t("qrSession") + ": " + sid;
 
   const urlEl =
     document.getElementById("qrUrlDisplay");
@@ -2241,11 +2408,15 @@ function generateQRCode(sid) {
     document.getElementById("qrModeBadge");
   if (badge) {
     if (attendanceMode === "checkIn") {
-      badge.textContent = t("qrBadgeCheckIn");
-      badge.className   = "qr-mode-badge checkin";
+      badge.textContent =
+        t("qrBadgeCheckIn");
+      badge.className =
+        "qr-mode-badge checkin";
     } else {
-      badge.textContent = t("qrBadgeCheckOut");
-      badge.className   = "qr-mode-badge checkout";
+      badge.textContent =
+        t("qrBadgeCheckOut");
+      badge.className =
+        "qr-mode-badge checkout";
     }
   }
 
@@ -2286,7 +2457,9 @@ function updateWindowCards() {
     )?.value || "--";
 
   const ciCard =
-    document.getElementById("statusCheckInWindow");
+    document.getElementById(
+      "statusCheckInWindow"
+    );
   const coCard =
     document.getElementById(
       "statusCheckOutWindow"
@@ -2392,18 +2565,23 @@ function startElapsedTimer(startedAtISO) {
     document.getElementById("startedAtValue");
   if (startedEl) {
     startedEl.textContent =
-      new Date(startedAtISO).toLocaleTimeString(
-        [], { hour: "2-digit", minute: "2-digit" }
-      );
+      new Date(startedAtISO)
+        .toLocaleTimeString([], {
+          hour:   "2-digit",
+          minute: "2-digit"
+        });
   }
   const elapsedEl =
     document.getElementById("elapsedValue");
   function tick() {
     const elapsed = Date.now() - startMs;
     if (elapsed < 0) return;
-    const h = Math.floor(elapsed / 3600000);
+    const h =
+      Math.floor(elapsed / 3600000);
     const m =
-      Math.floor((elapsed % 3600000) / 60000);
+      Math.floor(
+        (elapsed % 3600000) / 60000
+      );
     const s =
       Math.floor((elapsed % 60000) / 1000);
     if (elapsedEl) {
@@ -2437,7 +2615,9 @@ function showStatusPanel(sid, startedAt) {
   if (panel) panel.style.display = "block";
 
   const sidEl =
-    document.getElementById("statusSessionId");
+    document.getElementById(
+      "statusSessionId"
+    );
   if (sidEl) sidEl.textContent = sid;
 
   const qrEl =
@@ -2449,7 +2629,9 @@ function showStatusPanel(sid, startedAt) {
   }
 
   const modeCard =
-    document.getElementById("statusCurrentMode");
+    document.getElementById(
+      "statusCurrentMode"
+    );
   if (modeCard) {
     if (attendanceMode === "checkIn") {
       modeCard.textContent =
@@ -2474,11 +2656,17 @@ function hideStatusPanel() {
   stopElapsedTimer();
 }
 
-function updateStatusCounts(present, absent) {
+function updateStatusCounts(
+  present, absent
+) {
   const p =
-    document.getElementById("statusPresentCount");
+    document.getElementById(
+      "statusPresentCount"
+    );
   const a =
-    document.getElementById("statusAbsentCount");
+    document.getElementById(
+      "statusAbsentCount"
+    );
   if (p) p.textContent = present;
   if (a) a.textContent = absent;
 }
@@ -2489,10 +2677,14 @@ function updateStatusCounts(present, absent) {
 async function loadStudents() {
   try {
     const snap =
-      await getDocs(collection(db, "students"));
+      await getDocs(
+        collection(db, "students")
+      );
     allStudents = [];
     snap.forEach(d => {
-      allStudents.push({ id: d.id, ...d.data() });
+      allStudents.push({
+        id: d.id, ...d.data()
+      });
     });
     allStudents.sort((a, b) =>
       a.fullName.localeCompare(b.fullName)
@@ -2505,20 +2697,21 @@ async function loadStudents() {
 
 // ============================================
 // RENDER STUDENT LIST
-// ✅ CHANGED: Edit uses btn-edit-student class
-//            Delete uses btn-delete-student class
-//            They look visually different now
 // ============================================
 function renderStudentList() {
   const tbody =
-    document.getElementById("studentListBody");
+    document.getElementById(
+      "studentListBody"
+    );
   if (!tbody) return;
 
   if (allStudents.length === 0) {
     tbody.innerHTML = `
       <tr><td colspan="5"
-        style="padding:20px;text-align:center;
-               color:#94a3b8;font-size:13px;">
+        style="padding:20px;
+               text-align:center;
+               color:#94a3b8;
+               font-size:13px;">
         ${esc(t("noStudentsYet"))}
       </td></tr>
     `;
@@ -2550,34 +2743,32 @@ function renderStudentList() {
                       flex-wrap:wrap;
                       align-items:center;">
 
-            <!-- ✏️ EDIT — blue, normal action -->
+            <!-- ✏️ EDIT button -->
             <button
               class="btn-edit-student"
-              title="${esc(t("editBtnLabel"))}"
               onclick="window._openEditModal(
                 '${esc(s.studentId)}'
               )">
-              ✏️ <span data-t="editBtnLabel">
-                ${esc(t("editBtnLabel")
+              ✏️ ${esc(
+                t("editBtnLabel")
                   .replace("✏️ ", "")
                   .replace("✏️", "")
-                  .trim())}
-              </span>
+                  .trim()
+              )}
             </button>
 
-            <!-- 🗑️ DELETE — red outline, danger -->
+            <!-- 🗑️ DELETE button -->
             <button
               class="btn-delete-student"
-              title="${esc(t("deleteBtnLabel"))}"
               onclick="window._openDeleteModal(
                 '${esc(s.studentId)}'
               )">
-              🗑️ <span data-t="deleteBtnLabel">
-                ${esc(t("deleteBtnLabel")
+              🗑️ ${esc(
+                t("deleteBtnLabel")
                   .replace("🗑️ ", "")
                   .replace("🗑️", "")
-                  .trim())}
-              </span>
+                  .trim()
+              )}
             </button>
 
           </div>
@@ -2608,14 +2799,17 @@ async function addStudent() {
   const sex   = sexEl.value;
   const grade = gradeEl.value.trim();
 
-  if (!fullName || !studentId || !sex || !grade) {
+  if (
+    !fullName || !studentId ||
+    !sex || !grade
+  ) {
     msgEl.style.color = "#dc2626";
     msgEl.textContent = t("fillAllFields");
     return;
   }
 
-  if (allStudents.some(s =>
-    s.studentId === studentId
+  if (allStudents.some(
+    s => s.studentId === studentId
   )) {
     openDuplicateIdModal();
     return;
@@ -2649,8 +2843,9 @@ async function addStudent() {
     msgEl.style.color = "#16a34a";
     msgEl.textContent = t("studentAdded");
     await loadStudents();
-    setTimeout(() => { msgEl.textContent = ""; },
-      3000);
+    setTimeout(() => {
+      msgEl.textContent = "";
+    }, 3000);
 
   } catch (err) {
     msgEl.style.color = "#dc2626";
@@ -2674,7 +2869,6 @@ function closeDuplicateIdModal() {
 
 // ============================================
 // EDIT STUDENT MODAL
-// (unchanged — all existing logic preserved)
 // ============================================
 function openEditModal(studentId) {
   const student = allStudents.find(
@@ -2685,7 +2879,9 @@ function openEditModal(studentId) {
   editTargetStudent = student;
 
   const idEl =
-    document.getElementById("editStudentIdDisplay");
+    document.getElementById(
+      "editStudentIdDisplay"
+    );
   const nameEl =
     document.getElementById("editStudentName");
   const sexEl =
@@ -2695,11 +2891,13 @@ function openEditModal(studentId) {
   const msgEl =
     document.getElementById("editStudentMsg");
 
-  if (idEl)    idEl.value    = student.studentId;
-  if (nameEl)  nameEl.value  = student.fullName || "";
-  if (sexEl)   sexEl.value   = student.sex || "Male";
-  if (gradeEl) gradeEl.value = student.grade || "";
-  if (msgEl)   msgEl.textContent = "";
+  if (idEl) idEl.value    = student.studentId;
+  if (nameEl) nameEl.value =
+    student.fullName || "";
+  if (sexEl) sexEl.value  = student.sex || "Male";
+  if (gradeEl) gradeEl.value =
+    student.grade || "";
+  if (msgEl) msgEl.textContent = "";
 
   editOriginalValues = {
     fullName: student.fullName || "",
@@ -2726,7 +2924,7 @@ function hasUnsavedEditChanges() {
 
   return (
     nameVal  !== editOriginalValues.fullName ||
-    sexVal   !== editOriginalValues.sex ||
+    sexVal   !== editOriginalValues.sex      ||
     gradeVal !== editOriginalValues.grade
   );
 }
@@ -2759,12 +2957,13 @@ function openEditConfirm() {
   const gradeVal =
     document.getElementById("editStudentGrade")
       .value.trim();
-
   const msgEl =
     document.getElementById("editStudentMsg");
 
   if (!nameVal || !sexVal || !gradeVal) {
-    if (msgEl) msgEl.textContent = t("fillAllFields");
+    if (msgEl) {
+      msgEl.textContent = t("fillAllFields");
+    }
     return;
   }
 
@@ -2776,7 +2975,8 @@ function openEditConfirm() {
   }
 
   document.getElementById("editConfirmId")
-    .textContent = editTargetStudent.studentId;
+    .textContent =
+      editTargetStudent.studentId;
   document.getElementById("editConfirmName")
     .textContent = nameVal;
   document.getElementById("editConfirmSex")
@@ -2805,8 +3005,8 @@ async function confirmEditSave() {
   const gradeVal =
     document.getElementById("editStudentGrade")
       .value.trim();
-
-  const studentId = editTargetStudent.studentId;
+  const studentId =
+    editTargetStudent.studentId;
 
   try {
     await updateDoc(
@@ -2827,7 +3027,9 @@ async function confirmEditSave() {
     console.error("Update student:", err);
     closeEditConfirm();
     const msgEl =
-      document.getElementById("editStudentMsg");
+      document.getElementById(
+        "editStudentMsg"
+      );
     if (msgEl) {
       msgEl.textContent =
         t("sessionError") + " " + err.message;
@@ -2838,15 +3040,9 @@ async function confirmEditSave() {
 }
 
 // ============================================
-// ✅ DELETE STUDENT MODAL
-// IMPROVED:
-// - Uses Student ID as unique identifier
-// - Shows full student info in popup
-// - Uses showToast() for success message
-// - Existing Firebase deleteDoc() preserved
+// DELETE STUDENT MODAL
 // ============================================
 function openDeleteModal(studentId) {
-  // Find student by Student ID (unique key)
   const student = allStudents.find(
     s => s.studentId === studentId
   );
@@ -2861,17 +3057,16 @@ function openDeleteModal(studentId) {
     sexDisplay = t("optFemale");
   }
 
-  // Populate modal with student info
   document.getElementById("deleteConfirmId")
     .textContent = student.studentId;
   document.getElementById("deleteConfirmName")
     .textContent = student.fullName || "—";
   document.getElementById("deleteConfirmSex")
     .textContent = sexDisplay;
-  document.getElementById("deleteConfirmGrade")
-    .textContent = student.grade || "—";
+  document.getElementById(
+    "deleteConfirmGrade"
+  ).textContent = student.grade || "—";
 
-  // Show the modal
   document.getElementById("deleteStudentModal")
     ?.classList.add("show");
 }
@@ -2882,13 +3077,11 @@ function closeDeleteModal() {
   deleteTargetStudent = null;
 }
 
-// ✅ Existing Firebase deleteDoc() logic
-// preserved exactly — only toast is new
 async function confirmDeleteStudent() {
   if (!deleteTargetStudent) return;
 
-  // Use Student ID as the unique identifier
-  const studentId = deleteTargetStudent.studentId;
+  const studentId =
+    deleteTargetStudent.studentId;
 
   try {
     await deleteDoc(
@@ -2896,14 +3089,12 @@ async function confirmDeleteStudent() {
     );
 
     closeDeleteModal();
-
-    // ✅ IMPROVED: use toast instead of
-    // inline studentListMsg only
     showToast(t("studentDeleted"));
 
-    // Also set inline message for visibility
     const msg =
-      document.getElementById("studentListMsg");
+      document.getElementById(
+        "studentListMsg"
+      );
     if (msg) {
       msg.style.color = "#16a34a";
       msg.textContent = t("studentRemoved");
@@ -2912,8 +3103,6 @@ async function confirmDeleteStudent() {
       }, 3000);
     }
 
-    // Reload student list so deleted student
-    // disappears immediately
     await loadStudents();
 
   } catch (err) {
@@ -2922,7 +3111,6 @@ async function confirmDeleteStudent() {
   }
 }
 
-// Expose to onclick handlers in HTML
 window._openEditModal   = openEditModal;
 window._openDeleteModal = openDeleteModal;
 
@@ -2948,7 +3136,10 @@ async function startSession() {
       "checkOutEndTime"
     ).value;
 
-  if (!ciStart || !ciEnd || !coStart || !coEnd) {
+  if (
+    !ciStart || !ciEnd ||
+    !coStart || !coEnd
+  ) {
     alert(t("setTimesAlert")); return;
   }
 
@@ -3003,8 +3194,11 @@ async function startSession() {
     const batch = writeBatch(db);
     allStudents.forEach(student => {
       const ref = doc(
-        db, "sessionAttendance",
-        sid, "records", student.studentId
+        db,
+        "sessionAttendance",
+        sid,
+        "records",
+        student.studentId
       );
       batch.set(ref, {
         fullName:           student.fullName,
@@ -3044,7 +3238,9 @@ async function startSession() {
 
   } catch (err) {
     console.error("Start session:", err);
-    alert(t("sessionError") + " " + err.message);
+    alert(
+      t("sessionError") + " " + err.message
+    );
   }
 }
 
@@ -3089,7 +3285,9 @@ async function endSession() {
 
   } catch (err) {
     console.error("End session:", err);
-    alert(t("sessionError") + " " + err.message);
+    alert(
+      t("sessionError") + " " + err.message
+    );
   }
 }
 
@@ -3118,15 +3316,21 @@ async function loadSessionStatus() {
       sessionStartedAt = data.startedAt || null;
 
       const ciStartEl =
-        document.getElementById("checkInStartTime");
+        document.getElementById(
+          "checkInStartTime"
+        );
       const ciEndEl =
-        document.getElementById("checkInEndTime");
+        document.getElementById(
+          "checkInEndTime"
+        );
       const coStartEl =
         document.getElementById(
           "checkOutStartTime"
         );
       const coEndEl =
-        document.getElementById("checkOutEndTime");
+        document.getElementById(
+          "checkOutEndTime"
+        );
 
       if (ciStartEl) {
         ciStartEl.value =
@@ -3160,12 +3364,14 @@ async function loadSessionStatus() {
       updateModeUI();
       generateQRCode(data.sessionId);
 
-      document.getElementById("sessionInfoText")
-        .textContent = t("sessionActive");
+      document.getElementById(
+        "sessionInfoText"
+      ).textContent = t("sessionActive");
 
       showStatusPanel(
         data.sessionId,
-        data.startedAt || new Date().toISOString()
+        data.startedAt ||
+          new Date().toISOString()
       );
 
       startRealtimeListener(data.sessionId);
@@ -3187,7 +3393,10 @@ function startRealtimeListener(sid) {
   }
 
   const ref = collection(
-    db, "sessionAttendance", sid, "records"
+    db,
+    "sessionAttendance",
+    sid,
+    "records"
   );
 
   unsubscribeListener = onSnapshot(ref,
@@ -3229,13 +3438,15 @@ function startRealtimeListener(sid) {
           a.status !== "present" &&
           b.status === "present"
         ) return 1;
-        return a.fullName.localeCompare(b.fullName);
+        return a.fullName
+          .localeCompare(b.fullName);
       });
 
       const present = allRecords.filter(
         r => r.status === "present"
       ).length;
-      const absent = allRecords.length - present;
+      const absent =
+        allRecords.length - present;
 
       updateStatusCounts(present, absent);
       updateStats();
@@ -3257,7 +3468,9 @@ function startRealtimeListener(sid) {
 // ============================================
 function displayRecords(records) {
   const tbody =
-    document.getElementById("attendanceTableBody");
+    document.getElementById(
+      "attendanceTableBody"
+    );
 
   document.getElementById("recordCount")
     .textContent =
@@ -3385,12 +3598,15 @@ function displayRecords(records) {
 
   document.querySelectorAll(".profile-btn")
     .forEach(btn => {
-      btn.addEventListener("click", function () {
-        const id = btn.getAttribute("data-id");
-        const r  =
-          allRecords.find(x => x.id === id);
-        if (r) openProfile(r);
-      });
+      btn.addEventListener(
+        "click", function () {
+          const id =
+            btn.getAttribute("data-id");
+          const r  =
+            allRecords.find(x => x.id === id);
+          if (r) openProfile(r);
+        }
+      );
     });
 }
 
@@ -3419,7 +3635,9 @@ function searchRecords() {
     document.getElementById("searchInput")
       .value.toLowerCase().trim();
   const resultEl =
-    document.getElementById("searchResultText");
+    document.getElementById(
+      "searchResultText"
+    );
 
   if (!term) {
     displayRecords(allRecords);
@@ -3428,8 +3646,10 @@ function searchRecords() {
   }
 
   const filtered = allRecords.filter(r =>
-    r.fullName.toLowerCase().includes(term) ||
-    r.studentId.toLowerCase().includes(term) ||
+    r.fullName
+      .toLowerCase().includes(term) ||
+    r.studentId
+      .toLowerCase().includes(term) ||
     r.grade.toLowerCase().includes(term)
   );
 
@@ -3447,8 +3667,9 @@ function openProfile(r) {
 
   document.getElementById("profileName")
     .textContent = r.fullName || "—";
-  document.getElementById("profileGradeHeader")
-    .textContent = r.grade || "—";
+  document.getElementById(
+    "profileGradeHeader"
+  ).textContent = r.grade || "—";
   document.getElementById("profileStudentId")
     .textContent = r.studentId || "—";
 
@@ -3481,7 +3702,8 @@ function openProfile(r) {
     if (!isPresent) {
       coEl.textContent = t("notCheckedInYet");
     } else if (isCheckedOut) {
-      coEl.textContent = r.checkOutDisplay || "--";
+      coEl.textContent =
+        r.checkOutDisplay || "--";
     } else {
       coEl.textContent = t("notCheckedOut");
     }
@@ -3498,11 +3720,14 @@ function openProfile(r) {
     .textContent = r.longitude || "—";
 
   const distEl =
-    document.getElementById("profileDistance");
+    document.getElementById(
+      "profileDistance"
+    );
   if (distEl) {
     distEl.textContent =
       r.distanceFromSchool !== ""
-        ? Math.round(r.distanceFromSchool) + " m"
+        ? Math.round(r.distanceFromSchool) +
+          " m"
         : "—";
   }
 
@@ -3535,7 +3760,8 @@ function exportToCSV() {
   }
 
   const csv_val = v =>
-    `"${String(v ?? "").replace(/"/g, '""')}"`;
+    `"${String(v ?? "")
+      .replace(/"/g, '""')}"`;
 
   const headers = [
     t("labelStudentId"),
@@ -3583,7 +3809,8 @@ function exportToCSV() {
       r.latitude,
       r.longitude,
       r.distanceFromSchool !== ""
-        ? Math.round(r.distanceFromSchool) + "m"
+        ? Math.round(r.distanceFromSchool) +
+          "m"
         : "—"
     ].map(csv_val).join(",") + "\n";
   });
@@ -3658,9 +3885,11 @@ document.getElementById("modeCheckOutBtn")
     switchMode("checkOut");
   });
 
-// Edit Student modal buttons
+// Edit modal buttons
 document.getElementById("cancelEditBtn")
-  ?.addEventListener("click", attemptCloseEditModal);
+  ?.addEventListener(
+    "click", attemptCloseEditModal
+  );
 document.getElementById("saveEditBtn")
   ?.addEventListener("click", openEditConfirm);
 document.getElementById("editStudentModal")
@@ -3670,7 +3899,7 @@ document.getElementById("editStudentModal")
     }
   });
 
-// Edit Confirmation modal buttons
+// Edit confirm modal buttons
 document.getElementById("cancelEditConfirmBtn")
   ?.addEventListener("click", closeEditConfirm);
 document.getElementById("confirmEditBtn")
@@ -3682,7 +3911,7 @@ document.getElementById("editConfirmModal")
     }
   });
 
-// ✅ Delete Confirmation modal buttons
+// Delete modal buttons
 document.getElementById("cancelDeleteBtn")
   ?.addEventListener("click", closeDeleteModal);
 document.getElementById("confirmDeleteBtn")
@@ -3691,24 +3920,28 @@ document.getElementById("confirmDeleteBtn")
   );
 document.getElementById("deleteStudentModal")
   ?.addEventListener("click", function (e) {
-    if (e.target.id === "deleteStudentModal") {
+    if (
+      e.target.id === "deleteStudentModal"
+    ) {
       closeDeleteModal();
     }
   });
 
-// Duplicate Student ID popup
+// Duplicate ID popup
 document.getElementById("duplicateIdOkBtn")
   ?.addEventListener(
     "click", closeDuplicateIdModal
   );
 document.getElementById("duplicateIdModal")
   ?.addEventListener("click", function (e) {
-    if (e.target.id === "duplicateIdModal") {
+    if (
+      e.target.id === "duplicateIdModal"
+    ) {
       closeDuplicateIdModal();
     }
   });
 
-// Live validation for time inputs
+// Time input validation
 [
   "checkInStartTime",
   "checkInEndTime"
@@ -3743,16 +3976,20 @@ document.getElementById("duplicateIdModal")
 // INIT — build 12-hour time selectors
 // ============================================
 buildTimeSelector(
-  "checkInStartTimeSelects", "checkInStartTime"
+  "checkInStartTimeSelects",
+  "checkInStartTime"
 );
 buildTimeSelector(
-  "checkInEndTimeSelects", "checkInEndTime"
+  "checkInEndTimeSelects",
+  "checkInEndTime"
 );
 buildTimeSelector(
-  "checkOutStartTimeSelects", "checkOutStartTime"
+  "checkOutStartTimeSelects",
+  "checkOutStartTime"
 );
 buildTimeSelector(
-  "checkOutEndTimeSelects", "checkOutEndTime"
+  "checkOutEndTimeSelects",
+  "checkOutEndTime"
 );
 
 updateModeUI();
