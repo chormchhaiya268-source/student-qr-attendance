@@ -963,9 +963,9 @@ function showDistanceResult(loc) {
 // reliably — detect and use correct settings
 // ================================================
 function isMobileDevice() {
-  return /Android|webOS|iPhone|iPad|iPod|
-         BlackBerry|IEMobile|Opera Mini/i
-    .test(navigator.userAgent);
+  const ua = navigator.userAgent;
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i
+    .test(ua);
 }
 
 // ================================================
