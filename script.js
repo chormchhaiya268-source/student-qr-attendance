@@ -39,6 +39,60 @@ const app = initializeApp(firebaseConfig);
 const db  = getFirestore(app);
 
 // ================================================
+// ✅ NEW — TEACHER EMAIL FROM QR URL
+// ================================================
+const urlParams = new URLSearchParams(
+  window.location.search
+);
+const teacherEmail = urlParams.get("teacher");
+
+if (!teacherEmail) {
+  console.error(
+    "Missing 'teacher' parameter in URL."
+  );
+}
+
+// ================================================
+// ✅ NEW — FIREBASE PATH HELPERS
+// (multi-teacher support — every path below
+// is now scoped under teachers/{teacherEmail}/...)
+// ================================================
+function getSessionRef() {
+  return doc(
+    db, "teachers", teacherEmail,
+    "session", "current"
+  );
+}
+
+function getAttendanceCol(sid) {
+  return collection(
+    db, "teachers", teacherEmail,
+    "sessionAttendance", sid, "records"
+  );
+}
+
+function getAttendanceRecord(sid, studentId) {
+  return doc(
+    db, "teachers", teacherEmail,
+    "sessionAttendance", sid,
+    "records", studentId
+  );
+}
+
+function getStudentsCol() {
+  return collection(
+    db, "teachers", teacherEmail, "students"
+  );
+}
+
+function getDeviceLogRef(deviceKey) {
+  return doc(
+    db, "teachers", teacherEmail,
+    "deviceLogs", deviceKey
+  );
+}
+
+// ================================================
 // SCHOOL LOCATION
 // ================================================
 const SCHOOL_LAT = 11.822624138074948;
@@ -718,7 +772,7 @@ async function loadAllStudents() {
   try {
     const snap =
       await getDocs(
-        collection(db, "students")
+        getStudentsCol()
       );
 
     snap.forEach(function (d) {
@@ -1344,7 +1398,7 @@ function handleSessionClosed() {
 // START SESSION LISTENER
 // ================================================
 function startSessionListener() {
-  const ref = doc(db, "session", "current");
+  const ref = getSessionRef();
 
   sessionListener = onSnapshot(ref,
     function (snap) {
@@ -1405,6 +1459,25 @@ async function loadSession() {
       "sessionBannerIcon"
     );
 
+  // ✅ NEW — Check teacherEmail from QR URL
+  if (!teacherEmail) {
+    if (formCard) {
+      formCard.style.display = "none";
+    }
+    if (closedCard) {
+      closedCard.style.display = "block";
+    }
+    const msg = document.querySelector(
+      "[data-i18n='sessionClosedMsg']"
+    );
+    if (msg) {
+      msg.textContent =
+        "No teacher specified in QR code. " +
+        "Please scan the correct QR code.";
+    }
+    return;
+  }
+
   if (!sessionId) {
     if (formCard) {
       formCard.style.display = "none";
@@ -1421,7 +1494,7 @@ async function loadSession() {
 
   try {
     const snap = await getDoc(
-      doc(db, "session", "current")
+      getSessionRef()
     );
 
     if (!snap.exists()) {
@@ -1737,7 +1810,8 @@ function showNotCheckedInCard() {
 function saveAttendanceState(state) {
   try {
     const key =
-      "attendanceState_" + sessionId;
+      "attendanceState_" + teacherEmail +
+      "_" + sessionId;
     localStorage.setItem(
       key, JSON.stringify(state)
     );
@@ -1752,7 +1826,8 @@ async function tryRestoreAttendanceState() {
   let saved = null;
   try {
     const raw = localStorage.getItem(
-      "attendanceState_" + sessionId
+      "attendanceState_" + teacherEmail +
+      "_" + sessionId
     );
     if (raw) saved = JSON.parse(raw);
   } catch (err) {
@@ -1768,12 +1843,8 @@ async function tryRestoreAttendanceState() {
   }
 
   try {
-    const recordRef = doc(
-      db,
-      "sessionAttendance",
-      sessionId,
-      "records",
-      saved.studentId
+    const recordRef = getAttendanceRecord(
+      sessionId, saved.studentId
     );
     const snap = await getDoc(recordRef);
 
@@ -1913,7 +1984,7 @@ async function handleCheckInSubmit(
 ) {
   try {
     const freshSnap = await getDoc(
-      doc(db, "session", "current")
+      getSessionRef()
     );
     if (freshSnap.exists()) {
       const fd    = freshSnap.data();
@@ -1935,10 +2006,9 @@ async function handleCheckInSubmit(
     const deviceKey =
       sessionId + "_" + deviceToken;
     const deviceLogRef =
-      doc(db, "deviceLogs", deviceKey);
-    const recordRef = doc(
-      db, "sessionAttendance",
-      sessionId, "records", studentIdVal
+      getDeviceLogRef(deviceKey);
+    const recordRef = getAttendanceRecord(
+      sessionId, studentIdVal
     );
 
     let alreadyUsedByOther = false;
@@ -2061,7 +2131,7 @@ async function handleCheckOutSubmit(
 ) {
   try {
     const freshSnap = await getDoc(
-      doc(db, "session", "current")
+      getSessionRef()
     );
     if (freshSnap.exists()) {
       const fd    = freshSnap.data();
@@ -2080,9 +2150,8 @@ async function handleCheckOutSubmit(
       }
     }
 
-    const recordRef = doc(
-      db, "sessionAttendance",
-      sessionId, "records", studentIdVal
+    const recordRef = getAttendanceRecord(
+      sessionId, studentIdVal
     );
     const recordSnap = await getDoc(recordRef);
 
@@ -2290,7 +2359,7 @@ async function handleCheckOut() {
   ) => {
     try {
       const freshSnap = await getDoc(
-        doc(db, "session", "current")
+        getSessionRef()
       );
       if (freshSnap.exists()) {
         const fd    = freshSnap.data();
@@ -2310,10 +2379,8 @@ async function handleCheckOut() {
         }
       }
 
-      const recordRef = doc(
-        db, "sessionAttendance",
-        sessionId, "records",
-        currentStudentId
+      const recordRef = getAttendanceRecord(
+        sessionId, currentStudentId
       );
       const recordSnap =
         await getDoc(recordRef);
