@@ -81,7 +81,6 @@
       color: #92400e;
       border: 1px solid #fcd34d;
     }
-
     .mode-time-row {
       display: flex;
       align-items: center;
@@ -143,7 +142,6 @@
       min-height: 16px;
       font-weight: 500;
     }
-
     .time12-selects {
       display: flex;
       align-items: center;
@@ -172,11 +170,6 @@
       font-weight: 700;
       color: #64748b;
     }
-
-    /* ============================================
-       ✅ EDIT BUTTON — FIXED & IMPROVED
-       Bigger, clearer, proper blue gradient
-    ============================================ */
     .btn-edit-student {
       display: inline-flex;
       align-items: center;
@@ -201,7 +194,6 @@
       transition: background 0.18s ease,
                   box-shadow 0.18s ease,
                   transform 0.15s ease;
-      text-decoration: none;
     }
     .btn-edit-student:hover {
       background: linear-gradient(
@@ -215,12 +207,6 @@
       background: #1e40af;
       transform: scale(0.97);
     }
-
-    /* ============================================
-       ✅ DELETE BUTTON — FIXED & IMPROVED
-       Bigger, clearer red outline style
-       Cannot be confused with Edit button
-    ============================================ */
     .btn-delete-student {
       display: inline-flex;
       align-items: center;
@@ -242,7 +228,6 @@
                   color 0.18s ease,
                   box-shadow 0.18s ease,
                   transform 0.15s ease;
-      text-decoration: none;
     }
     .btn-delete-student:hover {
       background: #dc2626;
@@ -257,12 +242,6 @@
       color: #ffffff;
       transform: scale(0.97);
     }
-
-    /* ============================================
-       ✅ EDIT CONFIRM MODAL FOOTER — FIXED
-       Cancel button now looks proper
-       Save/Confirm button is clear and visible
-    ============================================ */
     .edit-actions {
       display: flex;
       gap: 12px;
@@ -271,9 +250,6 @@
       padding: 16px 20px 20px;
       flex-wrap: wrap;
     }
-
-    /* ✅ FIXED Cancel button inside modals
-       Was too light/grey — now clearly visible */
     .close-modal-btn {
       display: inline-flex;
       align-items: center;
@@ -303,10 +279,6 @@
       background: #cbd5e1;
       transform: scale(0.97);
     }
-
-    /* ============================================
-       ✅ DELETE MODAL STYLING — IMPROVED
-    ============================================ */
     .delete-modal-avatar {
       font-size: 40px;
       margin-bottom: 6px;
@@ -378,11 +350,6 @@
       margin: 8px 0 0;
       font-style: italic;
     }
-
-    /* ============================================
-       ✅ CONFIRM DELETE BUTTON — FIXED
-       Full red, clearly dangerous, proper size
-    ============================================ */
     .btn-confirm-delete {
       display: inline-flex;
       align-items: center;
@@ -419,11 +386,6 @@
       background: #991b1b;
       transform: scale(0.97);
     }
-
-    /* ============================================
-       ✅ CANCEL BUTTON inside delete modal
-       FIXED — proper visible style
-    ============================================ */
     .btn-cancel-delete {
       display: inline-flex;
       align-items: center;
@@ -453,12 +415,6 @@
       background: #cbd5e1;
       transform: scale(0.97);
     }
-
-    /* ============================================
-       ✅ EDIT CONFIRM MODAL FOOTER BUTTONS
-       Save button — green, clearly positive
-       Cancel button — grey, clearly safe
-    ============================================ */
     .btn-confirm-save {
       display: inline-flex;
       align-items: center;
@@ -494,10 +450,6 @@
     .btn-confirm-save:active {
       transform: scale(0.97);
     }
-
-    /* ============================================
-       ✅ MODAL FOOTER — proper padding & layout
-    ============================================ */
     .profile-footer {
       display: flex;
       gap: 12px;
@@ -507,7 +459,6 @@
       flex-wrap: wrap;
       border-top: 1px solid #f1f5f9;
     }
-
   </style>
 </head>
 
@@ -756,17 +707,14 @@
 
     <div class="mode-time-row"
       id="checkInTimeRow">
-
       <label data-t="checkInTimeLabel">
         ម៉ោងចូល:
       </label>
-
       <div class="time-range-group">
         <div class="time-input-wrap">
           <div class="time12-selects"
             id="checkInStartTimeSelects"></div>
-          <input
-            type="hidden"
+          <input type="hidden"
             id="checkInStartTime"
             value="07:00">
           <span class="time-input-sublabel"
@@ -774,14 +722,11 @@
             Start
           </span>
         </div>
-
         <span class="time-arrow">→</span>
-
         <div class="time-input-wrap">
           <div class="time12-selects"
             id="checkInEndTimeSelects"></div>
-          <input
-            type="hidden"
+          <input type="hidden"
             id="checkInEndTime"
             value="07:20">
           <span class="time-input-sublabel"
@@ -790,26 +735,21 @@
           </span>
         </div>
       </div>
-
       <p class="time-range-error"
         id="checkInTimeError"></p>
-
     </div>
 
     <div class="mode-time-row"
       id="checkOutTimeRow"
       style="display:none;">
-
       <label data-t="checkOutTimeLabel">
         ម៉ោងចេញ:
       </label>
-
       <div class="time-range-group">
         <div class="time-input-wrap">
           <div class="time12-selects"
             id="checkOutStartTimeSelects"></div>
-          <input
-            type="hidden"
+          <input type="hidden"
             id="checkOutStartTime"
             value="11:00">
           <span class="time-input-sublabel"
@@ -817,14 +757,11 @@
             Start
           </span>
         </div>
-
         <span class="time-arrow">→</span>
-
         <div class="time-input-wrap">
           <div class="time12-selects"
             id="checkOutEndTimeSelects"></div>
-          <input
-            type="hidden"
+          <input type="hidden"
             id="checkOutEndTime"
             value="12:59">
           <span class="time-input-sublabel"
@@ -833,10 +770,8 @@
           </span>
         </div>
       </div>
-
       <p class="time-range-error"
         id="checkOutTimeError"></p>
-
     </div>
 
     <div class="session-controls"
@@ -935,7 +870,6 @@
             id="qrStatusValue"
             data-t="qrActive">Active</div>
         </div>
-
         <div class="status-card">
           <div class="status-card-icon">📥</div>
           <div class="status-card-label"
@@ -947,7 +881,6 @@
             style="font-size:12px;
                    color:#16a34a;">—</div>
         </div>
-
         <div class="status-card">
           <div class="status-card-icon">📤</div>
           <div class="status-card-label"
@@ -959,7 +892,6 @@
             style="font-size:12px;
                    color:#f59e0b;">—</div>
         </div>
-
       </div>
     </div>
 
@@ -1228,7 +1160,6 @@
       </h2>
     </div>
     <div class="profile-body">
-
       <div class="profile-row">
         <span class="profile-row-label">
           🔒 <span data-t="labelStudentId">
@@ -1259,7 +1190,6 @@
         data-t="studentIdLocked">
         Student ID cannot be changed.
       </p>
-
       <div class="profile-row">
         <span class="profile-row-label">
           ✏️ <span data-t="labelStudentName">
@@ -1276,7 +1206,6 @@
                    width:160px;">
         </span>
       </div>
-
       <div class="profile-row">
         <span class="profile-row-label">
           ✏️ <span data-t="labelStudentSex">
@@ -1302,7 +1231,6 @@
           </select>
         </span>
       </div>
-
       <div class="profile-row">
         <span class="profile-row-label">
           ✏️ <span data-t="labelStudentGrade">
@@ -1319,9 +1247,7 @@
                    width:150px;">
         </span>
       </div>
-
     </div>
-
     <p id="editStudentMsg"
       style="font-size:12px;
              color:#dc2626;
@@ -1329,9 +1255,6 @@
              min-height:18px;
              padding:0 20px;
              margin:4px 0 0;"></p>
-
-    <!-- ✅ FIXED: Both buttons same height,
-         clearly visible, properly spaced -->
     <div class="profile-footer edit-actions">
       <button id="cancelEditBtn"
         class="close-modal-btn"
@@ -1373,7 +1296,6 @@
         Are you sure you want to update
         this student's information?
       </p>
-
       <div class="profile-row">
         <span class="profile-row-label"
           data-t="labelStudentId">
@@ -1406,7 +1328,6 @@
         <span class="profile-row-value"
           id="editConfirmGrade"></span>
       </div>
-
       <p style="font-size:11px;
                 color:#94a3b8;
                 text-align:center;
@@ -1415,9 +1336,6 @@
         Student ID cannot be changed.
       </p>
     </div>
-
-    <!-- ✅ FIXED: Cancel clearly visible,
-         Save button green and clear -->
     <div class="profile-footer"
       style="gap:12px;">
       <button id="cancelEditConfirmBtn"
@@ -1441,26 +1359,19 @@
     style="max-width:400px;
            padding:0;
            overflow:hidden;">
-
-    <!-- ⚠️ Danger header -->
     <div class="delete-modal-header-danger">
       <div class="delete-modal-avatar">🗑️</div>
       <h2 data-t="deleteConfirmTitle">
         ⚠️ Delete Student
       </h2>
     </div>
-
-    <!-- Body -->
     <div class="profile-body"
       style="padding:20px 24px 10px;">
-
       <p class="delete-warning-text"
         data-t="deleteConfirmText">
         Are you sure you want to delete
-        this student? This action cannot
-        be undone.
+        this student?
       </p>
-
       <div class="delete-student-info-box">
         <div class="delete-info-row">
           <span class="delete-info-label"
@@ -1494,17 +1405,11 @@
             id="deleteConfirmGrade">—</span>
         </div>
       </div>
-
       <p class="delete-cannot-undo"
         data-t="cannotUndoNote">
         ⚠️ This action cannot be undone.
       </p>
-
     </div>
-
-    <!-- ✅ FIXED Footer buttons:
-         Cancel — clearly visible grey
-         Delete — clearly visible red -->
     <div class="profile-footer"
       style="gap:12px;
              padding:14px 24px 20px;">
@@ -1623,6 +1528,54 @@ const db   = getFirestore(app);
 const auth = getAuth(app);
 
 // ============================================
+// ✅ TEACHER EMAIL — set after login
+// All Firebase paths use this email so
+// each teacher only sees their own data
+// ============================================
+let teacherEmail = null;
+
+// ============================================
+// ✅ FIREBASE PATH HELPERS
+// Every collection is scoped under:
+// teachers/{teacherEmail}/...
+// so Teacher A cannot see Teacher B data
+// ============================================
+function studentsCol() {
+  return collection(
+    db, "teachers", teacherEmail, "students"
+  );
+}
+
+function studentDocRef(studentId) {
+  return doc(
+    db, "teachers", teacherEmail,
+    "students", studentId
+  );
+}
+
+function sessionDocRef() {
+  return doc(
+    db, "teachers", teacherEmail,
+    "session", "current"
+  );
+}
+
+function attendanceCol(sid) {
+  return collection(
+    db, "teachers", teacherEmail,
+    "sessionAttendance", sid, "records"
+  );
+}
+
+function attendanceRecordRef(sid, studentId) {
+  return doc(
+    db, "teachers", teacherEmail,
+    "sessionAttendance", sid,
+    "records", studentId
+  );
+}
+
+// ============================================
 // URL HELPERS
 // ============================================
 function getLoginUrl() {
@@ -1643,6 +1596,7 @@ function getStudentUrl() {
 
 // ============================================
 // AUTH GUARD
+// ✅ Sets teacherEmail from logged-in user
 // ============================================
 onAuthStateChanged(auth, function (user) {
   const overlay =
@@ -1652,6 +1606,10 @@ onAuthStateChanged(auth, function (user) {
     window.location.href = getLoginUrl();
     return;
   }
+
+  // ✅ Store teacher email — used in all
+  // Firebase paths to separate data
+  teacherEmail = user.email;
 
   const badge =
     document.getElementById(
@@ -1688,7 +1646,6 @@ const tt = {
     logoutBtn:    "Logout",
     logoutConfirm:
       "Are you sure you want to logout?",
-
     studentListTitle: "Student List Manager",
     studentListHint:
       "Add students here. " +
@@ -1713,7 +1670,6 @@ const tt = {
     okBtn: "OK",
     noStudentsYet:  "No students yet.",
     confirmRemove:  "Remove this student?",
-
     editBtnLabel:      "✏️ Edit",
     deleteBtnLabel:    "🗑️ Delete",
     editStudentTitle:  "✏️ Edit Student",
@@ -1746,17 +1702,14 @@ const tt = {
       "Student ID cannot be changed.",
     studentDeleted:
       "✅ Student deleted successfully!",
-
     phStudentName:  "Student full name",
     phStudentId:    "e.g. IT01",
     phStudentGrade: "e.g. Grade 10A",
     searchPlaceholder:
       "Search by name or ID...",
-
     optSelectSex: "Select Sex",
     optMale:      "Male",
     optFemale:    "Female",
-
     sessionControlTitle: "Session Control",
     sessionOpen:         "OPEN",
     sessionClosed:       "Closed",
@@ -1779,7 +1732,6 @@ const tt = {
       "Session error. Please try again.",
     noStudentsError:
       "Please add students before starting.",
-
     startTimeLabel:    "Start",
     endTimeLabel:      "End",
     timeRangeError:
@@ -1787,7 +1739,6 @@ const tt = {
       "start time.",
     checkInWindowLabel:  "Check-In Window",
     checkOutWindowLabel: "Check-Out Window",
-
     attModeLabel:    "Attendance Mode:",
     modeCheckIn:     "ម៉ោងចូល",
     modeCheckOut:    "ម៉ោងចេញ",
@@ -1800,7 +1751,6 @@ const tt = {
       "✅ QR សម្រាប់ម៉ោងចូល (Check-In QR)",
     qrBadgeCheckOut:
       "🚪 QR សម្រាប់ម៉ោងចេញ (Check-Out QR)",
-
     attendanceStatusTitle: "Attendance Status",
     statusLabel:           "Status",
     startedAtLabel:        "Started At",
@@ -1811,21 +1761,17 @@ const tt = {
     qrStatusLabel:         "QR Status",
     qrActive:              "✅ Active",
     qrInactive:            "🔴 Inactive",
-
     qrTitle:         "📱 Today's QR Code",
     qrInstructions:
       "Show this QR code to students.",
     downloadQr:  "⬇ Download QR Code",
     qrSession:   "Session",
-
     totalLabel:   "Total Students",
     todayLabel:   "Present Today",
     absentLabel:  "Not Checked In",
     updatedLabel: "Last Updated",
-
     searchTitle:  "🔍 Find a Student",
     results:      "result(s)",
-
     tableTitle:  "📋 Attendance List",
     colName:     "Student Name",
     colSex:      "Sex",
@@ -1835,18 +1781,15 @@ const tt = {
     colStatus:   "ស្ថានភាព",
     colProfile:  "Profile",
     viewBtn:     "👁 View",
-
     profileSex:      "Sex",
     profileGrade:    "Grade / Class",
     profileLat:      "Latitude",
     profileLon:      "Longitude",
     profileDistance: "Distance from School",
     closeProfile:    "Close",
-
     notCheckedInYet: "មិនទាន់ចុះវត្តមាន",
     present:         "✅ មានវត្តមាន",
     notCheckedOut:   "មិនទាន់ចេញ",
-
     noRecords:
       "No attendance records found.",
     noRecordsSub:
@@ -1867,7 +1810,6 @@ const tt = {
     logoutBtn:    "ចាកចេញ",
     logoutConfirm:
       "តើអ្នកពិតជាចង់ចាកចេញមែនទេ?",
-
     studentListTitle: "គ្រប់គ្រងបញ្ជីសិស្ស",
     studentListHint:
       "បន្ថែមសិស្សនៅទីនេះ។",
@@ -1890,7 +1832,6 @@ const tt = {
     okBtn: "យល់ព្រម",
     noStudentsYet:  "មិនទាន់មានសិស្សទេ។",
     confirmRemove:  "លុបសិស្សនេះ?",
-
     editBtnLabel:      "✏️ កែប្រែ",
     deleteBtnLabel:    "🗑️ លុប",
     editStudentTitle:  "✏️ កែប្រែព័ត៌មានសិស្ស",
@@ -1922,17 +1863,14 @@ const tt = {
       "លេខសម្គាល់សិស្សមិនអាចកែប្រែបានទេ",
     studentDeleted:
       "✅ បានលុបសិស្សដោយជោគជ័យ!",
-
     phStudentName:  "ឈ្មោះពេញរបស់សិស្ស",
     phStudentId:    "ឧ. IT01",
     phStudentGrade: "ឧ. ថ្នាក់ទី ១០A",
     searchPlaceholder:
       "ស្វែងរកតាមឈ្មោះ ឬលេខ...",
-
     optSelectSex: "ជ្រើសរើសភេទ",
     optMale:      "ប្រុស",
     optFemale:    "ស្រី",
-
     sessionControlTitle: "គ្រប់គ្រងវគ្គ",
     sessionOpen:         "បើក",
     sessionClosed:       "បិទ",
@@ -1955,7 +1893,6 @@ const tt = {
       "មានបញ្ហា។ សូមព្យាយាមម្តងទៀត។",
     noStudentsError:
       "សូមបន្ថែមសិស្សមុន។",
-
     startTimeLabel:    "ចាប់ផ្ដើម",
     endTimeLabel:      "បញ្ចប់",
     timeRangeError:
@@ -1963,7 +1900,6 @@ const tt = {
       "យឺតជាងម៉ោងចាប់ផ្ដើម។",
     checkInWindowLabel:  "ម៉ោងអនុញ្ញាតចូល",
     checkOutWindowLabel: "ម៉ោងអនុញ្ញាតចេញ",
-
     attModeLabel:    "របៀបវត្តមាន:",
     modeCheckIn:     "ម៉ោងចូល",
     modeCheckOut:    "ម៉ោងចេញ",
@@ -1976,7 +1912,6 @@ const tt = {
       "✅ QR សម្រាប់ម៉ោងចូល",
     qrBadgeCheckOut:
       "🚪 QR សម្រាប់ម៉ោងចេញ",
-
     attendanceStatusTitle: "ស្ថានភាពវត្តមាន",
     statusLabel:           "ស្ថានភាព",
     startedAtLabel:        "ចាប់ផ្ដើមនៅ",
@@ -1987,21 +1922,17 @@ const tt = {
     qrStatusLabel:         "ស្ថានភាព QR",
     qrActive:              "✅ សកម្ម",
     qrInactive:            "🔴 អសកម្ម",
-
     qrTitle:        "📱 QR Code ថ្ងៃនេះ",
     qrInstructions:
       "បង្ហាញ QR Code នេះដល់សិស្ស។",
     downloadQr:     "⬇ ទាញយក QR Code",
     qrSession:      "វគ្គ",
-
     totalLabel:   "សិស្សសរុប",
     todayLabel:   "មានវត្តមានថ្ងៃនេះ",
     absentLabel:  "មិនទាន់ចុះ",
     updatedLabel: "ធ្វើបច្ចុប្បន្នចុងក្រោយ",
-
     searchTitle:  "🔍 ស្វែងរកសិស្ស",
     results:      "លទ្ធផល",
-
     tableTitle:  "📋 បញ្ជីវត្តមាន",
     colName:     "ឈ្មោះសិស្ស",
     colSex:      "ភេទ",
@@ -2011,18 +1942,15 @@ const tt = {
     colStatus:   "ស្ថានភាព",
     colProfile:  "ព័ត៌មាន",
     viewBtn:     "👁 មើល",
-
     profileSex:      "ភេទ",
     profileGrade:    "ថ្នាក់រៀន",
     profileLat:      "រយៈទទឹង",
     profileLon:      "រយៈបណ្តោយ",
     profileDistance: "ចម្ងាយពីសាលា",
     closeProfile:    "បិទ",
-
     notCheckedInYet: "មិនទាន់ចុះវត្តមាន",
     present:         "✅ មានវត្តមាន",
     notCheckedOut:   "មិនទាន់ចេញ",
-
     noRecords:    "រកមិនឃើញកំណត់ត្រា។",
     noRecordsSub:
       "ចាប់ផ្ដើមវត្តមានដើម្បី" +
@@ -2103,11 +2031,9 @@ function to12Parts(hhmm) {
   let m = parseInt(mStr, 10);
   if (isNaN(h)) h = 7;
   if (isNaN(m)) m = 0;
-
   const ampm = h >= 12 ? "PM" : "AM";
   let h12 = h % 12;
   if (h12 === 0) h12 = 12;
-
   return { hour: h12, minute: m, ampm: ampm };
 }
 
@@ -2378,13 +2304,18 @@ function generateSessionId() {
 
 // ============================================
 // GENERATE QR CODE
+// ✅ QR URL now includes teacherEmail
+// so script.js knows which teacher's
+// session and data to load
 // ============================================
 function generateQRCode(sid) {
   const base = getStudentUrl();
   const url  =
     base +
     "?session=" + sid +
-    "&mode=" + attendanceMode;
+    "&mode=" + attendanceMode +
+    "&teacher=" +
+    encodeURIComponent(teacherEmail);
 
   const qr =
     "https://api.qrserver.com/v1/" +
@@ -2672,14 +2603,12 @@ function updateStatusCounts(
 }
 
 // ============================================
-// LOAD STUDENTS
+// ✅ LOAD STUDENTS — uses teacher path
 // ============================================
 async function loadStudents() {
+  if (!teacherEmail) return;
   try {
-    const snap =
-      await getDocs(
-        collection(db, "students")
-      );
+    const snap = await getDocs(studentsCol());
     allStudents = [];
     snap.forEach(d => {
       allStudents.push({
@@ -2742,8 +2671,6 @@ function renderStudentList() {
                       gap:8px;
                       flex-wrap:wrap;
                       align-items:center;">
-
-            <!-- ✏️ EDIT button -->
             <button
               class="btn-edit-student"
               onclick="window._openEditModal(
@@ -2756,8 +2683,6 @@ function renderStudentList() {
                   .trim()
               )}
             </button>
-
-            <!-- 🗑️ DELETE button -->
             <button
               class="btn-delete-student"
               onclick="window._openDeleteModal(
@@ -2770,7 +2695,6 @@ function renderStudentList() {
                   .trim()
               )}
             </button>
-
           </div>
         </td>
       </tr>
@@ -2779,9 +2703,11 @@ function renderStudentList() {
 }
 
 // ============================================
-// ADD STUDENT
+// ✅ ADD STUDENT — uses teacher path
 // ============================================
 async function addStudent() {
+  if (!teacherEmail) return;
+
   const nameEl  =
     document.getElementById("newStudentName");
   const idEl    =
@@ -2817,7 +2743,7 @@ async function addStudent() {
 
   try {
     const existingSnap = await getDoc(
-      doc(db, "students", studentId)
+      studentDocRef(studentId)
     );
     if (existingSnap.exists()) {
       openDuplicateIdModal();
@@ -2825,7 +2751,7 @@ async function addStudent() {
     }
 
     await setDoc(
-      doc(db, "students", studentId),
+      studentDocRef(studentId),
       {
         fullName:  fullName,
         studentId: studentId,
@@ -2993,6 +2919,7 @@ function closeEditConfirm() {
     ?.classList.remove("show");
 }
 
+// ✅ EDIT SAVE — uses teacher path
 async function confirmEditSave() {
   if (!editTargetStudent) return;
 
@@ -3010,7 +2937,7 @@ async function confirmEditSave() {
 
   try {
     await updateDoc(
-      doc(db, "students", studentId),
+      studentDocRef(studentId),
       {
         fullName: nameVal,
         sex:      sexVal,
@@ -3077,6 +3004,7 @@ function closeDeleteModal() {
   deleteTargetStudent = null;
 }
 
+// ✅ DELETE STUDENT — uses teacher path
 async function confirmDeleteStudent() {
   if (!deleteTargetStudent) return;
 
@@ -3085,7 +3013,7 @@ async function confirmDeleteStudent() {
 
   try {
     await deleteDoc(
-      doc(db, "students", studentId)
+      studentDocRef(studentId)
     );
 
     closeDeleteModal();
@@ -3115,9 +3043,11 @@ window._openEditModal   = openEditModal;
 window._openDeleteModal = openDeleteModal;
 
 // ============================================
-// START SESSION
+// ✅ START SESSION — uses teacher path
 // ============================================
 async function startSession() {
+
+  if (!teacherEmail) return;
 
   const ciStart =
     document.getElementById(
@@ -3174,31 +3104,28 @@ async function startSession() {
   const now   = new Date();
 
   try {
-    await setDoc(
-      doc(db, "session", "current"),
-      {
-        isOpen:            true,
-        sessionId:         sid,
-        date:              today,
-        openTime:          ciStart,
-        closeTime:         coEnd,
-        checkInStartTime:  ciStart,
-        checkInEndTime:    ciEnd,
-        checkOutStartTime: coStart,
-        checkOutEndTime:   coEnd,
-        startedAt:         now.toISOString(),
-        attendanceMode:    attendanceMode
-      }
-    );
+    // ✅ Save session under teacher path
+    await setDoc(sessionDocRef(), {
+      isOpen:            true,
+      sessionId:         sid,
+      date:              today,
+      openTime:          ciStart,
+      closeTime:         coEnd,
+      checkInStartTime:  ciStart,
+      checkInEndTime:    ciEnd,
+      checkOutStartTime: coStart,
+      checkOutEndTime:   coEnd,
+      startedAt:         now.toISOString(),
+      attendanceMode:    attendanceMode,
+      teacherEmail:      teacherEmail
+    });
 
+    // ✅ Save attendance records under
+    // teacher path
     const batch = writeBatch(db);
     allStudents.forEach(student => {
-      const ref = doc(
-        db,
-        "sessionAttendance",
-        sid,
-        "records",
-        student.studentId
+      const ref = attendanceRecordRef(
+        sid, student.studentId
       );
       batch.set(ref, {
         fullName:           student.fullName,
@@ -3245,23 +3172,20 @@ async function startSession() {
 }
 
 // ============================================
-// END SESSION
+// ✅ END SESSION — uses teacher path
 // ============================================
 async function endSession() {
   if (!confirm(t("confirmEnd"))) return;
 
   try {
-    await setDoc(
-      doc(db, "session", "current"),
-      {
-        isOpen:    false,
-        sessionId: currentSessionId || "",
-        date: new Date()
-          .toLocaleDateString("en-CA"),
-        endedAt:   new Date().toISOString(),
-        endReason: "manual"
-      }
-    );
+    await setDoc(sessionDocRef(), {
+      isOpen:    false,
+      sessionId: currentSessionId || "",
+      date: new Date()
+        .toLocaleDateString("en-CA"),
+      endedAt:   new Date().toISOString(),
+      endReason: "manual"
+    });
 
     sessionIsOpen    = false;
     currentOpenTime  = null;
@@ -3292,13 +3216,13 @@ async function endSession() {
 }
 
 // ============================================
-// LOAD SESSION STATUS
+// ✅ LOAD SESSION STATUS — uses teacher path
 // ============================================
 async function loadSessionStatus() {
+  if (!teacherEmail) return;
+
   try {
-    const snap = await getDoc(
-      doc(db, "session", "current")
-    );
+    const snap = await getDoc(sessionDocRef());
     if (!snap.exists()) {
       updateSessionBadge(false);
       return;
@@ -3385,19 +3309,14 @@ async function loadSessionStatus() {
 }
 
 // ============================================
-// REAL-TIME LISTENER
+// ✅ REAL-TIME LISTENER — uses teacher path
 // ============================================
 function startRealtimeListener(sid) {
   if (unsubscribeListener) {
     unsubscribeListener();
   }
 
-  const ref = collection(
-    db,
-    "sessionAttendance",
-    sid,
-    "records"
-  );
+  const ref = attendanceCol(sid);
 
   unsubscribeListener = onSnapshot(ref,
     function (snap) {
@@ -3885,7 +3804,6 @@ document.getElementById("modeCheckOutBtn")
     switchMode("checkOut");
   });
 
-// Edit modal buttons
 document.getElementById("cancelEditBtn")
   ?.addEventListener(
     "click", attemptCloseEditModal
@@ -3899,7 +3817,6 @@ document.getElementById("editStudentModal")
     }
   });
 
-// Edit confirm modal buttons
 document.getElementById("cancelEditConfirmBtn")
   ?.addEventListener("click", closeEditConfirm);
 document.getElementById("confirmEditBtn")
@@ -3911,7 +3828,6 @@ document.getElementById("editConfirmModal")
     }
   });
 
-// Delete modal buttons
 document.getElementById("cancelDeleteBtn")
   ?.addEventListener("click", closeDeleteModal);
 document.getElementById("confirmDeleteBtn")
@@ -3927,7 +3843,6 @@ document.getElementById("deleteStudentModal")
     }
   });
 
-// Duplicate ID popup
 document.getElementById("duplicateIdOkBtn")
   ?.addEventListener(
     "click", closeDuplicateIdModal
@@ -3941,7 +3856,6 @@ document.getElementById("duplicateIdModal")
     }
   });
 
-// Time input validation
 [
   "checkInStartTime",
   "checkInEndTime"
@@ -3973,7 +3887,7 @@ document.getElementById("duplicateIdModal")
 });
 
 // ============================================
-// INIT — build 12-hour time selectors
+// INIT
 // ============================================
 buildTimeSelector(
   "checkInStartTimeSelects",
