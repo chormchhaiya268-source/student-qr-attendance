@@ -1448,7 +1448,9 @@ import {
 import {
   getAuth,
   onAuthStateChanged,
-  signOut
+  signOut,
+  setPersistence,
+  browserSessionPersistence
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 // ============================================
@@ -1472,6 +1474,20 @@ const firebaseConfig = {
 const app  = initializeApp(firebaseConfig);
 const db   = getFirestore(app);
 const auth = getAuth(app);
+
+// ================================================
+// 🔒 PER-TAB LOGIN SESSIONS
+// Must match the persistence mode set in login.js
+// so a teacher's session stays scoped to the tab
+// they logged in on, instead of bleeding into every
+// other tab in the same browser. See login.js for
+// the full explanation.
+// ================================================
+try {
+  await setPersistence(auth, browserSessionPersistence);
+} catch (err) {
+  console.error("Persistence setup error:", err);
+}
 
 // ============================================
 // 🔒 PER-TEACHER DATA SCOPING
