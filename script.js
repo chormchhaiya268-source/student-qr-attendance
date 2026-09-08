@@ -18,6 +18,30 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 // ================================================
+// 🔒 PER-TEACHER DATA SCOPING
+// The QR code encodes which teacher's classroom
+// this student is checking into (?teacher=UID).
+// Every read/write below is scoped under that
+// teacher's UID, so this page never touches
+// another teacher's roster, session, or
+// attendance records.
+// ================================================
+function sessionDocRef() {
+  return doc(db, "sessions", teacherUid);
+}
+function studentsCol() {
+  return collection(
+    db, "students", teacherUid, "roster"
+  );
+}
+function attendanceRecordDocRef(sid, studentId) {
+  return doc(
+    db, "attendance", teacherUid,
+    "sessions", sid, "records", studentId
+  );
+}
+
+// ================================================
 // FIREBASE CONFIG
 // ================================================
 const firebaseConfig = {
@@ -39,73 +63,12 @@ const app = initializeApp(firebaseConfig);
 const db  = getFirestore(app);
 
 // ================================================
-// ✅ NEW — TEACHER EMAIL FROM QR URL
-// ================================================
-const urlParams = new URLSearchParams(
-  window.location.search
-);
-const teacherEmail = urlParams.get("teacher");
-
-if (!teacherEmail) {
-  console.error(
-    "Missing 'teacher' parameter in URL."
-  );
-}
-
-// ================================================
-// ✅ NEW — FIREBASE PATH HELPERS
-// (multi-teacher support — every path below
-// is now scoped under teachers/{teacherEmail}/...)
-// ================================================
-function getSessionRef() {
-  return doc(
-    db, "teachers", teacherEmail,
-    "session", "current"
-  );
-}
-
-function getAttendanceCol(sid) {
-  return collection(
-    db, "teachers", teacherEmail,
-    "sessionAttendance", sid, "records"
-  );
-}
-
-function getAttendanceRecord(sid, studentId) {
-  return doc(
-    db, "teachers", teacherEmail,
-    "sessionAttendance", sid,
-    "records", studentId
-  );
-}
-
-function getStudentsCol() {
-  return collection(
-    db, "teachers", teacherEmail, "students"
-  );
-}
-
-function getDeviceLogRef(deviceKey) {
-  return doc(
-    db, "teachers", teacherEmail,
-    "deviceLogs", deviceKey
-  );
-}
-
-// ================================================
 // SCHOOL LOCATION
 // ================================================
-const SCHOOL_LAT = 11.822624138074948;
-const SCHOOL_LON = 104.7536601355822;
-
-// ✅ FIX 1 — Separate limits for phone vs PC
-// Phone GPS accuracy is usually 5–20 m
-// PC/Laptop WiFi accuracy is usually 50–300 m
-// We allow up to 300 m accuracy for any device
-const MAX_DISTANCE        = 200;  // meters from school
-const MAX_ACCURACY_PHONE  = 50;   // phone GPS
-const MAX_ACCURACY_PC     = 300;  // PC/Laptop WiFi
-const MAX_ACCURACY        = 300;  // ✅ allow PC
+const SCHOOL_LAT   = 11.822624138074948;
+const SCHOOL_LON   = 104.7536601355822;
+const MAX_DISTANCE = 100;
+const MAX_ACCURACY = 50;
 
 // ================================================
 // RATE LIMIT
@@ -119,6 +82,7 @@ const LOCKOUT_MS   = 5 * 60 * 1000;
 let currentLang      = "en";
 let sessionId        = null;
 let sessionData      = null;
+let teacherUid       = null;
 let studentLocation  = null;
 let locationVerified = false;
 let deviceToken      = null;
@@ -136,11 +100,6 @@ let studentsLoaded = false;
 let studentCheckedIn  = false;
 let studentCheckedOut = false;
 let currentStudentId  = null;
-
-// ✅ FIX 2 — Store verified location
-// so check-out can reuse it on PC
-// without calling GPS again
-let verifiedLocation = null;
 
 // ================================================
 // TRANSLATIONS
@@ -191,9 +150,8 @@ const i18n = {
       "Could not get your location. " +
       "Please try again.",
     locationPoorAccuracy:
-      "Location accuracy is low. " +
-      "Please try again or move closer " +
-      "to a window.",
+      "Could not verify your location. " +
+      "Please try again.",
     locationNotSupported:
       "Your browser does not support " +
       "location services.",
@@ -254,8 +212,7 @@ const i18n = {
       "Please wait. Student data is " +
       "still loading.",
     errLocation:
-      "Location not verified yet. " +
-      "Please wait.",
+      "Location not verified yet. Please wait.",
     errTooFar:
       "You are outside the school area. " +
       "Attendance is not allowed.",
@@ -391,8 +348,9 @@ const i18n = {
       "មិនអាចទទួលទីតាំងរបស់អ្នក។ " +
       "សូមព្យាយាមម្តងទៀត។",
     locationPoorAccuracy:
-      "ភាពត្រឹមត្រូវទីតាំងទាប។ " +
-      "សូមព្យាយាមម្តងទៀត។",
+      "អ្នកនៅឆ្ងាយពីសាលា " +
+      "សូមចូលទៅក្នុងថ្នាក់រៀន " +
+      "ដើម្បីចុះវត្តមាន។",
     locationNotSupported:
       "កម្មវិធីរុករករបស់អ្នក" +
       "មិនអាចប្រើទីតាំងបានទេ។",
@@ -608,8 +566,7 @@ function applyLanguage(lang) {
 
   document.querySelectorAll("[data-i18n]")
     .forEach(function (el) {
-      const key =
-        el.getAttribute("data-i18n");
+      const key = el.getAttribute("data-i18n");
       const val = i(key);
       if (val !== key) el.textContent = val;
     });
@@ -656,6 +613,8 @@ function applyLanguage(lang) {
 
   updateStudentIdFieldState();
 
+  // Keep the consent popup (defined in index.html)
+  // in sync with the selected language.
   if (typeof window.renderConsent === "function") {
     window.renderConsent(lang);
   }
@@ -771,9 +730,7 @@ async function loadAllStudents() {
 
   try {
     const snap =
-      await getDocs(
-        getStudentsCol()
-      );
+      await getDocs(studentsCol());
 
     snap.forEach(function (d) {
       const data  = d.data();
@@ -958,13 +915,13 @@ function showDistanceResult(loc) {
   const locBox =
     document.getElementById("locationBox");
 
-  const isNear =
-    loc.distance <= MAX_DISTANCE;
+  const isNear = loc.distance <= MAX_DISTANCE;
 
   if (locBox) locBox.style.display = "none";
   box.style.display = "flex";
 
   if (isNear) {
+    icon.textContent   = "";
     icon.innerHTML = `<svg width="22"
       height="22" viewBox="0 0 24 24"
       fill="none" stroke="#15803d"
@@ -980,11 +937,6 @@ function showDistanceResult(loc) {
     box.style.borderColor = "#86efac";
     retry.style.display   = "none";
     locationVerified      = true;
-
-    // ✅ FIX 3 — Save verified location
-    // so check-out can reuse it on PC
-    verifiedLocation = loc;
-
   } else {
     icon.innerHTML = `<svg width="22"
       height="22" viewBox="0 0 24 24"
@@ -1005,93 +957,13 @@ function showDistanceResult(loc) {
     box.style.borderColor = "#fca5a5";
     retry.style.display   = "block";
     locationVerified      = false;
-    verifiedLocation      = null;
   }
 
   checkAndEnableSubmitButton();
 }
 
 // ================================================
-// ✅ FIX 4 — DETECT DEVICE TYPE
-// PC/Laptop cannot use enableHighAccuracy
-// reliably — detect and use correct settings
-// ================================================
-function isMobileDevice() {
-  const ua = navigator.userAgent;
-  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i
-    .test(ua);
-}
-
-// ================================================
-// ✅ FIX 5 — GET BEST LOCATION
-// Tries high accuracy first.
-// If accuracy is too poor, tries again
-// with low accuracy (for PC/Laptop).
-// Accepts the best result available.
-// ================================================
-function getBestLocation(
-  onSuccess, onError, timeout
-) {
-  const isMobile = isMobileDevice();
-
-  // Settings for phone — high accuracy GPS
-  const phoneOptions = {
-    enableHighAccuracy: true,
-    timeout:            timeout || 10000,
-    maximumAge:         0
-  };
-
-  // Settings for PC/Laptop — WiFi location
-  const pcOptions = {
-    enableHighAccuracy: false,
-    timeout:            timeout || 15000,
-    maximumAge:         30000
-  };
-
-  if (isMobile) {
-    // Phone — use high accuracy GPS directly
-    navigator.geolocation.getCurrentPosition(
-      onSuccess,
-      onError,
-      phoneOptions
-    );
-  } else {
-    // PC/Laptop — try high accuracy first
-    // then fall back to low accuracy
-    navigator.geolocation.getCurrentPosition(
-      function (pos) {
-        // Got a position from PC
-        // Check if accuracy is acceptable
-        if (pos.coords.accuracy <= MAX_ACCURACY) {
-          onSuccess(pos);
-        } else {
-          // Accuracy too poor even for PC
-          // Try low accuracy fallback
-          navigator.geolocation
-            .getCurrentPosition(
-              onSuccess,
-              onError,
-              pcOptions
-            );
-        }
-      },
-      function () {
-        // High accuracy failed on PC
-        // Try low accuracy fallback
-        navigator.geolocation
-          .getCurrentPosition(
-            onSuccess,
-            onError,
-            pcOptions
-          );
-      },
-      phoneOptions
-    );
-  }
-}
-
-// ================================================
-// REQUEST LOCATION — FIXED FOR ALL DEVICES
+// REQUEST LOCATION
 // ================================================
 function requestLocation() {
   const locStatus =
@@ -1105,7 +977,6 @@ function requestLocation() {
 
   locationVerified = false;
   studentLocation  = null;
-  verifiedLocation = null;
 
   const submitBtn =
     document.getElementById("submitBtn");
@@ -1126,30 +997,13 @@ function requestLocation() {
     return;
   }
 
-  // ✅ FIX 6 — Use getBestLocation()
-  // instead of getCurrentPosition() directly
-  // This works for both phone and PC/Laptop
-  getBestLocation(
+  navigator.geolocation.getCurrentPosition(
     function (pos) {
       const lat      = pos.coords.latitude;
       const lon      = pos.coords.longitude;
       const accuracy = pos.coords.accuracy;
 
-      const distance = haversineDistance(
-        lat, lon, SCHOOL_LAT, SCHOOL_LON
-      );
-
-      // ✅ FIX 7 — Accept PC accuracy up to
-      // MAX_ACCURACY (300m). Only reject if
-      // BOTH accuracy is poor AND distance
-      // is too far. If accuracy is poor but
-      // student is within range, allow it.
-      if (
-        accuracy > MAX_ACCURACY &&
-        distance > MAX_DISTANCE
-      ) {
-        // Both accuracy and distance are bad
-        // Definitely outside school
+      if (accuracy > MAX_ACCURACY) {
         if (locBox) {
           locBox.style.display = "none";
         }
@@ -1158,7 +1012,7 @@ function requestLocation() {
         box.style.borderColor = "#fca5a5";
         document
           .getElementById("distanceIcon")
-          .innerHTML = "";
+          .textContent = "";
         document
           .getElementById("distanceStatus")
           .textContent =
@@ -1170,8 +1024,10 @@ function requestLocation() {
         return;
       }
 
-      // ✅ Accept position even if accuracy
-      // is poor — as long as distance is ok
+      const distance = haversineDistance(
+        lat, lon, SCHOOL_LAT, SCHOOL_LON
+      );
+
       studentLocation = {
         latitude:  lat,
         longitude: lon,
@@ -1200,7 +1056,7 @@ function requestLocation() {
       box.style.borderColor = "#fca5a5";
       document
         .getElementById("distanceIcon")
-        .innerHTML = "";
+        .textContent = "";
       document
         .getElementById("distanceStatus")
         .textContent = msg;
@@ -1210,7 +1066,11 @@ function requestLocation() {
       retry.style.display = "block";
     },
 
-    12000
+    {
+      enableHighAccuracy: true,
+      timeout:            10000,
+      maximumAge:         0
+    }
   );
 }
 
@@ -1239,9 +1099,7 @@ function isRateLimited() {
     return true;
   }
   if (d.lockedUntil && now >= d.lockedUntil) {
-    saveRateData({
-      attempts: 0, lockedUntil: 0
-    });
+    saveRateData({ attempts: 0, lockedUntil: 0 });
   }
   return false;
 }
@@ -1250,9 +1108,7 @@ function recordFailedAttempt() {
   const d   = getRateData();
   const now = Date.now();
   if (d.lockedUntil && now >= d.lockedUntil) {
-    saveRateData({
-      attempts: 1, lockedUntil: 0
-    });
+    saveRateData({ attempts: 1, lockedUntil: 0 });
     return;
   }
   d.attempts = (d.attempts || 0) + 1;
@@ -1263,9 +1119,7 @@ function recordFailedAttempt() {
 }
 
 function resetRateLimit() {
-  saveRateData({
-    attempts: 0, lockedUntil: 0
-  });
+  saveRateData({ attempts: 0, lockedUntil: 0 });
 }
 
 function showRateLimitBox() {
@@ -1274,9 +1128,7 @@ function showRateLimitBox() {
   if (!formCard) return;
 
   const old =
-    document.getElementById(
-      "rateLimitWarning"
-    );
+    document.getElementById("rateLimitWarning");
   if (old) old.remove();
 
   const box = document.createElement("div");
@@ -1319,9 +1171,7 @@ function showRateLimitBox() {
       return;
     }
     const rem  =
-      Math.ceil(
-        (d.lockedUntil - now) / 1000
-      );
+      Math.ceil((d.lockedUntil - now) / 1000);
     const mins = Math.floor(rem / 60);
     const secs = rem % 60;
     const el =
@@ -1378,7 +1228,7 @@ function handleSessionClosed() {
     banner.style.display    = "flex";
     banner.style.background = "#fef2f2";
     banner.style.color      = "#dc2626";
-    banner.style.border     =
+    banner.style.border =
       "1px solid #fca5a5";
     const icon = document.getElementById(
       "sessionBannerIcon"
@@ -1388,8 +1238,7 @@ function handleSessionClosed() {
     );
     if (icon) icon.textContent = "";
     if (text) {
-      text.textContent =
-        i("attendanceClosed");
+      text.textContent = i("attendanceClosed");
     }
   }
 }
@@ -1398,7 +1247,7 @@ function handleSessionClosed() {
 // START SESSION LISTENER
 // ================================================
 function startSessionListener() {
-  const ref = getSessionRef();
+  const ref = sessionDocRef();
 
   sessionListener = onSnapshot(ref,
     function (snap) {
@@ -1415,9 +1264,7 @@ function startSessionListener() {
       if (!valid) handleSessionClosed();
     },
     function (err) {
-      console.error(
-        "Session listener:", err
-      );
+      console.error("Session listener:", err);
     }
   );
 }
@@ -1427,10 +1274,9 @@ function startSessionListener() {
 // ================================================
 async function loadSession() {
   const params =
-    new URLSearchParams(
-      window.location.search
-    );
-  sessionId = params.get("session");
+    new URLSearchParams(window.location.search);
+  sessionId  = params.get("session");
+  teacherUid = params.get("teacher");
 
   const modeParam = params.get("mode");
   if (
@@ -1445,40 +1291,15 @@ async function loadSession() {
   const formCard =
     document.getElementById("formCard");
   const closedCard =
-    document.getElementById(
-      "sessionClosedCard"
-    );
+    document.getElementById("sessionClosedCard");
   const banner =
     document.getElementById("sessionBanner");
   const bannerText =
-    document.getElementById(
-      "sessionBannerText"
-    );
+    document.getElementById("sessionBannerText");
   const bannerIcon =
-    document.getElementById(
-      "sessionBannerIcon"
-    );
+    document.getElementById("sessionBannerIcon");
 
-  // ✅ NEW — Check teacherEmail from QR URL
-  if (!teacherEmail) {
-    if (formCard) {
-      formCard.style.display = "none";
-    }
-    if (closedCard) {
-      closedCard.style.display = "block";
-    }
-    const msg = document.querySelector(
-      "[data-i18n='sessionClosedMsg']"
-    );
-    if (msg) {
-      msg.textContent =
-        "No teacher specified in QR code. " +
-        "Please scan the correct QR code.";
-    }
-    return;
-  }
-
-  if (!sessionId) {
+  if (!sessionId || !teacherUid) {
     if (formCard) {
       formCard.style.display = "none";
     }
@@ -1494,7 +1315,7 @@ async function loadSession() {
 
   try {
     const snap = await getDoc(
-      getSessionRef()
+      sessionDocRef()
     );
 
     if (!snap.exists()) {
@@ -1564,6 +1385,7 @@ async function loadSession() {
       await tryRestoreAttendanceState();
     if (restored) return;
 
+    // Show form and start location
     if (formCard) {
       formCard.style.display = "block";
     }
@@ -1641,8 +1463,7 @@ function validateForm() {
   if (!findStudent(idVal)) {
     document
       .getElementById("studentIdError")
-      .textContent =
-        i("errStudentIdNotFound");
+      .textContent = i("errStudentIdNotFound");
     return false;
   }
 
@@ -1810,8 +1631,7 @@ function showNotCheckedInCard() {
 function saveAttendanceState(state) {
   try {
     const key =
-      "attendanceState_" + teacherEmail +
-      "_" + sessionId;
+      "attendanceState_" + sessionId;
     localStorage.setItem(
       key, JSON.stringify(state)
     );
@@ -1826,8 +1646,7 @@ async function tryRestoreAttendanceState() {
   let saved = null;
   try {
     const raw = localStorage.getItem(
-      "attendanceState_" + teacherEmail +
-      "_" + sessionId
+      "attendanceState_" + sessionId
     );
     if (raw) saved = JSON.parse(raw);
   } catch (err) {
@@ -1843,9 +1662,10 @@ async function tryRestoreAttendanceState() {
   }
 
   try {
-    const recordRef = getAttendanceRecord(
-      sessionId, saved.studentId
-    );
+    const recordRef =
+      attendanceRecordDocRef(
+        sessionId, saved.studentId
+      );
     const snap = await getDoc(recordRef);
 
     if (!snap.exists()) return false;
@@ -1984,7 +1804,7 @@ async function handleCheckInSubmit(
 ) {
   try {
     const freshSnap = await getDoc(
-      getSessionRef()
+      sessionDocRef()
     );
     if (freshSnap.exists()) {
       const fd    = freshSnap.data();
@@ -2004,12 +1824,14 @@ async function handleCheckInSubmit(
     }
 
     const deviceKey =
+      teacherUid + "_" +
       sessionId + "_" + deviceToken;
     const deviceLogRef =
-      getDeviceLogRef(deviceKey);
-    const recordRef = getAttendanceRecord(
-      sessionId, studentIdVal
-    );
+      doc(db, "deviceLogs", deviceKey);
+    const recordRef =
+      attendanceRecordDocRef(
+        sessionId, studentIdVal
+      );
 
     let alreadyUsedByOther = false;
     let alreadyCheckedIn   = false;
@@ -2120,10 +1942,7 @@ async function handleCheckInSubmit(
 }
 
 // ================================================
-// ✅ FIX 8 — HANDLE CHECK-OUT SUBMIT
-// On PC, reuse verifiedLocation instead of
-// calling GPS again (PC GPS is unreliable
-// for a second call)
+// HANDLE CHECK-OUT SUBMIT
 // ================================================
 async function handleCheckOutSubmit(
   studentIdVal, nameVal,
@@ -2131,7 +1950,7 @@ async function handleCheckOutSubmit(
 ) {
   try {
     const freshSnap = await getDoc(
-      getSessionRef()
+      sessionDocRef()
     );
     if (freshSnap.exists()) {
       const fd    = freshSnap.data();
@@ -2150,9 +1969,10 @@ async function handleCheckOutSubmit(
       }
     }
 
-    const recordRef = getAttendanceRecord(
-      sessionId, studentIdVal
-    );
+    const recordRef =
+      attendanceRecordDocRef(
+        sessionId, studentIdVal
+      );
     const recordSnap = await getDoc(recordRef);
 
     if (overlay) overlay.style.display = "none";
@@ -2184,8 +2004,7 @@ async function handleCheckOutSubmit(
         sessionId: sessionId,
         date:
           (sessionData && sessionData.date) ||
-          new Date()
-            .toLocaleDateString("en-CA"),
+          new Date().toLocaleDateString("en-CA"),
         fullName:
           rd.fullName || nameVal,
         checkInDisplay:
@@ -2200,118 +2019,92 @@ async function handleCheckOutSubmit(
 
     if (overlay) overlay.style.display = "flex";
 
-    // ✅ FIX 9 — Use verifiedLocation on PC
-    // instead of calling GPS again.
-    // This prevents PC GPS failures on
-    // the second location request.
-    const doCheckOut = async (
-      lat, lon, checkOutDist
-    ) => {
-      try {
-        const now = new Date();
-        const checkOutISO =
-          now.toISOString();
-        const checkOutDisplay =
-          formatTime(now);
-
-        await updateDoc(recordRef, {
-          checkOutTime:    checkOutISO,
-          checkOutDisplay: checkOutDisplay,
-          checkOutLat:     lat,
-          checkOutLon:     lon,
-          checkOutDist:    checkOutDist
-        });
-
-        if (overlay) {
-          overlay.style.display = "none";
-        }
-
-        currentStudentId  = studentIdVal;
-        studentCheckedIn  = true;
-        studentCheckedOut = true;
-
-        showCheckoutCard(
-          rd.fullName || nameVal,
-          rd.checkInDisplay || "--",
-          checkOutDisplay,
-          true
+    navigator.geolocation.getCurrentPosition(
+      async function (pos) {
+        const freshLat  = pos.coords.latitude;
+        const freshLon  = pos.coords.longitude;
+        const freshDist = haversineDistance(
+          freshLat, freshLon,
+          SCHOOL_LAT, SCHOOL_LON
         );
 
-        saveAttendanceState({
-          studentId: studentIdVal,
-          sessionId: sessionId,
-          date:
-            (sessionData &&
-             sessionData.date) ||
-            new Date()
-              .toLocaleDateString("en-CA"),
-          fullName:
-            rd.fullName || nameVal,
-          checkInDisplay:
-            rd.checkInDisplay || "--",
-          checkOutDisplay: checkOutDisplay,
-          checkedIn:  true,
-          checkedOut: true
-        });
-
-      } catch (err) {
-        console.error(
-          "Check-out save error:", err
-        );
-        if (overlay) {
-          overlay.style.display = "none";
-        }
-        showError(err.message);
-      }
-    };
-
-    // ✅ Use already verified location
-    // if available (works for PC)
-    if (
-      verifiedLocation &&
-      verifiedLocation.distance <= MAX_DISTANCE
-    ) {
-      await doCheckOut(
-        verifiedLocation.latitude,
-        verifiedLocation.longitude,
-        verifiedLocation.distance
-      );
-    } else {
-      // Fallback — try GPS again
-      getBestLocation(
-        async function (pos) {
-          const freshLat  =
-            pos.coords.latitude;
-          const freshLon  =
-            pos.coords.longitude;
-          const freshDist = haversineDistance(
-            freshLat, freshLon,
-            SCHOOL_LAT, SCHOOL_LON
-          );
-
-          if (freshDist > MAX_DISTANCE) {
-            if (overlay) {
-              overlay.style.display = "none";
-            }
-            showError(
-              i("errCheckOutLocation")
-            );
-            return;
-          }
-
-          await doCheckOut(
-            freshLat, freshLon, freshDist
-          );
-        },
-        function () {
+        if (freshDist > MAX_DISTANCE) {
           if (overlay) {
             overlay.style.display = "none";
           }
-          showError(i("locationError"));
-        },
-        12000
-      );
-    }
+          showError(i("errCheckOutLocation"));
+          return;
+        }
+
+        try {
+          const now = new Date();
+          const checkOutISO =
+            now.toISOString();
+          const checkOutDisplay =
+            formatTime(now);
+
+          await updateDoc(recordRef, {
+            checkOutTime:    checkOutISO,
+            checkOutDisplay: checkOutDisplay,
+            checkOutLat:     freshLat,
+            checkOutLon:     freshLon,
+            checkOutDist:    freshDist
+          });
+
+          if (overlay) {
+            overlay.style.display = "none";
+          }
+
+          currentStudentId  = studentIdVal;
+          studentCheckedIn  = true;
+          studentCheckedOut = true;
+
+          showCheckoutCard(
+            rd.fullName || nameVal,
+            rd.checkInDisplay || "--",
+            checkOutDisplay,
+            true
+          );
+
+          saveAttendanceState({
+            studentId: studentIdVal,
+            sessionId: sessionId,
+            date:
+              (sessionData &&
+               sessionData.date) ||
+              new Date()
+                .toLocaleDateString("en-CA"),
+            fullName:
+              rd.fullName || nameVal,
+            checkInDisplay:
+              rd.checkInDisplay || "--",
+            checkOutDisplay: checkOutDisplay,
+            checkedIn:  true,
+            checkedOut: true
+          });
+
+        } catch (err) {
+          console.error(
+            "Check-out save error:", err
+          );
+          if (overlay) {
+            overlay.style.display = "none";
+          }
+          showError(err.message);
+        }
+      },
+      function () {
+        if (overlay) {
+          overlay.style.display = "none";
+        }
+        showError(i("locationError"));
+      },
+      {
+        enableHighAccuracy: true,
+        timeout:            10000,
+        maximumAge:         0
+      }
+    );
 
   } catch (err) {
     console.error(
@@ -2323,9 +2116,7 @@ async function handleCheckOutSubmit(
 }
 
 // ================================================
-// ✅ FIX 10 — CHECK OUT BUTTON HANDLER
-// Reuse verifiedLocation on PC instead of
-// calling GPS again
+// CHECK OUT BUTTON HANDLER
 // ================================================
 async function handleCheckOut() {
   if (!studentCheckedIn) {
@@ -2353,175 +2144,15 @@ async function handleCheckOut() {
     loadingText.textContent = i("checkingOut");
   }
 
-  // ✅ Helper to save check-out to Firebase
-  const saveCheckOut = async (
-    lat, lon, dist
-  ) => {
-    try {
-      const freshSnap = await getDoc(
-        getSessionRef()
+  navigator.geolocation.getCurrentPosition(
+    async function (pos) {
+      const lat  = pos.coords.latitude;
+      const lon  = pos.coords.longitude;
+      const dist = haversineDistance(
+        lat, lon, SCHOOL_LAT, SCHOOL_LON
       );
-      if (freshSnap.exists()) {
-        const fd    = freshSnap.data();
-        const today =
-          new Date()
-            .toLocaleDateString("en-CA");
-        if (
-          !fd.isOpen          ||
-          fd.date   !== today ||
-          fd.sessionId !== sessionId
-        ) {
-          if (overlay) {
-            overlay.style.display = "none";
-          }
-          handleSessionClosed();
-          return;
-        }
-      }
 
-      const recordRef = getAttendanceRecord(
-        sessionId, currentStudentId
-      );
-      const recordSnap =
-        await getDoc(recordRef);
-
-      if (!recordSnap.exists()) {
-        if (overlay) {
-          overlay.style.display = "none";
-        }
-        showError(
-          "Attendance record not found."
-        );
-        return;
-      }
-
-      const rd = recordSnap.data();
-      if (rd.checkOutTime) {
-        if (overlay) {
-          overlay.style.display = "none";
-        }
-        studentCheckedOut = true;
-        showError(i("errAlreadyCheckedOut"));
-        return;
-      }
-
-      const now = new Date();
-      const checkOutISO     = now.toISOString();
-      const checkOutDisplay = formatTime(now);
-
-      await updateDoc(recordRef, {
-        checkOutTime:    checkOutISO,
-        checkOutDisplay: checkOutDisplay,
-        checkOutLat:     lat,
-        checkOutLon:     lon,
-        checkOutDist:    dist
-      });
-
-      studentCheckedOut = true;
-
-      if (overlay) {
-        overlay.style.display = "none";
-      }
-      if (loadingText) {
-        loadingText.textContent =
-          i("savingText");
-      }
-
-      const coEl = document.getElementById(
-        "displayCheckOutTime"
-      );
-      if (coEl) {
-        coEl.textContent = checkOutDisplay;
-      }
-
-      const btn = document.getElementById(
-        "checkOutBtn"
-      );
-      const doneMsg = document.getElementById(
-        "alreadyCheckedOutMsg"
-      );
-      if (btn) btn.style.display = "none";
-      if (doneMsg) {
-        doneMsg.textContent =
-          i("checkOutSuccess");
-        doneMsg.style.display = "block";
-        doneMsg.style.color   = "#16a34a";
-      }
-
-      const nameElNow =
-        document.getElementById(
-          "checkoutStudentName"
-        );
-      const ciElNow =
-        document.getElementById(
-          "displayCheckInTime"
-        );
-
-      saveAttendanceState({
-        studentId: currentStudentId,
-        sessionId: sessionId,
-        date:
-          (sessionData && sessionData.date) ||
-          new Date()
-            .toLocaleDateString("en-CA"),
-        fullName:
-          nameElNow?.textContent || "",
-        checkInDisplay:
-          ciElNow?.textContent   || null,
-        checkOutDisplay: checkOutDisplay,
-        checkedIn:  true,
-        checkedOut: true
-      });
-
-    } catch (err) {
-      console.error("Check-out error:", err);
-      if (overlay) {
-        overlay.style.display = "none";
-      }
-      if (loadingText) {
-        loadingText.textContent =
-          i("savingText");
-      }
-      showError(err.message);
-    }
-  };
-
-  // ✅ Reuse verified location if available
-  // This is the key fix for PC/Laptop
-  if (
-    verifiedLocation &&
-    verifiedLocation.distance <= MAX_DISTANCE
-  ) {
-    await saveCheckOut(
-      verifiedLocation.latitude,
-      verifiedLocation.longitude,
-      verifiedLocation.distance
-    );
-  } else {
-    // Fallback — try GPS again
-    getBestLocation(
-      async function (pos) {
-        const lat  = pos.coords.latitude;
-        const lon  = pos.coords.longitude;
-        const dist = haversineDistance(
-          lat, lon, SCHOOL_LAT, SCHOOL_LON
-        );
-
-        if (dist > MAX_DISTANCE) {
-          if (overlay) {
-            overlay.style.display = "none";
-          }
-          if (loadingText) {
-            loadingText.textContent =
-              i("savingText");
-          }
-          showError(i("errCheckOutLocation"));
-          return;
-        }
-
-        await saveCheckOut(lat, lon, dist);
-      },
-      function () {
+      if (dist > MAX_DISTANCE) {
         if (overlay) {
           overlay.style.display = "none";
         }
@@ -2529,16 +2160,168 @@ async function handleCheckOut() {
           loadingText.textContent =
             i("savingText");
         }
-        showError(i("locationError"));
-      },
-      12000
-    );
-  }
+        showError(i("errCheckOutLocation"));
+        return;
+      }
+
+      try {
+        const freshSnap = await getDoc(
+          sessionDocRef()
+        );
+        if (freshSnap.exists()) {
+          const fd    = freshSnap.data();
+          const today =
+            new Date()
+              .toLocaleDateString("en-CA");
+          if (
+            !fd.isOpen          ||
+            fd.date   !== today ||
+            fd.sessionId !== sessionId
+          ) {
+            if (overlay) {
+              overlay.style.display = "none";
+            }
+            handleSessionClosed();
+            return;
+          }
+        }
+
+        const recordRef =
+          attendanceRecordDocRef(
+            sessionId, currentStudentId
+          );
+        const recordSnap =
+          await getDoc(recordRef);
+
+        if (!recordSnap.exists()) {
+          if (overlay) {
+            overlay.style.display = "none";
+          }
+          showError(
+            "Attendance record not found."
+          );
+          return;
+        }
+
+        const rd = recordSnap.data();
+        if (rd.checkOutTime) {
+          if (overlay) {
+            overlay.style.display = "none";
+          }
+          studentCheckedOut = true;
+          showError(i("errAlreadyCheckedOut"));
+          return;
+        }
+
+        const now = new Date();
+        const checkOutISO     = now.toISOString();
+        const checkOutDisplay = formatTime(now);
+
+        await updateDoc(recordRef, {
+          checkOutTime:    checkOutISO,
+          checkOutDisplay: checkOutDisplay,
+          checkOutLat:     lat,
+          checkOutLon:     lon,
+          checkOutDist:    dist
+        });
+
+        studentCheckedOut = true;
+
+        if (overlay) {
+          overlay.style.display = "none";
+        }
+        if (loadingText) {
+          loadingText.textContent =
+            i("savingText");
+        }
+
+        const coEl = document.getElementById(
+          "displayCheckOutTime"
+        );
+        if (coEl) {
+          coEl.textContent = checkOutDisplay;
+        }
+
+        const btn = document.getElementById(
+          "checkOutBtn"
+        );
+        const doneMsg = document.getElementById(
+          "alreadyCheckedOutMsg"
+        );
+        if (btn) btn.style.display = "none";
+        if (doneMsg) {
+          doneMsg.textContent =
+            i("checkOutSuccess");
+          doneMsg.style.display = "block";
+          doneMsg.style.color   = "#16a34a";
+        }
+
+        const nameElNow =
+          document.getElementById(
+            "checkoutStudentName"
+          );
+        const ciElNow =
+          document.getElementById(
+            "displayCheckInTime"
+          );
+
+        saveAttendanceState({
+          studentId: currentStudentId,
+          sessionId: sessionId,
+          date:
+            (sessionData && sessionData.date) ||
+            new Date()
+              .toLocaleDateString("en-CA"),
+          fullName:
+            nameElNow?.textContent || "",
+          checkInDisplay:
+            ciElNow?.textContent   || null,
+          checkOutDisplay: checkOutDisplay,
+          checkedIn:  true,
+          checkedOut: true
+        });
+
+      } catch (err) {
+        console.error("Check-out error:", err);
+        if (overlay) {
+          overlay.style.display = "none";
+        }
+        if (loadingText) {
+          loadingText.textContent =
+            i("savingText");
+        }
+        showError(err.message);
+      }
+    },
+    function () {
+      if (overlay) {
+        overlay.style.display = "none";
+      }
+      if (loadingText) {
+        loadingText.textContent = i("savingText");
+      }
+      showError(i("locationError"));
+    },
+    {
+      enableHighAccuracy: true,
+      timeout:            10000,
+      maximumAge:         0
+    }
+  );
 }
 
 // ================================================
 // EVENT LISTENERS
 // ================================================
+
+// ------------------------------------------------
+// LANGUAGE BUTTON — toggles between English and
+// Khmer every time it is clicked. This is the
+// only place that switches currentLang, and it
+// always flips off the CURRENT value of
+// currentLang (never off displayed text), so the
+// switch is safe to click repeatedly in any order.
+// ------------------------------------------------
 document.getElementById("languageButton")
   ?.addEventListener("click", function () {
     const nextLang =
@@ -2550,9 +2333,7 @@ document.getElementById("retryLocationBtn")
   ?.addEventListener("click", requestLocation);
 
 document.getElementById("attendanceForm")
-  ?.addEventListener(
-    "submit", submitAttendance
-  );
+  ?.addEventListener("submit", submitAttendance);
 
 document.getElementById("checkOutBtn")
   ?.addEventListener("click", handleCheckOut);
@@ -2561,9 +2342,7 @@ let idTimer = null;
 document.getElementById("studentId")
   ?.addEventListener("input", function () {
     clearTimeout(idTimer);
-    idTimer = setTimeout(
-      validateStudentId, 600
-    );
+    idTimer = setTimeout(validateStudentId, 600);
   });
 
 document.getElementById("studentId")
@@ -2573,20 +2352,31 @@ document.getElementById("studentId")
   });
 
 // ================================================
-// EXPOSE startAttendanceFlow GLOBALLY
+// ✅ EXPOSE startAttendanceFlow GLOBALLY
+// Called by the consent popup's Continue button
+// in index.html after student agrees.
+// This is the ONLY change from the original
+// loadSession() call at the bottom.
 // ================================================
 window.startAttendanceFlow = async function () {
+  // Apply language first
   const savedLang =
     localStorage.getItem("studentLanguage")
     || "km";
   applyLanguage(savedLang);
+
+  // Then load session and start everything
   await loadSession();
 };
 
 // ================================================
 // START
+// Apply language on load so the main page
+// text is correct while popup is showing.
+// Do NOT call loadSession() here anymore.
+// It is called by window.startAttendanceFlow()
+// after student agrees to consent.
 // ================================================
 const savedLang =
-  localStorage.getItem("studentLanguage")
-  || "km";
+  localStorage.getItem("studentLanguage") || "km";
 applyLanguage(savedLang);
