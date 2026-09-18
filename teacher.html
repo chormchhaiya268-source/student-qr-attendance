@@ -1379,6 +1379,46 @@
   </div>
 </div>
 
+<!-- ============================================
+     ✅ END ATTENDANCE CONFIRMATION MODAL
+     Replaces the native browser confirm() popup
+     with a centered, styled modal that matches
+     the rest of the dashboard on any device.
+============================================= -->
+<div id="endSessionConfirmModal" class="profile-modal">
+  <div class="profile-content"
+    style="max-width:380px;">
+    <div class="profile-header">
+      <div class="profile-avatar">⏹️</div>
+      <h2 data-t="endSessionConfirmTitle">
+        End Attendance?
+      </h2>
+    </div>
+    <div class="profile-body">
+      <p style="font-size:14px;
+                color:#374151;
+                text-align:center;
+                padding:0 10px 6px;"
+        data-t="confirmEnd">
+        End attendance? Students cannot check
+        in after this.
+      </p>
+    </div>
+    <div class="profile-footer edit-actions">
+      <button id="cancelEndSessionBtn"
+        class="close-modal-btn"
+        data-t="cancelBtn">
+        Cancel
+      </button>
+      <button id="confirmEndSessionBtn"
+        class="btn btn-red"
+        data-t="endSession">
+        ⏹ End Attendance
+      </button>
+    </div>
+  </div>
+</div>
+
 <!-- DUPLICATE STUDENT ID POPUP -->
 <div id="duplicateIdModal" class="profile-modal">
   <div class="profile-content"
@@ -1585,6 +1625,8 @@ onAuthStateChanged(auth, function (user) {
 // TRANSLATIONS
 // ✅ Added: studentDeleted, cannotUndoNote,
 //    deleteBtnConfirm updated for both languages
+// ✅ Added: endSessionConfirmTitle for the new
+//    End Attendance confirmation modal
 // ============================================
 const tt = {
   en: {
@@ -1694,6 +1736,12 @@ const tt = {
       "Attendance session has ended.",
     confirmEnd:
       "End attendance? Students cannot check in after this.",
+
+    // ✅ NEW: title for the End Attendance
+    // confirmation modal
+    endSessionConfirmTitle:
+      "End Attendance?",
+
     setTimesAlert:
       "Please set all time values.",
     timeOrderAlert:
@@ -1882,6 +1930,12 @@ const tt = {
       "វគ្គចុះវត្តមានបានបញ្ចប់។",
     confirmEnd:
       "បញ្ចប់វត្តមាន? សិស្សនឹងមិនអាចចុះបានទៀតទេ។",
+
+    // ✅ NEW: title for the End Attendance
+    // confirmation modal — Khmer
+    endSessionConfirmTitle:
+      "បញ្ចប់វត្តមាន?",
+
     setTimesAlert:
       "សូមកំណត់ម៉ោងទាំងអស់។",
     timeOrderAlert:
@@ -3113,9 +3167,28 @@ async function startSession() {
 
 // ============================================
 // END SESSION
+// ✅ CHANGED: clicking "End Attendance" now
+// opens a centered, styled confirmation modal
+// (endSessionConfirmModal) instead of the
+// browser's native confirm() popup, which
+// always rendered pinned to the top of the
+// tab. The actual end-session logic moved
+// into performEndSession(), which now runs
+// only after the teacher taps the modal's
+// confirm button.
 // ============================================
-async function endSession() {
-  if (!confirm(t("confirmEnd"))) return;
+function endSession() {
+  document.getElementById("endSessionConfirmModal")
+    ?.classList.add("show");
+}
+
+function closeEndSessionConfirm() {
+  document.getElementById("endSessionConfirmModal")
+    ?.classList.remove("show");
+}
+
+async function performEndSession() {
+  closeEndSessionConfirm();
 
   try {
     await setDoc(
@@ -3149,7 +3222,7 @@ async function endSession() {
     document.getElementById("sessionInfoText")
       .textContent = "";
 
-    alert(t("sessionEnded"));
+    showToast(t("sessionEnded"));
 
   } catch (err) {
     console.error("End session:", err);
@@ -3755,6 +3828,22 @@ document.getElementById("deleteStudentModal")
   ?.addEventListener("click", function (e) {
     if (e.target.id === "deleteStudentModal") {
       closeDeleteModal();
+    }
+  });
+
+// ✅ End Attendance Confirmation modal buttons
+document.getElementById("cancelEndSessionBtn")
+  ?.addEventListener(
+    "click", closeEndSessionConfirm
+  );
+document.getElementById("confirmEndSessionBtn")
+  ?.addEventListener(
+    "click", performEndSession
+  );
+document.getElementById("endSessionConfirmModal")
+  ?.addEventListener("click", function (e) {
+    if (e.target.id === "endSessionConfirmModal") {
+      closeEndSessionConfirm();
     }
   });
 
