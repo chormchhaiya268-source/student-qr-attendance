@@ -2695,6 +2695,19 @@ function renderStudentList() {
               </span>
             </button>
 
+            <!-- 🔗 PARENT LINK — Telegram -->
+            <button
+              class="btn-edit-student"
+              style="background:#e0f2fe;color:#0369a1;
+                     border-color:#7dd3fc;"
+              onclick="window._openParentLink(
+                '${esc(s.studentId)}'
+              )">
+              🔗 ${tLang === "km"
+                ? "តំណអាណាព្យាបាល"
+                : "Parent link"}
+            </button>
+
           </div>
         </td>
       </tr>
@@ -3041,6 +3054,192 @@ async function confirmDeleteStudent() {
 // Expose to onclick handlers in HTML
 window._openEditModal   = openEditModal;
 window._openDeleteModal = openDeleteModal;
+
+// ============================================
+// 🔗 PARENT LINK (Telegram)
+// Asks the server for this student's secret
+// link, then shows it in a small popup so the
+// teacher can copy it and send it to the parent.
+// ============================================
+async function openParentLink(studentId, reset) {
+  const km = tLang === "km";
+  try {
+    const token =
+      await auth.currentUser.getIdToken();
+
+    const res = await fetch("/api/parent-link", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + token
+      },
+      body: JSON.stringify({
+        studentId: studentId,
+        reset: !!reset
+      })
+    });
+    const data = await res.json();
+
+    if (!res.ok || !data.ok) {
+      throw new Error(data.error || "Error");
+    }
+    showParentLinkModal(studentId, data);
+
+  } catch (err) {
+    console.error("Parent link error:", err);
+    alert(
+      (km
+        ? "មិនអាចបង្កើតតំណបានទេ៖ "
+        : "Could not create the link: ") +
+      err.message
+    );
+  }
+}
+
+function showParentLinkModal(studentId, data) {
+  const km = tLang === "km";
+  const stu = allStudents.find(
+    s => s.studentId === studentId
+  );
+  const name = stu ? stu.fullName : studentId;
+
+  const old =
+    document.getElementById("parentLinkModal");
+  if (old) old.remove();
+
+  const inviteText = km
+    ? "សូមចុចតំណនេះ រួចចុច Start " +
+      "ដើម្បីទទួលសារវត្តមានរបស់កូនអ្នក៖ " +
+      data.link
+    : "Tap this link, then press Start, " +
+      "to receive your child's attendance " +
+      "messages: " + data.link;
+
+  const wrap = document.createElement("div");
+  wrap.id = "parentLinkModal";
+  wrap.style.cssText =
+    "position:fixed;inset:0;z-index:99999;" +
+    "background:rgba(15,23,42,0.6);display:flex;" +
+    "align-items:center;justify-content:center;" +
+    "padding:16px;";
+
+  wrap.innerHTML = `
+    <div style="background:#fff;border-radius:16px;
+                width:100%;max-width:440px;
+                padding:22px;
+                box-shadow:0 20px 60px rgba(0,0,0,.3);">
+      <h3 style="margin:0 0 4px;font-size:17px;
+                 color:#0f172a;">
+        🔗 ${km ? "តំណអាណាព្យាបាល" : "Parent link"}
+      </h3>
+      <p style="margin:0 0 14px;font-size:13px;
+                color:#475569;">
+        <strong>${esc(name)}</strong>
+        (${esc(studentId)})
+      </p>
+
+      <input id="parentLinkInput" readonly
+        value="${esc(data.link)}"
+        style="width:100%;padding:10px;
+               border:1px solid #cbd5e1;
+               border-radius:8px;font-size:13px;
+               box-sizing:border-box;">
+
+      <p style="margin:10px 0 14px;font-size:12px;
+                color:#64748b;">
+        ${km
+          ? "អាណាព្យាបាលបានភ្ជាប់រួច៖ "
+          : "Parents already connected: "}
+        <strong>${data.connected}</strong>
+      </p>
+
+      <div style="display:flex;gap:8px;
+                  flex-wrap:wrap;">
+        <button id="plCopyLink"
+          style="flex:1;padding:10px;border:none;
+                 border-radius:8px;cursor:pointer;
+                 background:#2563eb;color:#fff;
+                 font-weight:600;font-family:inherit;">
+          ${km ? "ចម្លងតំណ" : "Copy link"}
+        </button>
+        <button id="plCopyMsg"
+          style="flex:1;padding:10px;border:none;
+                 border-radius:8px;cursor:pointer;
+                 background:#16a34a;color:#fff;
+                 font-weight:600;font-family:inherit;">
+          ${km ? "ចម្លងសារ" : "Copy message"}
+        </button>
+      </div>
+
+      <div style="display:flex;gap:8px;
+                  margin-top:10px;">
+        <button id="plReset"
+          style="flex:1;padding:9px;cursor:pointer;
+                 border:1px solid #fca5a5;
+                 background:#fff;color:#dc2626;
+                 border-radius:8px;font-size:12px;
+                 font-family:inherit;">
+          ${km ? "បង្កើតតំណថ្មី" : "Make new link"}
+        </button>
+        <button id="plClose"
+          style="flex:1;padding:9px;cursor:pointer;
+                 border:1px solid #cbd5e1;
+                 background:#fff;color:#334155;
+                 border-radius:8px;font-size:12px;
+                 font-family:inherit;">
+          ${km ? "បិទ" : "Close"}
+        </button>
+      </div>
+
+      <p id="plMsg" style="margin:10px 0 0;
+         font-size:12px;color:#16a34a;
+         min-height:16px;"></p>
+    </div>
+  `;
+  document.body.appendChild(wrap);
+
+  async function copyText(text) {
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch (e) {
+      const el =
+        document.getElementById("parentLinkInput");
+      el.value = text;
+      el.select();
+      document.execCommand("copy");
+      el.value = data.link;
+    }
+    const m = document.getElementById("plMsg");
+    if (m) {
+      m.textContent =
+        km ? "បានចម្លងរួចហើយ ✓" : "Copied ✓";
+    }
+  }
+
+  document.getElementById("plCopyLink")
+    .onclick = () => copyText(data.link);
+  document.getElementById("plCopyMsg")
+    .onclick = () => copyText(inviteText);
+  document.getElementById("plClose")
+    .onclick = () => wrap.remove();
+  wrap.addEventListener("click", e => {
+    if (e.target === wrap) wrap.remove();
+  });
+  document.getElementById("plReset")
+    .onclick = () => {
+      const ok = confirm(
+        km
+          ? "តំណចាស់នឹងលែងប្រើបាន។ បន្តទេ?"
+          : "The old link will stop working. Continue?"
+      );
+      if (ok) {
+        wrap.remove();
+        openParentLink(studentId, true);
+      }
+    };
+}
+
+window._openParentLink = openParentLink;
 
 // ============================================
 // START SESSION
