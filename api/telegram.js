@@ -64,7 +64,14 @@ module.exports = async (req, res) => {
 
     const chatId = msg.chat.id;
     const m = msg.text.trim().match(/^\/start(?:\s+(\S+))?$/);
-    if (!m) return res.status(200).end();
+    if (!m) {
+      // Parent typed something else: this bot only sends notifications
+      await reply(
+        chatId,
+        "ℹ️ ប៊ុតនេះសម្រាប់ផ្ញើសារវត្តមានរបស់សិស្សប៉ុណ្ណោះ។\nមិនអាចឆ្លើយតបសារបានទេ។"
+      );
+      return res.status(200).end();
+    }
 
     const code = m[1];
 
