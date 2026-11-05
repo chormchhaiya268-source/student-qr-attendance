@@ -106,6 +106,9 @@ let currentStudentId  = null;
 // ================================================
 const i18n = {
   en: {
+    errNoRecord:
+      "Your attendance record was not found " +
+      "for this session. Please tell your teacher.",
     title:    "QR Attendance System",
     subtitle: "Tepranom High School",
 
@@ -305,6 +308,9 @@ const i18n = {
   },
 
   km: {
+    errNoRecord:
+      "រកមិនឃើញកំណត់ត្រាវត្តមានរបស់អ្នក" +
+      "សម្រាប់វគ្គនេះទេ។ សូមប្រាប់គ្រូ។",
     title:    "ប្រព័ន្ធចុះវត្តមាន QR",
     subtitle: "វិទ្យាល័យទេពប្រណម្យ",
 
@@ -1481,6 +1487,31 @@ function formatTime(date) {
 }
 
 // ================================================
+// NOTIFY PARENT (Telegram, via /api/notify)
+// Fire-and-forget: it never blocks or breaks
+// the student's check-in if Telegram fails.
+// ================================================
+function notifyParent(studentId, type) {
+  try {
+    fetch("/api/notify", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        teacherUid: teacherUid,
+        sessionId:  sessionId,
+        studentId:  studentId,
+        type:       type
+      }),
+      keepalive: true
+    }).catch(function (e) {
+      console.warn("Parent notify failed:", e);
+    });
+  } catch (e) {
+    console.warn("Parent notify error:", e);
+  }
+}
+
+// ================================================
 // TIME WINDOW CHECK
 // ================================================
 function timeToMinutes(timeStr) {
@@ -1835,6 +1866,7 @@ async function handleCheckInSubmit(
 
     let alreadyUsedByOther = false;
     let alreadyCheckedIn   = false;
+    let recordMissing      = false;
 
     await runTransaction(db, async (tx) => {
       const deviceSnap =
@@ -1850,7 +1882,10 @@ async function handleCheckInSubmit(
         }
       }
 
-      if (!recordSnap.exists()) return;
+      if (!recordSnap.exists()) {
+        recordMissing = true;
+        return;
+      }
 
       const rd = recordSnap.data();
       if (rd.status === "present") {
@@ -1911,10 +1946,18 @@ async function handleCheckInSubmit(
       showError(i("errAlreadyCheckedIn"));
       return;
     }
+    if (recordMissing) {
+      // Nothing was saved, so do NOT show the success screen
+      currentStudentId = null;
+      studentCheckedIn = false;
+      showError(i("errNoRecord"));
+      return;
+    }
 
     resetRateLimit();
     currentStudentId = studentIdVal;
     studentCheckedIn = true;
+    notifyParent(studentIdVal, "checkin");
 
     const now = new Date();
     showCheckoutCard(
@@ -2050,6 +2093,7 @@ async function handleCheckOutSubmit(
             checkOutLon:     freshLon,
             checkOutDist:    freshDist
           });
+          notifyParent(studentIdVal, "checkout");
 
           if (overlay) {
             overlay.style.display = "none";
@@ -2224,6 +2268,7 @@ async function handleCheckOut() {
           checkOutLon:     lon,
           checkOutDist:    dist
         });
+        notifyParent(currentStudentId, "checkout");
 
         studentCheckedOut = true;
 
