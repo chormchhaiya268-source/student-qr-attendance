@@ -1,17 +1,14 @@
 // api/notify.js  (Vercel serverless function, CommonJS)
 //
-// Vercel > Project > Settings > Environment Variables:
-//   TELEGRAM_BOT_TOKEN        = token from BotFather
-//   FIREBASE_SERVICE_ACCOUNT  = entire service-account JSON
+// Called by the student page right after a check-in / check-out.
+// Sends a Khmer Telegram message to every parent connected to that student.
 //
-// package.json needs:  "dependencies": { "firebase-admin": "^12.0.0" }
-// (If your package.json has "type": "module", rename this file to notify.cjs
-//  is NOT enough on Vercel; instead remove "type": "module" or ask me for the ESM version.)
+// Parents are saved by api/telegram.js at:
+//   parentContacts/{teacherUid}/roster/{studentId}  ->  { chatIds: ["123", ...] }
+//
+// Vercel environment variables: TELEGRAM_BOT_TOKEN, FIREBASE_SERVICE_ACCOUNT
 
 const admin = require("firebase-admin");
-
-// Roster field that holds the parent's Telegram chat ID
-const PARENT_CHAT_FIELD = "parentChatId";
 
 if (!admin.apps.length) {
   admin.initializeApp({
@@ -42,6 +39,25 @@ function fmt(date) {
   }).format(date);
 }
 
+async function sendTelegram(chatId, text) {
+  try {
+    const r = await fetch(
+      `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ chat_id: chatId, text, parse_mode: "HTML" }),
+      }
+    );
+    const j = await r.json();
+    if (!j.ok) console.error("Telegram error for", chatId, j);
+    return j.ok === true;
+  } catch (e) {
+    console.error("Telegram fetch failed:", e);
+    return false;
+  }
+}
+
 module.exports = async (req, res) => {
   if (req.method !== "POST") {
     return res.status(405).json({ ok: false, error: "Method not allowed" });
@@ -64,7 +80,20 @@ module.exports = async (req, res) => {
       .collection("sessions").doc(sessionId)
       .collection("records").doc(studentId);
 
-    // 1. Claim this notification atomically (prevents duplicates/replays)
+    // 1. Find the parents first (nothing to do if none connected)
+    const contactSnap = await db
+      .collection("parentContacts").doc(teacherUid)
+      .collection("roster").doc(studentId)
+      .get();
+    const chatIds =
+      contactSnap.exists && Array.isArray(contactSnap.data().chatIds)
+        ? contactSnap.data().chatIds
+        : [];
+    if (chatIds.length === 0) {
+      return res.status(200).json({ ok: true, skipped: "no parent connected" });
+    }
+
+    // 2. Claim this notification atomically (prevents duplicates/replays)
     let rec = null;
     let reason = null;
     await db.runTransaction(async (tx) => {
@@ -88,18 +117,6 @@ module.exports = async (req, res) => {
       return res.status(200).json({ ok: true, skipped: reason });
     }
 
-    // 2. Look up the parent's chat ID (server-side only)
-    const stuSnap = await db
-      .collection("students").doc(teacherUid)
-      .collection("roster").doc(studentId)
-      .get();
-    const chatId = stuSnap.exists ? stuSnap.data()[PARENT_CHAT_FIELD] : null;
-
-    if (!chatId) {
-      await recRef.update({ [flag]: false }); // allow retry if ID added later
-      return res.status(200).json({ ok: true, skipped: "no parent chat id" });
-    }
-
     // 3. Build the Khmer message
     const title = isCheckout
       ? "🏫 សិស្សបានចាកចេញពីសាលា"
@@ -114,24 +131,16 @@ module.exports = async (req, res) => {
       `🕒 ${timeLabel}៖ ${esc(fmt(rec.eventTime))}\n\n` +
       `វិទ្យាល័យទេពប្រណម្យ`;
 
-    // 4. Send to Telegram
-    const tg = await fetch(
-      `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ chat_id: chatId, text, parse_mode: "HTML" }),
-      }
-    );
-    const tgJson = await tg.json();
+    // 4. Send to every connected parent
+    const results = await Promise.all(chatIds.map((id) => sendTelegram(id, text)));
+    const sentCount = results.filter(Boolean).length;
 
-    if (!tgJson.ok) {
-      console.error("Telegram error:", tgJson);
+    if (sentCount === 0) {
       await recRef.update({ [flag]: false }); // release claim so it can retry
-      return res.status(502).json({ ok: false, error: tgJson.description });
+      return res.status(502).json({ ok: false, error: "Telegram failed" });
     }
 
-    return res.status(200).json({ ok: true });
+    return res.status(200).json({ ok: true, sent: sentCount });
   } catch (err) {
     console.error(err);
     return res.status(500).json({ ok: false, error: "Server error" });
