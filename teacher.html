@@ -971,6 +971,9 @@
             <th data-t="colCheckOut">
               ម៉ោងចេញ
             </th>
+            <th data-t="colLocation">
+              ទីតាំង
+            </th>
             <th data-t="colStatus">
               ស្ថានភាព
             </th>
@@ -981,7 +984,7 @@
         </thead>
         <tbody id="attendanceTableBody">
           <tr>
-            <td colspan="8"
+            <td colspan="9"
               class="table-loading">
               Loading...
             </td>
@@ -1064,6 +1067,13 @@
         </span>
         <span class="profile-row-value"
           id="profileDistance"></span>
+      </div>
+      <div class="profile-row">
+        <span class="profile-row-label">
+          📨 Telegram
+        </span>
+        <span class="profile-row-value"
+          id="profileNotify"></span>
       </div>
     </div>
     <div class="profile-footer">
@@ -1805,6 +1815,7 @@ const tt = {
     colCheckOut: "ម៉ោងចេញ",
     colStatus:   "ស្ថានភាព",
     colProfile:  "Profile",
+    colLocation: "Location",
     viewBtn:     "👁 View",
 
     profileSex:      "Sex",
@@ -1997,6 +2008,7 @@ const tt = {
     colCheckOut: "ម៉ោងចេញ",
     colStatus:   "ស្ថានភាព",
     colProfile:  "ព័ត៌មាន",
+    colLocation: "ទីតាំង",
     viewBtn:     "👁 មើល",
 
     profileSex:      "ភេទ",
@@ -3171,6 +3183,15 @@ function showParentLinkModal(studentId, data) {
         </button>
       </div>
 
+      <button id="plTest"
+        style="width:100%;margin-top:10px;
+               padding:10px;border:none;
+               border-radius:8px;cursor:pointer;
+               background:#7c3aed;color:#fff;
+               font-weight:600;font-family:inherit;">
+        📨 ${km ? "ផ្ញើសារសាកល្បង" : "Send test message"}
+      </button>
+
       <div style="display:flex;gap:8px;
                   margin-top:10px;">
         <button id="plReset"
@@ -3211,6 +3232,7 @@ function showParentLinkModal(studentId, data) {
     }
     const m = document.getElementById("plMsg");
     if (m) {
+      m.style.color = "#16a34a";
       m.textContent =
         km ? "បានចម្លងរួចហើយ ✓" : "Copied ✓";
     }
@@ -3222,6 +3244,52 @@ function showParentLinkModal(studentId, data) {
     .onclick = () => copyText(inviteText);
   document.getElementById("plClose")
     .onclick = () => wrap.remove();
+
+  document.getElementById("plTest")
+    .onclick = async () => {
+      const m = document.getElementById("plMsg");
+      m.style.color = "#475569";
+      m.textContent =
+        km ? "កំពុងផ្ញើ..." : "Sending...";
+      try {
+        const token =
+          await auth.currentUser.getIdToken();
+        const res = await fetch("/api/parent-link", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token
+          },
+          body: JSON.stringify({
+            studentId: studentId,
+            action: "test"
+          })
+        });
+        const d = await res.json();
+        if (!res.ok || !d.ok) {
+          throw new Error(d.error || "Error");
+        }
+        if (d.sent > 0) {
+          m.style.color = "#16a34a";
+          m.textContent = km
+            ? "✓ បានផ្ញើហើយ។ សូមមើល Telegram។"
+            : "✓ Sent! Check the parent's Telegram.";
+        } else if (d.problem === "no parent connected") {
+          m.style.color = "#dc2626";
+          m.textContent = km
+            ? "មិនទាន់មានអាណាព្យាបាលភ្ជាប់ទេ។ សូមឱ្យអាណាព្យាបាលបើកតំណ រួចចុច Start។"
+            : "No parent is connected yet. Ask the parent to open the link and press Start.";
+        } else {
+          m.style.color = "#dc2626";
+          m.textContent =
+            (km ? "មិនអាចផ្ញើបាន៖ " : "Could not send: ") +
+            (d.problem || d.telegramError || "unknown");
+        }
+      } catch (err) {
+        m.style.color = "#dc2626";
+        m.textContent = err.message;
+      }
+    };
   wrap.addEventListener("click", e => {
     if (e.target === wrap) wrap.remove();
   });
@@ -3524,6 +3592,10 @@ function startRealtimeListener(sid) {
 
   const ref = attendanceRecordsCol(sid);
 
+  // Remembers each student's last state so we can
+  // detect a NEW check-in / check-out and pop a card.
+  let prevState = null;
+
   unsubscribeListener = onSnapshot(ref,
     function (snap) {
       allRecords = [];
@@ -3550,9 +3622,31 @@ function startRealtimeListener(sid) {
           longitude:
             data.longitude       ?? "",
           distanceFromSchool:
-            data.distanceFromSchool ?? ""
+            data.distanceFromSchool ?? "",
+          notifyResult:
+            data.notifyResult || ""
         });
       });
+
+      // New check-in / check-out since last update?
+      if (prevState) {
+        allRecords.forEach(function (r) {
+          const p = prevState.get(r.id);
+          const wasPresent = !!p && p.present;
+          const wasOut     = !!p && p.out;
+          if (r.status === "present" && !wasPresent) {
+            showScanCard(r, "in");
+          } else if (r.checkOutTime && !wasOut) {
+            showScanCard(r, "out");
+          }
+        });
+      }
+      prevState = new Map(
+        allRecords.map(r => [r.id, {
+          present: r.status === "present",
+          out:     !!r.checkOutTime
+        }])
+      );
 
       allRecords.sort((a, b) => {
         if (
@@ -3587,6 +3681,132 @@ function startRealtimeListener(sid) {
 }
 
 // ============================================
+// LOCATION CELL + MAP LINK
+// ============================================
+function mapUrl(r) {
+  return "https://www.google.com/maps?q=" +
+    encodeURIComponent(r.latitude + "," + r.longitude);
+}
+
+function locationCell(r) {
+  const hasLoc =
+    r.status === "present" &&
+    r.latitude !== "" && r.longitude !== "" &&
+    r.latitude !== null && r.longitude !== null;
+  if (!hasLoc) {
+    return `<span style="color:#cbd5e1;">—</span>`;
+  }
+  const dist =
+    r.distanceFromSchool !== "" &&
+    r.distanceFromSchool !== null
+      ? Math.round(r.distanceFromSchool) + " m"
+      : "map";
+  return `<a href="${esc(mapUrl(r))}"
+    target="_blank" rel="noopener"
+    title="Open in Google Maps"
+    style="color:#2563eb;font-weight:600;
+           font-size:12px;text-decoration:none;">
+    📍 ${esc(dist)}
+  </a>`;
+}
+
+// ============================================
+// LIVE SCAN POP-UP
+// Shows a card (name, class, time, location,
+// status) the moment a student checks in / out.
+// ============================================
+function showScanCard(r, kind) {
+  const km = tLang === "km";
+  let feed = document.getElementById("scanFeed");
+  if (!feed) {
+    feed = document.createElement("div");
+    feed.id = "scanFeed";
+    feed.style.cssText =
+      "position:fixed;top:14px;right:14px;" +
+      "z-index:99998;display:flex;" +
+      "flex-direction:column;gap:10px;" +
+      "width:min(340px,calc(100vw - 28px));";
+    document.body.appendChild(feed);
+  }
+  while (feed.children.length >= 5) {
+    feed.removeChild(feed.firstChild);
+  }
+
+  const isOut = kind === "out";
+  const color = isOut ? "#d97706" : "#16a34a";
+  const bg    = isOut ? "#fffbeb" : "#f0fdf4";
+  const title = isOut
+    ? (km ? "🏫 ចាកចេញពីសាលា" : "🏫 Checked out")
+    : (km ? "✅ ចុះវត្តមានចូលរៀន" : "✅ Checked in");
+  const timeText = isOut
+    ? (r.checkOutDisplay || "--")
+    : (r.checkInDisplay  || "--");
+  const statusText = km ? "មានវត្តមាន" : "Present";
+
+  let locHtml = "";
+  if (!isOut && r.latitude !== "" &&
+      r.latitude !== null) {
+    const d =
+      r.distanceFromSchool !== "" &&
+      r.distanceFromSchool !== null
+        ? Math.round(r.distanceFromSchool) +
+          (km ? " ម៉ែត្រពីសាលា" : " m from school")
+        : (km ? "មើលផែនទី" : "View map");
+    locHtml = `
+      <div style="margin-top:4px;">
+        📍 <a href="${esc(mapUrl(r))}"
+          target="_blank" rel="noopener"
+          style="color:#2563eb;font-weight:600;
+                 text-decoration:none;">
+          ${esc(d)}
+        </a>
+      </div>`;
+  }
+
+  const card = document.createElement("div");
+  card.style.cssText =
+    "background:" + bg + ";" +
+    "border:2px solid " + color + ";" +
+    "border-radius:14px;padding:12px 14px;" +
+    "box-shadow:0 10px 30px rgba(0,0,0,.18);" +
+    "font-size:13px;color:#0f172a;" +
+    "line-height:1.5;position:relative;";
+  card.innerHTML = `
+    <button aria-label="close"
+      style="position:absolute;top:6px;right:8px;
+             border:none;background:none;
+             font-size:18px;cursor:pointer;
+             color:#64748b;">×</button>
+    <div style="font-weight:700;color:${color};
+                margin-bottom:4px;">
+      ${title}
+    </div>
+    <div style="font-size:15px;font-weight:700;">
+      ${esc(r.fullName)}
+      <span style="font-weight:500;color:#64748b;
+                   font-size:12px;">
+        (${esc(r.studentId)})
+      </span>
+    </div>
+    <div style="color:#475569;">
+      ${esc(r.grade || "")}
+    </div>
+    <div style="margin-top:4px;">
+      🕒 ${esc(timeText)}
+    </div>
+    ${locHtml}
+    <div style="margin-top:6px;font-weight:700;
+                color:${color};">
+      ${isOut ? "" : esc(statusText)}
+    </div>
+  `;
+  card.querySelector("button").onclick =
+    () => card.remove();
+  feed.appendChild(card);
+  setTimeout(() => card.remove(), 15000);
+}
+
+// ============================================
 // DISPLAY RECORDS
 // ============================================
 function displayRecords(records) {
@@ -3600,7 +3820,7 @@ function displayRecords(records) {
   if (records.length === 0) {
     tbody.innerHTML = `
       <tr>
-        <td colspan="8"
+        <td colspan="9"
           style="padding:55px 20px;
                  text-align:center;
                  color:#64748b;">
@@ -3705,6 +3925,9 @@ function displayRecords(records) {
         </td>
         <td style="white-space:nowrap;">
           ${checkOutDisplay}
+        </td>
+        <td style="white-space:nowrap;">
+          ${locationCell(r)}
         </td>
         <td>${statusBadge}</td>
         <td>
@@ -3838,6 +4061,12 @@ function openProfile(r) {
       r.distanceFromSchool !== ""
         ? Math.round(r.distanceFromSchool) + " m"
         : "—";
+  }
+
+  const nEl =
+    document.getElementById("profileNotify");
+  if (nEl) {
+    nEl.textContent = r.notifyResult || "—";
   }
 
   document.getElementById("profileModal")
