@@ -44,7 +44,7 @@ module.exports = async (req, res) => {
     }
 
     // 2. Which student? Must be in THIS teacher's own roster.
-    const { studentId, reset } = req.body || {};
+    const { studentId, reset, action } = req.body || {};
     if (typeof studentId !== "string" || !/^[^\/\\]{1,64}$/.test(studentId)) {
       return res.status(400).json({ ok: false, error: "Bad student ID" });
     }
@@ -54,6 +54,54 @@ module.exports = async (req, res) => {
       .get();
     if (!stuSnap.exists) {
       return res.status(404).json({ ok: false, error: "Student not found" });
+    }
+
+    // 2b. "Send test message": proves the Telegram side works,
+    //     and tells the teacher the exact reason if it does not.
+    if (action === "test") {
+      if (!process.env.TELEGRAM_BOT_TOKEN) {
+        return res.status(200).json({
+          ok: true, sent: 0,
+          problem: "TELEGRAM_BOT_TOKEN is missing in Vercel settings",
+        });
+      }
+      const cs = await db
+        .collection("parentContacts").doc(teacherUid)
+        .collection("roster").doc(studentId)
+        .get();
+      const ids =
+        cs.exists && Array.isArray(cs.data().chatIds) ? cs.data().chatIds : [];
+      if (ids.length === 0) {
+        return res.status(200).json({
+          ok: true, sent: 0,
+          problem: "no parent connected",
+        });
+      }
+      const name = stuSnap.data().fullName || studentId;
+      const text =
+        "🔔 <b>សារសាកល្បង</b>\n\nប្រព័ន្ធវត្តមានដំណើរការល្អ។\nសិស្ស៖ <b>" +
+        String(name).replace(/&/g, "&amp;").replace(/</g, "&lt;") +
+        "</b>";
+      let sent = 0;
+      let telegramError = null;
+      for (const id of ids) {
+        try {
+          const r = await fetch(
+            `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ chat_id: id, text, parse_mode: "HTML" }),
+            }
+          );
+          const j = await r.json();
+          if (j.ok) sent++;
+          else telegramError = j.description;
+        } catch (e) {
+          telegramError = String(e.message || e);
+        }
+      }
+      return res.status(200).json({ ok: true, sent, telegramError });
     }
 
     // 3. Reuse the existing code, or make a new one
