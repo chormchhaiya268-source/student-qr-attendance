@@ -65,9 +65,25 @@ const db  = getFirestore(app);
 // ================================================
 // SCHOOL LOCATION
 // ================================================
-const SCHOOL_LAT   = 11.822624138074948;
-const SCHOOL_LON   = 104.7536601355822;
-const MAX_DISTANCE = 100;
+// A student may scan if they are inside ANY zone below.
+// radius = meters from the zone's center point.
+// To add another place: copy one line, change name,
+// lat, lon and radius. A zone with lat/lon = null
+// is ignored (switched off).
+const SCHOOL_ZONES = [
+  {
+    name:   "School",
+    lat:    11.822624138074948,
+    lon:    104.7536601355822,
+    radius: 150
+  },
+  {
+    name:   "KOICA Lab",
+    lat:    null,   // <-- paste KOICA lab latitude
+    lon:    null,   // <-- paste KOICA lab longitude
+    radius: 50
+  }
+];
 const MAX_ACCURACY = 50;
 
 // ================================================
@@ -907,6 +923,40 @@ function haversineDistance(
 }
 
 // ================================================
+// CHECK SCHOOL AREA (all zones)
+// inside   = true if within ANY zone's radius
+// distance = meters to the best-matching zone center
+// zone     = name of that zone
+// ================================================
+function checkSchoolArea(lat, lon) {
+  let best = null;
+  SCHOOL_ZONES.forEach(function (z) {
+    if (z.lat === null || z.lon === null) return;
+    const d = haversineDistance(
+      lat, lon, z.lat, z.lon
+    );
+    const outside = d - z.radius; // <= 0 = inside
+    if (best === null || outside < best.outside) {
+      best = {
+        distance: d,
+        outside:  outside,
+        zone:     z.name
+      };
+    }
+  });
+  if (best === null) {
+    return {
+      inside: false, distance: 0, zone: null
+    };
+  }
+  return {
+    inside:   best.outside <= 0,
+    distance: best.distance,
+    zone:     best.zone
+  };
+}
+
+// ================================================
 // SHOW DISTANCE RESULT
 // ================================================
 function showDistanceResult(loc) {
@@ -921,7 +971,7 @@ function showDistanceResult(loc) {
   const locBox =
     document.getElementById("locationBox");
 
-  const isNear = loc.distance <= MAX_DISTANCE;
+  const isNear = loc.inside === true;
 
   if (locBox) locBox.style.display = "none";
   box.style.display = "flex";
@@ -1030,15 +1080,15 @@ function requestLocation() {
         return;
       }
 
-      const distance = haversineDistance(
-        lat, lon, SCHOOL_LAT, SCHOOL_LON
-      );
+      const area = checkSchoolArea(lat, lon);
 
       studentLocation = {
         latitude:  lat,
         longitude: lon,
         accuracy:  accuracy,
-        distance:  distance
+        distance:  area.distance,
+        inside:    area.inside,
+        zone:      area.zone
       };
 
       showDistanceResult(studentLocation);
@@ -1772,13 +1822,13 @@ async function submitAttendance(e) {
     return;
   }
 
-  const dist = haversineDistance(
+  const area = checkSchoolArea(
     studentLocation.latitude,
-    studentLocation.longitude,
-    SCHOOL_LAT, SCHOOL_LON
+    studentLocation.longitude
   );
+  const dist = area.distance;
 
-  if (dist > MAX_DISTANCE) {
+  if (!area.inside) {
     showError(i("errTooFar"));
     locationVerified = false;
     checkAndEnableSubmitButton();
@@ -2066,12 +2116,12 @@ async function handleCheckOutSubmit(
       async function (pos) {
         const freshLat  = pos.coords.latitude;
         const freshLon  = pos.coords.longitude;
-        const freshDist = haversineDistance(
-          freshLat, freshLon,
-          SCHOOL_LAT, SCHOOL_LON
+        const freshArea = checkSchoolArea(
+          freshLat, freshLon
         );
+        const freshDist = freshArea.distance;
 
-        if (freshDist > MAX_DISTANCE) {
+        if (!freshArea.inside) {
           if (overlay) {
             overlay.style.display = "none";
           }
@@ -2192,11 +2242,10 @@ async function handleCheckOut() {
     async function (pos) {
       const lat  = pos.coords.latitude;
       const lon  = pos.coords.longitude;
-      const dist = haversineDistance(
-        lat, lon, SCHOOL_LAT, SCHOOL_LON
-      );
+      const area = checkSchoolArea(lat, lon);
+      const dist = area.distance;
 
-      if (dist > MAX_DISTANCE) {
+      if (!area.inside) {
         if (overlay) {
           overlay.style.display = "none";
         }
