@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Get my location</title>
+  <style>
+    :root {
+      --bg: #f1f5f9;
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --line: #cbd5e1;
+      --blue: #2563eb;
+      --green: #16a34a;
+      --red: #dc2626;
+      --amber: #d97706;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0f172a;
+        --card: #1e293b;
+        --text: #f1f5f9;
+        --muted: #94a3b8;
+        --line: #475569;
+      }
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 16px;
+      background: var(--bg);
+      color: var(--text);
+      font-family: "Battambang", "Kantumruy Pro", system-ui, Arial, sans-serif;
+      line-height: 1.6;
+    }
+    .card {
+      max-width: 460px;
+      margin: 0 auto;
+      background: var(--card);
+      border-radius: 16px;
+      padding: 22px;
+      box-shadow: 0 8px 30px rgba(0,0,0,.12);
+    }
+    h1 { font-size: 19px; margin: 0 0 6px; }
+    p  { margin: 0 0 12px; color: var(--muted); font-size: 14px; }
+    button {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      background: var(--blue);
+      color: #fff;
+    }
+    button:disabled { opacity: .6; cursor: wait; }
+    .result { margin-top: 16px; display: none; }
+    .row {
+      display: flex; justify-content: space-between;
+      padding: 8px 0; border-bottom: 1px solid var(--line);
+      font-size: 15px;
+    }
+    .row strong { font-variant-numeric: tabular-nums; }
+    pre {
+      background: var(--bg);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 12px;
+      font-size: 14px;
+      overflow-x: auto;
+      margin: 12px 0;
+      color: var(--text);
+    }
+    #copyBtn { background: var(--green); }
+    #status { margin-top: 10px; font-size: 13px; font-weight: 600; min-height: 20px; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>📍 Get my location / យកទីតាំងរបស់ខ្ញុំ</h1>
+    <p>
+      Stand in the <b>middle of the KOICA lab</b>, then press the button.
+      Wait about 15 seconds.<br>
+      ឈរនៅ<b>កណ្ដាលបន្ទប់ KOICA</b> រួចចុចប៊ូតុង ហើយរង់ចាំប្រហែល ១៥ វិនាទី។
+    </p>
+
+    <button id="goBtn">Get location / យកទីតាំង</button>
+    <div id="status"></div>
+
+    <div class="result" id="result">
+      <div class="row"><span>Latitude</span><strong id="lat">-</strong></div>
+      <div class="row"><span>Longitude</span><strong id="lon">-</strong></div>
+      <div class="row"><span>GPS accuracy</span><strong id="acc">-</strong></div>
+
+      <pre id="line"></pre>
+      <button id="copyBtn">Copy / ចម្លង</button>
+    </div>
+  </div>
+
+<script>
+  var goBtn = document.getElementById("goBtn");
+  var statusEl = document.getElementById("status");
+  var result = document.getElementById("result");
+  var watchId = null;
+  var best = null;
+
+  function setStatus(text, color) {
+    statusEl.textContent = text;
+    statusEl.style.color = color || "inherit";
+  }
+
+  function show(pos) {
+    var lat = pos.coords.latitude;
+    var lon = pos.coords.longitude;
+    var acc = pos.coords.accuracy;
+
+    result.style.display = "block";
+    document.getElementById("lat").textContent = lat.toFixed(6);
+    document.getElementById("lon").textContent = lon.toFixed(6);
+    document.getElementById("acc").textContent = "± " + Math.round(acc) + " m";
+    document.getElementById("line").textContent =
+      "lat:    " + lat.toFixed(6) + ",\n" +
+      "lon:    " + lon.toFixed(6) + ",";
+  }
+
+  function stop() {
+    if (watchId !== null) {
+      navigator.geolocation.clearWatch(watchId);
+      watchId = null;
+    }
+    goBtn.disabled = false;
+    goBtn.textContent = "Get location again / យកទីតាំងម្តងទៀត";
+    if (best) {
+      if (best.coords.accuracy <= 30) {
+        setStatus("✓ Good. You can copy it now. / ល្អហើយ អាចចម្លងបាន។", "var(--green)");
+      } else {
+        setStatus("⚠ GPS is weak (" + Math.round(best.coords.accuracy) +
+          " m). Go near a window or door and press again. / GPS ខ្សោយ សូមទៅជិតបង្អួចហើយព្យាយាមម្តងទៀត។",
+          "var(--amber)");
+      }
+    }
+  }
+
+  goBtn.addEventListener("click", function () {
+    if (!navigator.geolocation) {
+      setStatus("This browser cannot use location.", "var(--red)");
+      return;
+    }
+    best = null;
+    goBtn.disabled = true;
+    goBtn.textContent = "Reading GPS... / កំពុងអាន...";
+    setStatus("");
+
+    watchId = navigator.geolocation.watchPosition(
+      function (pos) {
+        if (!best || pos.coords.accuracy < best.coords.accuracy) {
+          best = pos;
+          show(pos);
+        }
+        if (pos.coords.accuracy <= 10) stop();
+      },
+      function (err) {
+        stop();
+        setStatus(
+          err.code === err.PERMISSION_DENIED
+            ? "Please allow location access. / សូមអនុញ្ញាតការប្រើទីតាំង។"
+            : "Could not get location. Try again. / មិនអាចទទួលទីតាំងបានទេ។",
+          "var(--red)"
+        );
+      },
+      { enableHighAccuracy: true, timeout: 20000, maximumAge: 0 }
+    );
+
+    setTimeout(function () {
+      if (watchId !== null) stop();
+    }, 15000);
+  });
+
+  document.getElementById("copyBtn").addEventListener("click", function () {
+    var text = document.getElementById("line").textContent;
+    function done() {
+      setStatus("Copied ✓ / បានចម្លង", "var(--green)");
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done, function () {
+        setStatus("Please select and copy the text manually.", "var(--amber)");
+      });
+    } else {
+      setStatus("Please select and copy the text manually.", "var(--amber)");
+    }
+  });
+</script>
+</body>
+</html>
