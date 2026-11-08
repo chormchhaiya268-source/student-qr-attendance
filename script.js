@@ -66,25 +66,42 @@ const db  = getFirestore(app);
 // SCHOOL LOCATION
 // ================================================
 // A student may scan if they are inside ANY zone below.
-// radius = meters from the zone's center point.
-// To add another place: copy one line, change name,
-// lat, lon and radius. A zone with lat/lon = null
-// is ignored (switched off).
+// radius      = meters from the zone's center point.
+// maxAccuracy = how rough the device's location may
+//               be, in meters. Phones with GPS are
+//               accurate (small number). Laptops have
+//               no GPS and guess from Wi-Fi, so a
+//               laptop zone needs a bigger number.
+// To add another place: copy one block, change name,
+// lat, lon, radius, maxAccuracy. A zone with
+// lat/lon = null is ignored (switched off).
 const SCHOOL_ZONES = [
   {
-    name:   "School",
-    lat:    11.822624138074948,
-    lon:    104.7536601355822,
-    radius: 150
-  },
-  {
-    name:   "KOICA Lab",
-    lat:    null,   // <-- paste KOICA lab latitude
-    lon:    null,   // <-- paste KOICA lab longitude
-    radius: 50
+    // Covers the whole campus INCLUDING the KOICA lab
+    // (the lab is right next to this center point).
+    name:        "School",
+    lat:         11.822624138074948,
+    lon:         104.7536601355822,
+    radius:      180,
+    maxAccuracy: 50
   }
+  // To add another place later, add a comma after the
+  // block above and copy this template:
+  // ,{
+  //   name: "Other place", lat: 0.0, lon: 0.0,
+  //   radius: 50, maxAccuracy: 50
+  // }
 ];
-const MAX_ACCURACY = 50;
+
+// Biggest accuracy number any active zone accepts
+function largestAllowedAccuracy() {
+  let m = 0;
+  SCHOOL_ZONES.forEach(function (z) {
+    if (z.lat === null || z.lon === null) return;
+    if (z.maxAccuracy > m) m = z.maxAccuracy;
+  });
+  return m || 50;
+}
 
 // ================================================
 // RATE LIMIT
@@ -928,14 +945,31 @@ function haversineDistance(
 // distance = meters to the best-matching zone center
 // zone     = name of that zone
 // ================================================
-function checkSchoolArea(lat, lon) {
-  let best = null;
+function checkSchoolArea(lat, lon, accuracy) {
+  // If accuracy is not given, only the distance is checked
+  const checkAcc = typeof accuracy === "number";
+  let insideZone = null;
+  let best       = null;
+  let poor       = false;
+
   SCHOOL_ZONES.forEach(function (z) {
     if (z.lat === null || z.lon === null) return;
     const d = haversineDistance(
       lat, lon, z.lat, z.lon
     );
-    const outside = d - z.radius; // <= 0 = inside
+    const withinRadius = d <= z.radius;
+    const accuracyOk =
+      !checkAcc || accuracy <= z.maxAccuracy;
+
+    if (withinRadius && accuracyOk) {
+      if (!insideZone || d < insideZone.distance) {
+        insideZone = { distance: d, zone: z.name };
+      }
+    } else if (withinRadius && !accuracyOk) {
+      poor = true; // right place, GPS too rough
+    }
+
+    const outside = d - z.radius;
     if (best === null || outside < best.outside) {
       best = {
         distance: d,
@@ -944,15 +978,26 @@ function checkSchoolArea(lat, lon) {
       };
     }
   });
+
+  if (insideZone) {
+    return {
+      inside:        true,
+      distance:      insideZone.distance,
+      zone:          insideZone.zone,
+      poorAccuracy:  false
+    };
+  }
   if (best === null) {
     return {
-      inside: false, distance: 0, zone: null
+      inside: false, distance: 0,
+      zone: null, poorAccuracy: false
     };
   }
   return {
-    inside:   best.outside <= 0,
-    distance: best.distance,
-    zone:     best.zone
+    inside:        false,
+    distance:      best.distance,
+    zone:          best.zone,
+    poorAccuracy:  poor
   };
 }
 
@@ -1059,7 +1104,14 @@ function requestLocation() {
       const lon      = pos.coords.longitude;
       const accuracy = pos.coords.accuracy;
 
-      if (accuracy > MAX_ACCURACY) {
+      const areaCheck =
+        checkSchoolArea(lat, lon, accuracy);
+
+      if (
+        accuracy > largestAllowedAccuracy() ||
+        (!areaCheck.inside &&
+          areaCheck.poorAccuracy)
+      ) {
         if (locBox) {
           locBox.style.display = "none";
         }
@@ -1080,7 +1132,7 @@ function requestLocation() {
         return;
       }
 
-      const area = checkSchoolArea(lat, lon);
+      const area = areaCheck;
 
       studentLocation = {
         latitude:  lat,
@@ -1824,7 +1876,8 @@ async function submitAttendance(e) {
 
   const area = checkSchoolArea(
     studentLocation.latitude,
-    studentLocation.longitude
+    studentLocation.longitude,
+    studentLocation.accuracy
   );
   const dist = area.distance;
 
