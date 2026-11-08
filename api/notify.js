@@ -147,13 +147,25 @@ module.exports = async (req, res) => {
       : "✅ សិស្សបានចុះវត្តមានចូលរៀន";
     const timeLabel = isCheckout ? "ម៉ោងចាកចេញ" : "ម៉ោងចូលរៀន";
 
+    // Where the student scanned (map link)
+    const lat = Number(isCheckout ? rec.checkOutLat : rec.latitude);
+    const lon = Number(isCheckout ? rec.checkOutLon : rec.longitude);
+    const hasLoc =
+      (isCheckout ? rec.checkOutLat : rec.latitude) !== null &&
+      (isCheckout ? rec.checkOutLat : rec.latitude) !== undefined &&
+      Number.isFinite(lat) && Number.isFinite(lon);
+    const locLine = hasLoc
+      ? `📍 ទីតាំង៖ <a href="https://www.google.com/maps?q=${lat},${lon}">មើលលើផែនទី</a>\n`
+      : "";
+
     const text =
-      `<b>${title}</b>\n\n` +
+      `<b>${title}</b>\n` +
+      `🏫 វិទ្យាល័យទេពប្រណម្យ\n\n` +
       `👤 ឈ្មោះ៖ <b>${esc(rec.fullName)}</b>\n` +
       `🆔 អត្តលេខ៖ ${esc(rec.studentId || studentId)}\n` +
-      `🏫 ថ្នាក់៖ ${esc(rec.grade)}\n` +
-      `🕒 ${timeLabel}៖ ${esc(fmt(rec.eventTime))}\n\n` +
-      `វិទ្យាល័យទេពប្រណម្យ`;
+      `📚 ថ្នាក់៖ ${esc(rec.grade)}\n` +
+      `🕒 ${timeLabel}៖ ${esc(fmt(rec.eventTime))}\n` +
+      locLine;
 
     // 4. Send to every connected parent
     const results = await Promise.all(chatIds.map((id) => sendTelegram(id, text)));
