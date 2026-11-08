@@ -174,6 +174,150 @@
     }
 
     /* ============================================
+       WHEEL TIME PICKER (tap the time, then
+       drag / hold and scroll the wheels)
+    ============================================ */
+    .time12-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 44px;
+      padding: 10px 16px;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      background: #ffffff;
+      color: #1e293b;
+      font-size: 16px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      font-variant-numeric: tabular-nums;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .time12-btn:hover { border-color: #3b82f6; }
+    .time12-btn:active { transform: scale(0.97); }
+
+    .tw-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 100000;
+      background: rgba(15, 23, 42, 0.55);
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+    }
+    .tw-sheet {
+      background: #ffffff;
+      width: 100%;
+      max-width: 380px;
+      border-radius: 22px 22px 0 0;
+      padding: 18px 18px 20px;
+      box-shadow: 0 -10px 40px rgba(0,0,0,0.25);
+    }
+    @media (min-width: 560px) {
+      .tw-overlay { align-items: center; }
+      .tw-sheet { border-radius: 22px; }
+    }
+    .tw-title {
+      text-align: center;
+      font-size: 13px;
+      font-weight: 600;
+      color: #64748b;
+    }
+    .tw-preview {
+      text-align: center;
+      font-size: 28px;
+      font-weight: 800;
+      color: #0f172a;
+      margin: 2px 0 8px;
+      font-variant-numeric: tabular-nums;
+    }
+    .tw-wheels {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      height: 220px;
+    }
+    .tw-band {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 88px;
+      height: 44px;
+      background: rgba(37, 99, 235, 0.10);
+      border-top: 2px solid #3b82f6;
+      border-bottom: 2px solid #3b82f6;
+      pointer-events: none;
+    }
+    .tw-col {
+      flex: 1;
+      height: 220px;
+      box-sizing: border-box;
+      padding: 88px 0;
+      overflow-y: scroll;
+      scroll-snap-type: y mandatory;
+      scrollbar-width: none;
+      overscroll-behavior: contain;
+      touch-action: pan-y;
+      cursor: grab;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-overflow-scrolling: touch;
+      -webkit-mask-image: linear-gradient(
+        transparent, #000 28%, #000 72%, transparent);
+      mask-image: linear-gradient(
+        transparent, #000 28%, #000 72%, transparent);
+    }
+    .tw-col::-webkit-scrollbar { display: none; }
+    .tw-col.dragging {
+      cursor: grabbing;
+      scroll-snap-type: none;
+    }
+    .tw-item {
+      height: 44px;
+      line-height: 44px;
+      text-align: center;
+      font-size: 22px;
+      font-weight: 600;
+      color: #94a3b8;
+      scroll-snap-align: center;
+    }
+    .tw-item.sel {
+      color: #0f172a;
+      font-weight: 800;
+    }
+    .tw-colon {
+      align-self: center;
+      font-size: 26px;
+      font-weight: 800;
+      color: #0f172a;
+    }
+    .tw-hint {
+      text-align: center;
+      font-size: 12px;
+      color: #94a3b8;
+      margin-top: 8px;
+    }
+    .tw-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 14px;
+    }
+    .tw-actions button {
+      flex: 1;
+      padding: 13px;
+      border: none;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+    }
+    .tw-cancel { background: #e2e8f0; color: #334155; }
+    .tw-ok     { background: #2563eb; color: #ffffff; }
+
+    /* ============================================
        ✅ EDIT BUTTON — safe/normal action
        Blue, clean, standard appearance
     ============================================ */
@@ -2205,6 +2349,20 @@ function buildTimeSelector(containerId, hiddenId) {
   container.appendChild(minSel);
   container.appendChild(ampmSel);
 
+  // The old dropdowns stay in the page (other code reads
+  // them) but are hidden. The teacher taps this button.
+  [hourSel, colon, minSel, ampmSel].forEach(el => {
+    el.style.display = "none";
+  });
+  const timeBtn = document.createElement("button");
+  timeBtn.type = "button";
+  timeBtn.className = "time12-btn";
+  timeBtn.id = hiddenId + "_btn";
+  timeBtn.addEventListener("click", function () {
+    openTimeWheel(hiddenId);
+  });
+  container.appendChild(timeBtn);
+
   setSelectorFrom24(hiddenId);
 
   function syncHiddenFromSelector() {
@@ -2243,6 +2401,261 @@ function setSelectorFrom24(hiddenId) {
   hourSel.value = p.hour;
   minSel.value = String(p.minute).padStart(2, "0");
   ampmSel.value = p.ampm;
+  refreshTimeButton(hiddenId);
+}
+
+
+// ============================================
+// WHEEL TIME PICKER
+// Tap the time -> a sheet opens with 3 wheels
+// (hour, minute, AM/PM). Drag or hold-and-scroll
+// with a finger or the mouse, then press OK.
+// ============================================
+function refreshTimeButton(hiddenId) {
+  const btn =
+    document.getElementById(hiddenId + "_btn");
+  const hidden =
+    document.getElementById(hiddenId);
+  if (!btn || !hidden) return;
+  btn.textContent =
+    "🕐 " + formatDisplay12(hidden.value);
+}
+
+function makeWheel(values, onPaint) {
+  const ITEM = 44;
+  const PAD  = 88;
+  const col = document.createElement("div");
+  col.className = "tw-col";
+  values.forEach(function (v) {
+    const it = document.createElement("div");
+    it.className = "tw-item";
+    it.textContent = v;
+    col.appendChild(it);
+  });
+  const items = col.children;
+
+  function indexNow() {
+    const i = Math.round(col.scrollTop / ITEM);
+    return Math.max(0, Math.min(values.length - 1, i));
+  }
+  function paint() {
+    const idx = indexNow();
+    for (let i = 0; i < items.length; i++) {
+      items[i].classList.toggle("sel", i === idx);
+    }
+    if (onPaint) onPaint();
+  }
+
+  let ticking = false;
+  col.addEventListener("scroll", function () {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(function () {
+      ticking = false;
+      paint();
+    });
+  });
+
+  // Mouse: hold the button and drag up / down
+  let dragging = false;
+  let moved = false;
+  let startY = 0;
+  let startTop = 0;
+
+  col.addEventListener("pointerdown", function (e) {
+    if (e.pointerType !== "mouse" || e.button !== 0) {
+      return;
+    }
+    dragging = true;
+    moved = false;
+    startY = e.clientY;
+    startTop = col.scrollTop;
+    col.classList.add("dragging");
+    try { col.setPointerCapture(e.pointerId); }
+    catch (err) { /* ignore */ }
+  });
+  col.addEventListener("pointermove", function (e) {
+    if (!dragging) return;
+    const dy = e.clientY - startY;
+    if (Math.abs(dy) > 4) moved = true;
+    col.scrollTop = startTop - dy;
+  });
+  function endDrag(e) {
+    if (!dragging) return;
+    dragging = false;
+    col.classList.remove("dragging");
+    try { col.releasePointerCapture(e.pointerId); }
+    catch (err) { /* ignore */ }
+    col.scrollTo({
+      top: indexNow() * ITEM,
+      behavior: "smooth"
+    });
+    setTimeout(function () { moved = false; }, 0);
+  }
+  col.addEventListener("pointerup", endDrag);
+  col.addEventListener("pointercancel", endDrag);
+
+  // Tap / click a number to jump to it
+  col.addEventListener("click", function (e) {
+    if (moved) return;
+    const rect = col.getBoundingClientRect();
+    const y =
+      e.clientY - rect.top + col.scrollTop - PAD;
+    let i = Math.floor(y / ITEM);
+    i = Math.max(0, Math.min(values.length - 1, i));
+    col.scrollTo({ top: i * ITEM, behavior: "smooth" });
+  });
+
+  return {
+    el: col,
+    getIndex: indexNow,
+    setIndex: function (i) {
+      col.scrollTop = i * ITEM;
+      paint();
+    }
+  };
+}
+
+function openTimeWheel(hiddenId) {
+  const hidden =
+    document.getElementById(hiddenId);
+  const hourSel =
+    document.getElementById(hiddenId + "_hour");
+  const minSel =
+    document.getElementById(hiddenId + "_min");
+  const ampmSel =
+    document.getElementById(hiddenId + "_ampm");
+  if (!hidden || !hourSel || !minSel || !ampmSel) {
+    return;
+  }
+  if (document.getElementById("timeWheelOverlay")) {
+    return;
+  }
+
+  const km  = tLang === "km";
+  const cur = to12Parts(hidden.value);
+
+  const hours = [];
+  for (let h = 1; h <= 12; h++) hours.push(String(h));
+  const mins = [];
+  for (let m = 0; m < 60; m++) {
+    mins.push(String(m).padStart(2, "0"));
+  }
+  const ampms = ["AM", "PM"];
+
+  const label =
+    document
+      .getElementById(hiddenId + "Selects")
+      ?.parentElement
+      ?.querySelector(".time-input-sublabel")
+      ?.textContent.trim() || "";
+
+  const overlay = document.createElement("div");
+  overlay.className = "tw-overlay";
+  overlay.id = "timeWheelOverlay";
+
+  const sheet = document.createElement("div");
+  sheet.className = "tw-sheet";
+
+  const title = document.createElement("div");
+  title.className = "tw-title";
+  title.textContent = label;
+
+  const preview = document.createElement("div");
+  preview.className = "tw-preview";
+
+  const wheelsBox = document.createElement("div");
+  wheelsBox.className = "tw-wheels";
+
+  const band = document.createElement("div");
+  band.className = "tw-band";
+
+  function updatePreview() {
+    if (!hWheel || !mWheel || !aWheel) return;
+    preview.textContent =
+      hours[hWheel.getIndex()] + ":" +
+      mins[mWheel.getIndex()] + " " +
+      ampms[aWheel.getIndex()];
+  }
+  let hWheel, mWheel, aWheel;
+  hWheel = makeWheel(hours, updatePreview);
+  mWheel = makeWheel(mins, updatePreview);
+  aWheel = makeWheel(ampms, updatePreview);
+
+  const colon = document.createElement("div");
+  colon.className = "tw-colon";
+  colon.textContent = ":";
+
+  wheelsBox.appendChild(band);
+  wheelsBox.appendChild(hWheel.el);
+  wheelsBox.appendChild(colon);
+  wheelsBox.appendChild(mWheel.el);
+  wheelsBox.appendChild(aWheel.el);
+
+  const hint = document.createElement("div");
+  hint.className = "tw-hint";
+  hint.textContent = km
+    ? "សង្កត់ ហើយអូសឡើងចុះ ដើម្បីជ្រើសរើស"
+    : "Press and drag up or down to choose";
+
+  const actions = document.createElement("div");
+  actions.className = "tw-actions";
+  const cancelBtn = document.createElement("button");
+  cancelBtn.type = "button";
+  cancelBtn.className = "tw-cancel";
+  cancelBtn.textContent = km ? "បោះបង់" : "Cancel";
+  const okBtn = document.createElement("button");
+  okBtn.type = "button";
+  okBtn.className = "tw-ok";
+  okBtn.textContent = km ? "រួចរាល់" : "OK";
+  actions.appendChild(cancelBtn);
+  actions.appendChild(okBtn);
+
+  sheet.appendChild(title);
+  sheet.appendChild(preview);
+  sheet.appendChild(wheelsBox);
+  sheet.appendChild(hint);
+  sheet.appendChild(actions);
+  overlay.appendChild(sheet);
+  document.body.appendChild(overlay);
+
+  const oldOverflow = document.body.style.overflow;
+  document.body.style.overflow = "hidden";
+
+  // Start on the current time
+  hWheel.setIndex(cur.hour - 1);
+  mWheel.setIndex(cur.minute);
+  aWheel.setIndex(cur.ampm === "PM" ? 1 : 0);
+
+  function close() {
+    document.removeEventListener("keydown", onKey);
+    document.body.style.overflow = oldOverflow;
+    overlay.remove();
+  }
+  function onKey(e) {
+    if (e.key === "Escape") close();
+    if (e.key === "Enter") apply();
+  }
+  function apply() {
+    hourSel.value  = hours[hWheel.getIndex()];
+    minSel.value   = mins[mWheel.getIndex()];
+    ampmSel.value  = ampms[aWheel.getIndex()];
+    // This fires the existing logic: it updates the
+    // hidden 24-hour value, the validation and the
+    // "Check-In Window" card.
+    ampmSel.dispatchEvent(
+      new Event("change", { bubbles: true })
+    );
+    refreshTimeButton(hiddenId);
+    close();
+  }
+
+  cancelBtn.addEventListener("click", close);
+  okBtn.addEventListener("click", apply);
+  overlay.addEventListener("click", function (e) {
+    if (e.target === overlay) close();
+  });
+  document.addEventListener("keydown", onKey);
 }
 
 // ============================================
