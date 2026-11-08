@@ -820,6 +820,33 @@
         </div>
 
       </div>
+
+      <!-- 📣 ABSENT ALERTS (Telegram) -->
+      <div style="margin-top:14px;padding:12px 14px;
+                  border:1px solid #fcd34d;
+                  background:#fffbeb;
+                  border-radius:12px;">
+        <label style="display:flex;align-items:flex-start;
+                      gap:8px;font-size:13px;
+                      font-weight:600;color:#92400e;
+                      cursor:pointer;line-height:1.5;">
+          <input type="checkbox" id="autoAbsentToggle"
+            checked
+            style="width:18px;height:18px;
+                   margin-top:2px;flex-shrink:0;">
+          <span data-t="absentAutoLabel"></span>
+        </label>
+        <button id="sendAbsentBtn" type="button"
+          style="margin-top:10px;width:100%;
+                 padding:10px;border:none;
+                 border-radius:8px;cursor:pointer;
+                 background:#d97706;color:#fff;
+                 font-weight:700;font-family:inherit;"
+          data-t="absentSendBtn"></button>
+        <p id="absentAlertStatus"
+          style="margin:8px 0 0;font-size:12px;
+                 min-height:16px;color:#475569;"></p>
+      </div>
     </div>
 
     <p id="sessionInfoText"
@@ -1816,6 +1843,9 @@ const tt = {
     colStatus:   "ស្ថានភាព",
     colProfile:  "Profile",
     colLocation: "Location",
+    absentAutoLabel:
+      "📣 Auto-alert parents of students who did not check in, when the check-in time ends",
+    absentSendBtn: "Send absent alerts now",
     viewBtn:     "👁 View",
 
     profileSex:      "Sex",
@@ -2009,6 +2039,9 @@ const tt = {
     colStatus:   "ស្ថានភាព",
     colProfile:  "ព័ត៌មាន",
     colLocation: "ទីតាំង",
+    absentAutoLabel:
+      "📣 ជូនដំណឹងអាណាព្យាបាលស្វ័យប្រវត្តិ ពេលម៉ោងចុះវត្តមានចូលបញ្ចប់ (សិស្សដែលមិនទាន់ចុះ)",
+    absentSendBtn: "ផ្ញើដំណឹងអវត្តមានឥឡូវនេះ",
     viewBtn:     "👁 មើល",
 
     profileSex:      "ភេទ",
@@ -3310,6 +3343,180 @@ function showParentLinkModal(studentId, data) {
 window._openParentLink = openParentLink;
 
 // ============================================
+// 📣 ABSENT ALERTS (Telegram)
+// When the check-in end time passes, ask the
+// server to message the parents of students who
+// did NOT scan. The server double-checks the
+// time, so it can never send too early or twice.
+// ============================================
+let absentAlertDone = false;
+let absentAlertBusy = false;
+let absentNextTryAt = 0;
+
+function setAbsentStatus(text, color) {
+  const el =
+    document.getElementById("absentAlertStatus");
+  if (!el) return;
+  el.textContent = text;
+  el.style.color = color || "#475569";
+}
+
+function describeAbsentResult(d) {
+  const km = tLang === "km";
+  if (d.status === "sent") {
+    if (d.absent === 0) {
+      return km
+        ? "✓ គ្រប់គ្នាបានចុះវត្តមានហើយ។ គ្មានអ្នកអវត្តមានទេ។"
+        : "✓ Everyone has checked in. Nobody is absent.";
+    }
+    return km
+      ? "✓ បានផ្ញើដំណឹងអវត្តមានទៅអាណាព្យាបាលរបស់សិស្ស " +
+        d.students + " នាក់ (អវត្តមាន " + d.absent +
+        (d.noParent
+          ? ", មិនទាន់ភ្ជាប់ Telegram " + d.noParent
+          : "") + ")"
+      : "✓ Absent alerts sent for " + d.students +
+        " student(s) (" + d.absent + " absent" +
+        (d.noParent
+          ? ", " + d.noParent +
+            " without a connected parent"
+          : "") + ")";
+  }
+  if (d.status === "already_done") {
+    return km
+      ? "✓ ដំណឹងអវត្តមានត្រូវបានផ្ញើរួចហើយ។"
+      : "✓ Absent alerts were already sent.";
+  }
+  if (d.status === "too_early") {
+    return km
+      ? "⏳ ម៉ោងចុះវត្តមានមិនទាន់បញ្ចប់ទេ។"
+      : "⏳ The check-in time has not ended yet.";
+  }
+  if (d.status === "started_late") {
+    return km
+      ? "⚠️ វគ្គចាប់ផ្ដើមក្រោយម៉ោងចុះវត្តមានបញ្ចប់ ដូច្នេះមិនផ្ញើស្វ័យប្រវត្តិទេ។ សូមចុចប៊ូតុងដើម្បីផ្ញើដោយខ្លួនឯង។"
+      : "⚠️ The session started after the check-in time ended, so nothing was sent automatically. Press the button to send.";
+  }
+  return km
+    ? "មិនមានវគ្គដែលអាចផ្ញើបានទេ។"
+    : "No open session to send for.";
+}
+
+async function sendAbsentAlerts(manual) {
+  if (absentAlertBusy) return;
+  absentAlertBusy = true;
+  const km = tLang === "km";
+  setAbsentStatus(
+    km ? "កំពុងផ្ញើ..." : "Sending...", "#475569"
+  );
+  try {
+    const token =
+      await auth.currentUser.getIdToken();
+    const res = await fetch("/api/notify-absent", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + token
+      },
+      body: JSON.stringify({ manual: !!manual })
+    });
+    const d = await res.json();
+    if (!res.ok || !d.ok) {
+      throw new Error(d.error || "Error");
+    }
+
+    if (
+      d.status === "sent" ||
+      d.status === "already_done" ||
+      d.status === "started_late"
+    ) {
+      absentAlertDone = true;
+    } else {
+      absentNextTryAt = Date.now() + 60000;
+    }
+
+    const good =
+      d.status === "sent" ||
+      d.status === "already_done";
+    setAbsentStatus(
+      describeAbsentResult(d),
+      good ? "#16a34a" : "#b45309"
+    );
+    if (good && d.status === "sent" && d.messages > 0) {
+      showToast(
+        km
+          ? "📣 បានផ្ញើដំណឹងអវត្តមានទៅអាណាព្យាបាល"
+          : "📣 Absent alerts sent to parents"
+      );
+    }
+  } catch (err) {
+    console.error("Absent alerts:", err);
+    absentNextTryAt = Date.now() + 60000;
+    setAbsentStatus(
+      (km ? "មិនអាចផ្ញើបាន៖ " : "Could not send: ") +
+        err.message,
+      "#dc2626"
+    );
+  } finally {
+    absentAlertBusy = false;
+  }
+}
+
+function absentTick() {
+  if (
+    !sessionIsOpen ||
+    absentAlertDone ||
+    absentAlertBusy
+  ) return;
+  const toggle =
+    document.getElementById("autoAbsentToggle");
+  if (!toggle || !toggle.checked) return;
+  if (Date.now() < absentNextTryAt) return;
+
+  const end =
+    document.getElementById("checkInEndTime")
+      ?.value;
+  if (!end) return;
+  const nowHM =
+    new Date().toTimeString().slice(0, 5);
+  if (nowHM <= end) return; // not ended yet
+
+  sendAbsentAlerts(false);
+}
+setInterval(absentTick, 20000);
+
+(function initAbsentControls() {
+  const toggle =
+    document.getElementById("autoAbsentToggle");
+  if (toggle) {
+    try {
+      if (localStorage.getItem("autoAbsentAlert")
+          === "0") {
+        toggle.checked = false;
+      }
+    } catch (e) { /* ignore */ }
+    toggle.addEventListener("change", function () {
+      try {
+        localStorage.setItem(
+          "autoAbsentAlert",
+          toggle.checked ? "1" : "0"
+        );
+      } catch (e) { /* ignore */ }
+    });
+  }
+  document.getElementById("sendAbsentBtn")
+    ?.addEventListener("click", function () {
+      const km = tLang === "km";
+      const ok = confirm(
+        km
+          ? "ផ្ញើដំណឹងអវត្តមានទៅអាណាព្យាបាលរបស់សិស្សដែលមិនទាន់ចុះវត្តមានឥឡូវនេះ?"
+          : "Send absent alerts now to the parents of every student who has not checked in?"
+      );
+      if (ok) sendAbsentAlerts(true);
+    });
+})();
+
+// ============================================
 // START SESSION
 // ============================================
 async function startSession() {
@@ -3424,6 +3631,9 @@ async function startSession() {
       .textContent = t("sessionActive");
 
     startRealtimeListener(sid);
+    absentAlertDone = false;
+    absentNextTryAt = 0;
+    setAbsentStatus("");
     alert(t("sessionStarted"));
 
   } catch (err) {
